@@ -20,13 +20,23 @@ function Index() {
 
       if (response.status === 200) {
         localStorage.setItem('token', response.data.token);
+        // console.log(response.data.token);
         navigate('/overview');
       } else {
         setMessage('Invalid login credentials.');
         setShowMessageBox(true);
       }
     } catch (error) {
-      setMessage(error.response?.data?.error || 'An error occurred during login.');
+      const errorResponse = error.response?.data?.error || 'An error occurred during login.';
+      let errorMessage = '';
+
+      if (typeof errorResponse === 'object') {
+        errorMessage = Object.values(errorResponse).flat().join(' ');
+      } else {
+        errorMessage = errorResponse;
+      }
+
+      setMessage(errorMessage);
       setShowMessageBox(true);
     }
   };
@@ -43,7 +53,7 @@ function Index() {
         </div>
         <div className="max-w-3xl mx-auto bg-white rounded-xl shadow-lg overflow-hidden">
           <div className="flex">
-            <div className="w-1/2 bg-white p-8 py-10 rounded-xl">
+            <div className="w-2/3 bg-white p-8 py-10 rounded-xl">
               <div className="text-center">
                 <h2 className="text-2xl font-bold mb-4">LOGIN</h2>
                 <form onSubmit={validateForm}>
