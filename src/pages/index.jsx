@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 function Index() {
   const [username, setUsername] = useState('');
@@ -8,17 +9,26 @@ function Index() {
   const [showMessageBox, setShowMessageBox] = useState(false);
   const navigate = useNavigate();
 
-  const validateForm = (e) => {
+  const validateForm = async (e) => {
     e.preventDefault();
-    if (!username.includes('@')) {
-      setMessage('Please enter a valid email address.');
-      setShowMessageBox(true);
-      return false;
-    }
 
-    // If validation passes, navigate to the overview page
-    navigate('/overview');
-    return true;
+    try {
+      const response = await axios.post('http://192.168.1.6:3000/api/login', {
+        username,
+        password,
+      });
+
+      if (response.status === 200) {
+        localStorage.setItem('token', response.data.token);
+        navigate('/overview');
+      } else {
+        setMessage('Invalid login credentials.');
+        setShowMessageBox(true);
+      }
+    } catch (error) {
+      setMessage(error.response?.data?.error || 'An error occurred during login.');
+      setShowMessageBox(true);
+    }
   };
 
   const closeMessageBox = () => {
