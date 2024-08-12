@@ -67,9 +67,9 @@ function Overview() {
   }, []);
 
   return (
-    <div className="flex w-full bg-gray-100">
+    <div className="flex w-full bg-white">
       <Navbar />
-      <div className="flex flex-col w-full">
+      <div className="flex flex-col xl:w-4/5 ml-80 bg-white">
         <div className="w-11/12 mx-auto bg-white p-6 m-3 rounded-lg shadow-md mb-6">
           <h2 className="text-1xl font-bold">Management System Overview</h2>
         </div>
@@ -124,7 +124,7 @@ function Overview() {
             <div className="bg-white p-6 rounded-lg shadow-md">
               <h3 className="text-lg font-bold mb-4">SALES</h3>
               {/* Adjusted container for the pie chart */}
-              <div className="flex justify-center items-center h-64">
+              <div className="flex justify-center items-center h-80">
                 <div className="w-full h-full max-w-xs">
                   <Pie data={data} options={options} />
                 </div>

@@ -183,9 +183,9 @@ function DeliveryMan() {
   //* End delete account
 
   return (
-    <div className="flex w-full bg-gray-100">
+    <div className="flex w-full bg-white">
       <Navbar />
-      <div className="flex flex-col w-full">
+      <div className="flex flex-col w-full ml-60 bg-white">
         <div className="w-4/5 mx-auto bg-white p-6 m-3 rounded-lg shadow-md mb-6">
           <h2 className="text-1xl font-bold">Management System Delivery Man</h2>
         </div>
@@ -204,7 +204,7 @@ function DeliveryMan() {
               </button>
             </div>
             <button
-              className="bg-white text-black px-4 py-2 rounded-md shadow-md focus:outline-none"
+              className="bg-blue-500 text-black px-4 py-2 bg-blue-500 text-white rounded-md shadow-md focus:outline-none"
               onClick={openAddModal}
             >
               +
@@ -216,8 +216,18 @@ function DeliveryMan() {
               key={index}
               className="flex items-center justify-between bg-white-200 p-4 rounded-lg shadow-lg relative"
             >
-              <div>Name: {deliveryMan.name}</div>
-              <div>Number: {deliveryMan.number}</div>
+            <div className="information flex">
+              <div className='font-bold'>
+                {deliveryMan.name}
+              </div>
+              <div className="font-bold ml-5">
+               |
+              </div>
+              <div className='font-bold ml-5'>
+                {deliveryMan.number}
+              </div>
+            </div>
+            <div className="settings">
               <div className="flex space-x-2">
                 <img
                   src="./src/assets/edit.png"
@@ -226,12 +236,13 @@ function DeliveryMan() {
                   onClick={() => openEditModal(deliveryMan.name)}
                 />
                 <img
-                  src="./src/assets/delete.png" //! Add a delete icon here
+                  src="./src/assets/delete.png" //! TODO: Add a delete icon here
                   alt="Delete"
                   className="w-6 h-6 cursor-pointer"
                   onClick={() => handleDelete(deliveryMan.id)}
                 />
               </div>
+            </div>
             </div>
           ))}
         </div>
