@@ -1,30 +1,60 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Navbar from '../components/navbar';
+import axios from 'axios';
+
 
 function DeliveryMan() {
+  const api = import.meta.env.VITE_API_URL;
+
   const [addModalOpen, setAddModalOpen] = useState(false);
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [deliveryMen, setDeliveryMen] = useState([]);
+
   const [newDeliveryMan, setNewDeliveryMan] = useState({
+    usertype: '',
     name: '',
     username: '',
     password: '',
-    confirmPassword: ''
+    confirmPassword: '',
+    email: '',
+    number: '',
   });
+
   const [editDeliveryMan, setEditDeliveryMan] = useState({
+    id: '',
+    usertype: '',
     name: '',
     username: '',
     password: '',
-    confirmPassword: ''
+    confirmPassword: '',
+    email: '',
+    number: '', 
   });
+
+  // Fetching delivery men on component mount
+  useEffect(() => {
+    const fetchDeliveryMen = async () => {
+      try {
+        const response = await axios.get(`${api}/api/users`);
+        setDeliveryMen(response.data.data.filter(user => user.user_type_id === 2));
+      } catch (error) {
+        console.error('An error occurred while fetching delivery men:', error);
+      }
+    };
+
+    fetchDeliveryMen();
+  }, []);
 
   const openAddModal = () => {
     setAddModalOpen(true);
     setNewDeliveryMan({
+      usertype: '',
       name: '',
       username: '',
       password: '',
-      confirmPassword: ''
+      confirmPassword: '',
+      email: '', // Reset email
+      number: '', // Reset number
     });
   };
 
@@ -35,10 +65,14 @@ function DeliveryMan() {
     if (deliveryMan) {
       setEditModalOpen(true);
       setEditDeliveryMan({
+        usertype: deliveryMan.usertype,
+        id: deliveryMan.id,
         name: deliveryMan.name,
         username: deliveryMan.username,
-        password: deliveryMan.password,
-        confirmPassword: deliveryMan.confirmPassword
+        password: '',
+        confirmPassword: '',
+        email: deliveryMan.email || '',
+        number: deliveryMan.number || '',
       });
     }
   };
@@ -52,7 +86,7 @@ function DeliveryMan() {
       [name]: value
     }));
   };
-
+  
   const handleEditDeliveryManChange = (e) => {
     const { name, value } = e.target;
     setEditDeliveryMan((prev) => ({
@@ -61,25 +95,92 @@ function DeliveryMan() {
     }));
   };
 
-  const submitAddModal = () => {
-    setDeliveryMen([...deliveryMen, newDeliveryMan]);
-    closeAddModal();
+  //* Start Create account modal Pop-out
+  const submitAddModal = async () => {
+    if (newDeliveryMan.password.length < 8) {
+      console.error('Password must be at least 8 characters long');
+      alert('Password must be at least 8 characters long');
+      return;
+    }
+    if (newDeliveryMan.password !== newDeliveryMan.confirmPassword) {
+      console.error('Passwords do not match');
+      alert('Passwords do not match');
+      return;
+    }
+    if (!newDeliveryMan.number) {
+      console.error('Phone number is required');
+      alert('Phone number is required');
+      return;
+    }
+    try {
+      const response = await axios.post(`${api}/api/users`, {
+        user_type_id: newDeliveryMan.usertype,
+        name: newDeliveryMan.name,
+        username: newDeliveryMan.username,
+        password: newDeliveryMan.password,
+        email: newDeliveryMan.email || 'null@gmail.com', // Use 'null@gmail.com' if email is null
+        number: newDeliveryMan.number,
+      });
+  
+      if (response.status === 201) {
+        setDeliveryMen([...deliveryMen, response.data.data]);
+        closeAddModal();
+      } else {
+        console.error('Error creating delivery man');
+      }
+    } catch (error) {
+      console.error('An error occurred while creating a delivery man:', error.response.data.error);
+      alert('An error occurred: ' + JSON.stringify(error.response.data.error));
+    }
   };
+  //* End Create Account modal Pop-out
 
-  const submitEditModal = () => {
-    setDeliveryMen((prevDeliveryMen) =>
-      prevDeliveryMen.map((man) =>
-        man.name === editDeliveryMan.name ? editDeliveryMan : {
-          ...man,
-          name: editDeliveryMan.name,
-          username: editDeliveryMan.username,
-          password: editDeliveryMan.password,
-          confirmPassword: editDeliveryMan.confirmPassword
-        }
-      )
-    );
-    closeEditModal();
+  //* Start Edit Account modal Pop-out
+  const submitEditModal = async () => {
+    try {
+      const response = await axios.put(`${api}/api/users/${editDeliveryMan.id}`, {
+        name: editDeliveryMan.name,
+        username: editDeliveryMan.username,
+        password: editDeliveryMan.password,
+        user_type_id: editDeliveryMan.usertype,
+        email: editDeliveryMan.email || null,
+        number: editDeliveryMan.number,
+      });
+
+      if (response.status === 200) {
+        setDeliveryMen((prevDeliveryMen) =>
+          prevDeliveryMen.map((man) =>
+            man.id === editDeliveryMan.id ? response.data.data : man
+          )
+        );
+        closeEditModal();
+      } else {
+        console.error('Error updating delivery man');
+      }
+    } catch (error) {
+      console.error('An error occurred while updating the delivery man:', error.response.data.error);
+    }
   };
+  //* End Edit Account modal Pop-out
+
+  //* Start delete account
+  const handleDelete = async (id) => {
+    if (window.confirm("Are you sure you want to delete this delivery man?")) {
+      try {
+        const response = await axios.delete(`${api}/api/users/${id}`);
+  
+        if (response.status === 200) {
+          setDeliveryMen(deliveryMen.filter((man) => man.id !== id));
+          console.log('Delivery man deleted successfully');
+        } else {
+          console.error('Failed to delete the delivery man');
+        }
+      } catch (error) {
+        console.error('An error occurred while deleting the delivery man:', error.response.data.error);
+      }
+    }
+  };  
+  //* End delete account
 
   return (
     <div className="flex w-full bg-gray-100">
@@ -110,23 +211,32 @@ function DeliveryMan() {
             </button>
           </div>
           <div id="delivery-man-container" className="mt-4 space-y-4">
-            {deliveryMen.map((deliveryMan, index) => (
-              <div
-                key={index}
-                className="flex items-center justify-between bg-white-200 p-4 rounded-lg shadow-lg relative"
-              >
-                <div>{deliveryMan.name}</div>
+          {deliveryMen.map((deliveryMan, index) => (
+            <div
+              key={index}
+              className="flex items-center justify-between bg-white-200 p-4 rounded-lg shadow-lg relative"
+            >
+              <div>Name: {deliveryMan.name}</div>
+              <div>Number: {deliveryMan.number}</div>
+              <div className="flex space-x-2">
                 <img
                   src="./src/assets/edit.png"
                   alt="Edit"
                   className="w-6 h-6 cursor-pointer"
                   onClick={() => openEditModal(deliveryMan.name)}
                 />
+                <img
+                  src="./src/assets/delete.png" //! Add a delete icon here
+                  alt="Delete"
+                  className="w-6 h-6 cursor-pointer"
+                  onClick={() => handleDelete(deliveryMan.id)}
+                />
               </div>
-            ))}
-          </div>
+            </div>
+          ))}
         </div>
 
+        </div>
         {/* Add Modal */}
         {addModalOpen && (
           <div
@@ -135,6 +245,20 @@ function DeliveryMan() {
           >
             <div className="bg-white p-6 rounded-lg shadow-lg w-1/4">
               <h3 className="text-lg font-bold mb-4">Add Delivery Man</h3>
+              <div className="mb-4">
+                <label htmlFor="usertype" className="block text-gray-700">Usertype:</label>
+                <select
+                  id="usertype"
+                  name="usertype"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                  value={newDeliveryMan.usertype}
+                  onChange={handleAddDeliveryManChange}
+                >
+                  <option value="">Select Usertype</option> {/* Default placeholder */}
+                  <option value="1">Admin</option>
+                  <option value="2">Employee</option>
+                </select>
+              </div>
               <div className="mb-4">
                 <label htmlFor="name" className="block text-gray-700">Name:</label>
                 <input
@@ -154,6 +278,28 @@ function DeliveryMan() {
                   name="username"
                   className="w-full px-3 py-2 border border-gray-300 rounded-md"
                   value={newDeliveryMan.username}
+                  onChange={handleAddDeliveryManChange}
+                />
+              </div>
+              <div className="mb-4">
+                <label htmlFor="email" className="block text-gray-700">Email:</label>
+                <input
+                  type="email"
+                  id="email"
+                  name="email"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                  value={newDeliveryMan.email}
+                  onChange={handleAddDeliveryManChange}
+                />
+              </div>
+              <div className="mb-4">
+                <label htmlFor="number" className="block text-gray-700">Number:</label>
+                <input
+                  type="text"
+                  id="number"
+                  name="number"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                  value={newDeliveryMan.number}
                   onChange={handleAddDeliveryManChange}
                 />
               </div>
@@ -190,13 +336,12 @@ function DeliveryMan() {
                   className="bg-blue-500 text-white px-4 py-2 rounded-md shadow-md"
                   onClick={submitAddModal}
                 >
-                  Save
+                  Create
                 </button>
               </div>
             </div>
           </div>
         )}
-
         {/* Edit Modal */}
         {editModalOpen && (
           <div
@@ -224,6 +369,28 @@ function DeliveryMan() {
                   name="username"
                   className="w-full px-3 py-2 border border-gray-300 rounded-md"
                   value={editDeliveryMan.username}
+                  onChange={handleEditDeliveryManChange}
+                />
+              </div>
+              <div className="mb-4">
+                <label htmlFor="editEmail" className="block text-gray-700">Email:</label>
+                <input
+                  type="email"
+                  id="editEmail"
+                  name="email"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                  value={editDeliveryMan.email}
+                  onChange={handleEditDeliveryManChange}
+                />
+              </div>
+              <div className="mb-4">
+                <label htmlFor="editNumber" className="block text-gray-700">Number:</label>
+                <input
+                  type="text"
+                  id="editNumber"
+                  name="number"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                  value={editDeliveryMan.number}
                   onChange={handleEditDeliveryManChange}
                 />
               </div>
