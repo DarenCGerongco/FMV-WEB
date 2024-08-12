@@ -71,7 +71,7 @@ const Navbar = () => {
     </li>
     <li className="mb-4 flex items-center hover:bg-white hover:bg-opacity-25 hover:rounded transition duration-300">
       <div className="border border-white rounded w-5 h-5 mr-2"></div>
-      <Link to="/deliveryman" className="text-white text-lg">Delivery man</Link>
+      <Link to="/deliveryman" className="text-red-400 text-lg">Delivery man</Link>
     </li>
     <li className="mt-auto mb-4 flex items-center hover:bg-white hover:bg-opacity-25 hover:rounded transition duration-300">
       <div className="border border-white rounded w-5 h-5 mr-2"></div>
