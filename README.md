@@ -16,3 +16,6 @@ Currently, two official plugins are available:
 
 # To run the Code:
 - `npx vite`
+
+# .ENV should be created
+- `".env" should be created and the content should have: "VITE_API_URL=http://192.168.1.6:3000"`
