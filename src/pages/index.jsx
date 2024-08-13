@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
 function Index() {
+  const url = import.meta.env.VITE_API_URL;
+
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [message, setMessage] = useState('');
@@ -13,7 +15,7 @@ function Index() {
     e.preventDefault();
 
     try {
-      const response = await axios.post('http://192.168.1.6:3000/api/login', {
+      const response = await axios.post(`${url}/api/login`, {
         username,
         password,
       });

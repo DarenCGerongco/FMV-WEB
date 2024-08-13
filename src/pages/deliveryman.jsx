@@ -4,7 +4,7 @@ import axios from 'axios';
 
 
 function DeliveryMan() {
-  const api = import.meta.env.VITE_API_URL;
+  const url = import.meta.env.VITE_API_URL;
 
   const [addModalOpen, setAddModalOpen] = useState(false);
   const [editModalOpen, setEditModalOpen] = useState(false);
@@ -35,7 +35,7 @@ function DeliveryMan() {
   useEffect(() => {
     const fetchDeliveryMen = async () => {
       try {
-        const response = await axios.get(`${api}/api/users`);
+        const response = await axios.get(`${url}/api/users`);
         setDeliveryMen(response.data.data.filter(user => user.user_type_id === 2));
       } catch (error) {
         console.error('An error occurred while fetching delivery men:', error);
@@ -113,7 +113,7 @@ function DeliveryMan() {
       return;
     }
     try {
-      const response = await axios.post(`${api}/api/users`, {
+      const response = await axios.post(`${url}/api/users`, {
         user_type_id: newDeliveryMan.usertype,
         name: newDeliveryMan.name,
         username: newDeliveryMan.username,
@@ -138,7 +138,7 @@ function DeliveryMan() {
   //* Start Edit Account modal Pop-out
   const submitEditModal = async () => {
     try {
-      const response = await axios.put(`${api}/api/users/${editDeliveryMan.id}`, {
+      const response = await axios.put(`${url}/api/users/${editDeliveryMan.id}`, {
         name: editDeliveryMan.name,
         username: editDeliveryMan.username,
         password: editDeliveryMan.password,
@@ -167,7 +167,7 @@ function DeliveryMan() {
   const handleDelete = async (id) => {
     if (window.confirm("Are you sure you want to delete this delivery man?")) {
       try {
-        const response = await axios.delete(`${api}/api/users/${id}`);
+        const response = await axios.delete(`${url}/api/users/${id}`);
   
         if (response.status === 200) {
           setDeliveryMen(deliveryMen.filter((man) => man.id !== id));
