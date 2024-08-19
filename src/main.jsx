@@ -8,7 +8,10 @@ import Inventory from './pages/inventory.jsx';
 import Sales from './pages/sales.jsx'
 import Delivery from'./pages/delivery.jsx'
 import Overview from'./pages/overview.jsx'
+import Order from './pages/order.jsx';
 import Navbar from './components/navbar.jsx';
+
+
 
 const root = createRoot(document.getElementById('root'));
 
@@ -22,7 +25,7 @@ root.render(
         <Route path="/sales" element={<Sales />} />
         <Route path="/delivery" element={<Delivery />} />
         <Route path="/overview" element={<Overview />} />
-        <Route path="/" element={<Index />} />
+        <Route path="/order" element={<Order />} />
         <Route path="/overview" element={<Overview />} />
         
       </Routes>
