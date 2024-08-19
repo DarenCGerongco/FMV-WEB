@@ -22,7 +22,6 @@ function Index() {
 
       if (response.status === 200) {
         localStorage.setItem('token', response.data.token);
-        // console.log(response.data.token);
         navigate('/overview');
       } else {
         setMessage('Invalid login credentials.');
@@ -48,10 +47,10 @@ function Index() {
   };
 
   return (
-    <div className="flex">
-      <div className="flex flex-col items-center justify-center h-screen bg-gray-100 flex-grow">
+    <div className="flex h-screen bg-cover bg-center" style={{ backgroundImage: 'url(/src/assets/background.png)' }}>
+      <div className="flex flex-col items-center justify-center h-full w-full">
         <div className="header-text">
-          <h1 className="text-3xl font-extrabold mb-10">FMV Management System</h1>
+          <h1 className="text-3xl font-extrabold mb-10 text-black">FMV Management System</h1>
         </div>
         <div className="max-w-3xl mx-auto bg-white rounded-xl shadow-lg overflow-hidden">
           <div className="flex">
