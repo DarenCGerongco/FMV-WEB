@@ -184,10 +184,10 @@ function DeliveryMan() {
 
   return (
     <div className="flex w-full bg-white">
-      <Navbar />
-      <div className="flex flex-col w-full ml-60 bg-white">
+      <Navbar/>
+      <div className="flex flex-col w-full ml-72 bg-white">
         <div className="w-4/5 mx-auto bg-white p-6 m-3 rounded-lg shadow-md mb-6">
-          <h2 className="text-1xl font-bold">Management System Delivery Man</h2>
+          <h2 className="text-1xl font-bold">DELIVERY MAN</h2>
         </div>
         <div className="w-4/5 mx-auto bg-white p-5 m-3 rounded-lg shadow-xl">
           <div className="relative mt-4 flex items-center space-x-4">
@@ -246,8 +246,7 @@ function DeliveryMan() {
             </div>
           ))}
         </div>
-
-        </div>
+      </div>
         {/* Add Modal */}
         {addModalOpen && (
           <div
@@ -353,6 +352,7 @@ function DeliveryMan() {
             </div>
           </div>
         )}
+
         {/* Edit Modal */}
         {editModalOpen && (
           <div
