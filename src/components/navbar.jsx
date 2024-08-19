@@ -43,45 +43,49 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="fixed top-0 left-0 w-1/6 h-screen bg-custom-blue p-4 flex flex-col items-center">
-      <div className="flex items-center mb-3">
-        <h1 className="text-white text-1xl font-bold mr-3 text-center">FMV Management System</h1>
-        <img src="./src/assets/Logo.png" alt="Client's Company Image" className="max-w-16 h-auto" />
+    <nav className="fixed top-0 left-0 w-1/6 h-screen bg-custom-blue p-4 flex flex-col justify-between items-center">
+      <div className="flex flex-col items-center w-full">
+        <div className="flex items-center mb-3">
+          <h1 className="text-white text-1xl font-bold mr-3 text-center">FMV Management System</h1>
+          <img src="./src/assets/Logo.png" alt="Client's Company Image" className="max-w-16 h-auto" />
+        </div>
+        <ul className="pl-6 flex-grow mt-8 w-full">
+          <li className="mb-4 flex items-center hover:bg-white hover:bg-opacity-40% hover:rounded transition duration-300 group">
+            <div className="border border-white rounded w-5 h-5 mr-2 group-hover:border-black"></div>
+            <Link to="/overview" className="text-white text-lg group-hover:text-black">Dashboard</Link>
+          </li>
+          <li className="mb-4 flex items-center hover:bg-white hover:bg-opacity-40% hover:rounded transition duration-300 group">
+            <div className="border border-white rounded w-5 h-5 mr-2 group-hover:border-black"></div>
+            <Link to="/order" className="text-white text-lg group-hover:text-black">Order</Link>
+          </li>
+          <li className="mb-4 flex items-center hover:bg-white hover:bg-opacity-40% hover:rounded transition duration-300 group">
+            <div className="border border-white rounded w-5 h-5 mr-2 group-hover:border-black"></div>
+            <Link to="/delivery" className="text-white text-lg group-hover:text-black">Delivery</Link>
+          </li>
+          <li className="mb-4 flex items-center hover:bg-white hover:bg-opacity-40% hover:rounded transition duration-300 group">
+            <div className="border border-white rounded w-5 h-5 mr-2 group-hover:border-black"></div>
+            <Link to="/sales" className="text-white text-lg group-hover:text-black">Sales</Link>
+          </li>
+          <li className="mb-4 flex items-center hover:bg-white hover:bg-opacity-40% hover:rounded transition duration-300 group">
+            <div className="border border-white rounded w-5 h-5 mr-2 group-hover:border-black"></div>
+            <Link to="/inventory" className="text-white text-lg group-hover:text-black">Inventory</Link>
+          </li>
+          <li className="mb-4 flex items-center hover:bg-white hover:bg-opacity-40% hover:rounded transition duration-300 group">
+            <div className="border border-white rounded w-5 h-5 mr-2 group-hover:border-black"></div>
+            <Link to="/deliveryman" className="text-white text-lg group-hover:text-black">Delivery man</Link>
+          </li>
+          <li className="mb-4 flex items-center hover:bg-white hover:bg-opacity-40% hover:rounded transition duration-300 group">
+            <div className="border border-white rounded w-5 h-5 mr-2 group-hover:border-black"></div>
+            <Link to="/settings" className="text-white text-lg group-hover:text-black">Settings</Link>
+          </li>
+        </ul>
       </div>
-      <ul className="flex-grow mt-8">
-        <li className=" mb-4 flex items-center hover:bg-white hover:bg-opacity-40% hover:rounded transition duration-300 group">
-          <div className="border border-white rounded w-5 h-5 mr-2 group-hover:border-black"></div>
-          <Link to="/overview" className="text-white text-lg group-hover:text-black">Dashboard</Link>
-        </li>
-        <li className=" mb-4 flex items-center hover:bg-white hover:bg-opacity-40% hover:rounded transition duration-300 group">
-          <div className="border border-white rounded w-5 h-5 mr-2 group-hover:border-black"></div>
-          <Link to="/order" className="text-white text-lg group-hover:text-black">Order</Link>
-        </li>
-        <li className=" mb-4 flex items-center hover:bg-white hover:bg-opacity-40% hover:rounded transition duration-300 group">
-          <div className="border border-white rounded w-5 h-5 mr-2 group-hover:border-black"></div>
-          <Link to="/delivery" className="text-white text-lg group-hover:text-black">Delivery</Link>
-        </li>
-        <li className=" mb-4 flex items-center hover:bg-white hover:bg-opacity-40% hover:rounded transition duration-300 group">
-          <div className="border border-white rounded w-5 h-5 mr-2 group-hover:border-black"></div>
-          <Link to="/sales" className="text-white text-lg group-hover:text-black">Sales</Link>
-        </li>
-        <li className=" mb-4 flex items-center hover:bg-white hover:bg-opacity-40% hover:rounded transition duration-300 group">
-          <div className="border border-white rounded w-5 h-5 mr-2 group-hover:border-black"></div>
-          <Link to="/inventory" className="text-white text-lg group-hover:text-black">Inventory</Link>
-        </li>
-        <li className=" mb-4 flex items-center hover:bg-white hover:bg-opacity-40% hover:rounded transition duration-300 group">
-          <div className="border border-white rounded w-5 h-5 mr-2 group-hover:border-black"></div>
-          <Link to="/deliveryman" className="text-white text-lg group-hover:text-black">Delivery man</Link>
-        </li>
-        <li className=" mb-4 flex items-center hover:bg-white hover:bg-opacity-40% hover:rounded transition duration-300 group">
-          <div className="border border-white rounded w-5 h-5 mr-2 group-hover:border-black"></div>
-          <Link to="/settings" className="text-white text-lg group-hover:text-black">Settings</Link>
-        </li>
-        <li className=" mb-4 flex items-center hover:bg-white hover:bg-opacity-40% hover:rounded transition duration-300 group">
+      <div className="pl-6 w-full">
+        <li className="mb-4 flex items-center hover:bg-white hover:bg-opacity-40% hover:rounded transition duration-300 group">
           <div className="border border-white rounded w-5 h-5 mr-2 group-hover:border-black"></div>
           <button onClick={openModal} className="text-white text-lg group-hover:text-black">Logout</button>
         </li>
-      </ul>
+      </div>
       {isModalOpen && (
         <div
           id="logoutModal"
