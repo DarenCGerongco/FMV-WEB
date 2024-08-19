@@ -132,13 +132,12 @@ useEffect(() => {
   return (
     <div className="flex w-full bg-white">
       <Navbar />
-
-      {/* Main Content */}
-      <div className="w-full ml-80 bg-white">
+      <div className="flex flex-col w-full ml-72 bg-white"> {/* Adjust margin-left */}
         <div className="w-4/5 mx-auto bg-white p-6 m-3 rounded-lg shadow-md mb-6">
-          <h2 className="text-1xl font-bold">Management System Inventory</h2>
+          <h2 className="text-1xl font-bold">Management System</h2>
         </div>
 
+  
         {/* Searchbar and Restock Button */}
         <div className="w-4/5 mx-auto bg-white p-5 m-3 rounded-lg shadow-xl">
           <div className="relative mt-4 flex items-center space-x-4">
@@ -162,38 +161,30 @@ useEffect(() => {
             >
               Restock
             </button>
-
-            {/* Start Add Item Button */}
-              <div className="flex justify-center">
-                <button
-                  className="text-white px-4 py-2 rounded-md shadow-md focus:outline-none bg-blue-600"
-                  onClick={openAddItemModal}
-                >
-                  <span>
-                    Register
-                  </span>
-                </button>
-              </div>
-            {/* End Add Item Button */}
-            
+  
+            {/* Add Item Button */}
+            <button
+              className="text-white px-4 py-2 rounded-md shadow-md focus:outline-none bg-blue-600"
+              onClick={openAddItemModal}
+            >
+              Register
+            </button>
           </div>
-
+  
           {/* Labels */}
-          <h3 className="text-sm mt-6 ml-8 text-gray-400 flex justify-between">
-            <span className="w-1/5">Item Name</span> 
-            <span className="text-sm text-gray-400 w-1/5">Item Category</span> 
-            <span className="text-sm text-gray-400 w-1/5">Item Price</span>
-            <span className="text-sm text-gray-400 w-1/5">Item Amount</span>
-            <span className="text-sm text-gray-400 w-1/12">Edit</span> 
+          <h3 className="text-sm mt-6 px-4 text-gray-400 flex justify-between"> {/* Updated padding */}
+            <span className="w-1/5">Item Name</span>
+            <span className="w-1/5">Item Category</span>
+            <span className="w-1/5">Item Price</span> {/* Updated width for better alignment */}
+            <span className="w-1/5">Item Amount</span>
+            <span className="w-1/12">Edit</span>
           </h3>
 
-          {/* Item List */}
-          <div className="mt-4 space-y-4 mb-10">
-            {console.log(items)}  {/* Log the items array here */}
+          <div className="mt-4 space-y-4 mb-10 px-4"> {/* Added consistent padding */}
             {items.map((item, index) => (
-              <div key={index} className="flex items-center justify-between bg-white-200 p-4 rounded-lg shadow-lg relative">
-                <div className="w-1/15">{item.product_name}</div>
-                <div className="ml-20 w-1/5">{item.category_name}</div>
+              <div key={index} className="flex items-center justify-between bg-white p-4 rounded-lg shadow-lg">
+                <div className="w-1/5">{item.product_name}</div>
+                <div className="w-1/5">{item.category_name}</div>
                 <div className="w-1/5">{item.original_price ? item.original_price : 'N/A'}</div>
                 <div className="w-1/5">{item.quantity}</div>
                 <img
@@ -206,12 +197,11 @@ useEffect(() => {
             ))}
           </div>
         </div>
-
-
+  
         {/* Add Item Modal */}
         {addItemModalOpen && (
           <div className="modal fixed top-0 left-0 w-full h-full bg-gray-800 bg-opacity-75 flex justify-center items-center">
-            <div className="bg-white p-8 rounded-lg shadow-lg w-96 flex flex-col items-center relative">
+            <div className="bg-white p-8 rounded-lg shadow-lg w-96 flex flex-col items-center">
               <h2 className="text-lg font-semibold mb-6 text-center">Add New Item</h2>
               <input
                 type="text"
@@ -267,26 +257,20 @@ useEffect(() => {
             </div>
           </div>
         )}
-
+  
         {/* Restock Modal */}
         {restockModalOpen && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-900 bg-opacity-50">
-            <div className="bg-white p-12 rounded-lg shadow-lg w-112 flex flex-col items-center relative">
+            <div className="bg-white p-12 rounded-lg shadow-lg w-112 flex flex-col items-center">
               <h2 className="text-lg font-semibold mb-10 text-center">Restock Items</h2>
               <div className="relative mb-8">
                 <div className="flex items-center border border-gray-300 rounded-md shadow-sm mb-16">
-                  <div className="h-full border-r border-gray-300 px-3 py-2">
-                    <div className="text-gray-400">|</div>
-                  </div>
                   <input
                     type="text"
                     id="itemname"
                     className="flex-1 px-3 py-2 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                     placeholder="Enter Item Name"
                   />
-                  <div className="h-full border-r border-gray-300 px-3 py-2">
-                    <div className="text-gray-400">|</div>
-                  </div>
                   <input
                     type="number"
                     id="itemamount"
@@ -316,6 +300,7 @@ useEffect(() => {
       </div>
     </div>
   );
+  
 }
 
 export default Inventory;
