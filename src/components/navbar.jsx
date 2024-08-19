@@ -49,37 +49,37 @@ const Navbar = () => {
         <img src="./src/assets/Logo.png" alt="Client's Company Image" className="max-w-16 h-auto" />
       </div>
       <ul className="flex-grow mt-8">
-        <li className="mb-4 flex items-center hover:bg-white hover:bg-opacity-25 hover:rounded transition duration-300">
-          <div className="border border-white rounded w-5 h-5 mr-2"></div>
-          <Link to="/overview" className="text-white text-lg">Dashboard</Link>
+        <li className=" mb-4 flex items-center hover:bg-white hover:bg-opacity-40% hover:rounded transition duration-300 group">
+          <div className="border border-white rounded w-5 h-5 mr-2 group-hover:border-black"></div>
+          <Link to="/overview" className="text-white text-lg group-hover:text-black">Dashboard</Link>
         </li>
-        <li className="mb-4 flex items-center hover:bg-white hover:bg-opacity-25 hover:rounded transition duration-300">
-          <div className="border border-white rounded w-5 h-5 mr-2"></div>
-          <Link to="/order" className="text-white text-lg">Order</Link>
+        <li className=" mb-4 flex items-center hover:bg-white hover:bg-opacity-40% hover:rounded transition duration-300 group">
+          <div className="border border-white rounded w-5 h-5 mr-2 group-hover:border-black"></div>
+          <Link to="/overview" className="text-white text-lg group-hover:text-black">Order</Link>
         </li>
-        <li className="mb-4 flex items-center hover:bg-white hover:bg-opacity-25 hover:rounded transition duration-300">
-          <div className="border border-white rounded w-5 h-5 mr-2"></div>
-          <Link to="/delivery" className="text-white text-lg">Delivery</Link>
+        <li className=" mb-4 flex items-center hover:bg-white hover:bg-opacity-40% hover:rounded transition duration-300 group">
+          <div className="border border-white rounded w-5 h-5 mr-2 group-hover:border-black"></div>
+          <Link to="/overview" className="text-white text-lg group-hover:text-black">Delivery</Link>
         </li>
-        <li className="mb-4 flex items-center hover:bg-white hover:bg-opacity-25 hover:rounded transition duration-300">
-          <div className="border border-white rounded w-5 h-5 mr-2"></div>
-          <Link to="/sales" className="text-white text-lg">Sales</Link>
+        <li className=" mb-4 flex items-center hover:bg-white hover:bg-opacity-40% hover:rounded transition duration-300 group">
+          <div className="border border-white rounded w-5 h-5 mr-2 group-hover:border-black"></div>
+          <Link to="/overview" className="text-white text-lg group-hover:text-black">Sales</Link>
         </li>
-        <li className="mb-4 flex items-center hover:bg-white hover:bg-opacity-25 hover:rounded transition duration-300">
-          <div className="border border-white rounded w-5 h-5 mr-2"></div>
-          <Link to="/inventory" className="text-white text-lg">Inventory</Link>
+        <li className=" mb-4 flex items-center hover:bg-white hover:bg-opacity-40% hover:rounded transition duration-300 group">
+          <div className="border border-white rounded w-5 h-5 mr-2 group-hover:border-black"></div>
+          <Link to="/overview" className="text-white text-lg group-hover:text-black">Inventory</Link>
         </li>
-        <li className="mb-4 flex items-center hover:bg-white hover:bg-opacity-25 hover:rounded transition duration-300">
-          <div className="border border-white rounded w-5 h-5 mr-2"></div>
-          <Link to="/deliveryman" className="text-red-400 text-lg">Delivery man</Link>
+        <li className=" mb-4 flex items-center hover:bg-white hover:bg-opacity-40% hover:rounded transition duration-300 group">
+          <div className="border border-white rounded w-5 h-5 mr-2 group-hover:border-black"></div>
+          <Link to="/overview" className="text-white text-lg group-hover:text-black">Delivery Man</Link>
         </li>
-        <li className="mt-auto mb-4 flex items-center hover:bg-white hover:bg-opacity-25 hover:rounded transition duration-300">
-          <div className="border border-white rounded w-5 h-5 mr-2"></div>
-          <Link to="/settings" className="text-white text-lg">Settings</Link>
+        <li className=" mb-4 flex items-center hover:bg-white hover:bg-opacity-40% hover:rounded transition duration-300 group">
+          <div className="border border-white rounded w-5 h-5 mr-2 group-hover:border-black"></div>
+          <Link to="/overview" className="text-white text-lg group-hover:text-black">Settings</Link>
         </li>
-        <li className="mb-4 flex items-center hover:bg-white hover:bg-opacity-25 hover:rounded transition duration-300">
-          <div className="border border-white rounded w-5 h-5 mr-2"></div>
-          <button onClick={openModal} className="text-white text-lg">Logout</button>
+        <li className=" mb-4 flex items-center hover:bg-white hover:bg-opacity-40% hover:rounded transition duration-300 group">
+          <div className="border border-white rounded w-5 h-5 mr-2 group-hover:border-black"></div>
+          <Link to="/overview" className="text-white text-lg group-hover:text-black">Logout</Link>
         </li>
       </ul>
       {isModalOpen && (
