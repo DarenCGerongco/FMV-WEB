@@ -18,4 +18,5 @@ Currently, two official plugins are available:
 - `npx vite`
 
 # .ENV should be created
-- ".env" should be created and the content should have example: `"VITE_API_URL=http://192.168.1.6:3000"`
+- First, run the ipconfig, then find the IPV4 of your device, example you have `192.168.1.20`;
+- ".env" should be created and the content should be like this: `"VITE_API_URL=http://192.168.1.6:3000"`
