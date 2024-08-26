@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import Navbar from '../components/navbar';
 import axios from 'axios';
 
@@ -6,43 +6,26 @@ function Order() {
   const url = import.meta.env.VITE_API_URL;
 
   const [addModalOpen, setAddModalOpen] = useState(false);
-  const [editModalOpen, setEditModalOpen] = useState(false);
   const [orders, setOrders] = useState([]);
 
   const [newOrder, setNewOrder] = useState({
     deliveredTo: '',
-    address: '',
+    street: '',
+    city: '',
+    barangay: '',
+    zipcode: '',
     date: '',
     items: [],
   });
-
-  const [editOrder, setEditOrder] = useState({
-    id: '',
-    deliveredTo: '',
-    address: '',
-    date: '',
-    items: [],
-  });
-
-  // Fetching orders on component mount
-//   useEffect(() => {
-//     const fetchOrders = async () => {
-//       try {
-//         const response = await axios.get(`${url}/api/orders`);
-//         setOrders(response.data.data);
-//       } catch (error) {
-//         console.error('An error occurred while fetching orders:', error);
-//       }
-//     };
-
-//     fetchOrders();
-//   }, []);
 
   const openAddModal = () => {
     setAddModalOpen(true);
     setNewOrder({
       deliveredTo: '',
-      address: '',
+      street: '',
+      city: '',
+      barangay: '',
+      zipcode: '',
       date: '',
       items: [],
     });
@@ -50,35 +33,11 @@ function Order() {
 
   const closeAddModal = () => setAddModalOpen(false);
 
-  const openEditModal = (id) => {
-    const order = orders.find((ord) => ord.id === id);
-    if (order) {
-      setEditModalOpen(true);
-      setEditOrder({
-        id: order.id,
-        deliveredTo: order.deliveredTo,
-        address: order.address,
-        date: order.date,
-        items: order.items,
-      });
-    }
-  };
-
-  const closeEditModal = () => setEditModalOpen(false);
-
   const handleAddOrderChange = (e) => {
     const { name, value } = e.target;
     setNewOrder((prev) => ({
       ...prev,
-      [name]: value
-    }));
-  };
-
-  const handleEditOrderChange = (e) => {
-    const { name, value } = e.target;
-    setEditOrder((prev) => ({
-      ...prev,
-      [name]: value
+      [name]: value,
     }));
   };
 
@@ -96,42 +55,9 @@ function Order() {
     }
   };
 
-  const submitEditModal = async () => {
-    try {
-      const response = await axios.put(`${url}/api/orders/${editOrder.id}`, editOrder);
-      if (response.status === 200) {
-        setOrders((prevOrders) =>
-          prevOrders.map((order) =>
-            order.id === editOrder.id ? response.data.data : order
-          )
-        );
-        closeEditModal();
-      } else {
-        console.error('Error updating order');
-      }
-    } catch (error) {
-      console.error('An error occurred while updating the order:', error.response.data.error);
-    }
-  };
-
-  const handleDelete = async (id) => {
-    if (window.confirm("Are you sure you want to delete this order?")) {
-      try {
-        const response = await axios.delete(`${url}/api/orders/${id}`);
-        if (response.status === 200) {
-          setOrders(orders.filter((order) => order.id !== id));
-        } else {
-          console.error('Failed to delete the order');
-        }
-      } catch (error) {
-        console.error('An error occurred while deleting the order:', error.response.data.error);
-      }
-    }
-  };
-
   return (
     <div className="flex w-full bg-white">
-      <Navbar/>
+      <Navbar />
       <div className="flex flex-col w-full ml-72 bg-white">
         <div className="w-4/5 mx-auto bg-white p-6 m-3 rounded-lg shadow-md mb-6">
           <h2 className="text-1xl font-bold">MANAGEMENT SYSTEM ORDER</h2>
@@ -176,13 +102,13 @@ function Order() {
                       src="./src/assets/edit.png"
                       alt="Edit"
                       className="w-6 h-6 cursor-pointer"
-                      onClick={() => openEditModal(order.id)}
+                      onClick={() => console.log('Edit')}
                     />
                     <img
                       src="./src/assets/delete.png"
                       alt="Delete"
                       className="w-6 h-6 cursor-pointer"
-                      onClick={() => handleDelete(order.id)}
+                      onClick={() => console.log('Delete')}
                     />
                   </div>
                 </div>
@@ -190,126 +116,120 @@ function Order() {
             ))}
           </div>
         </div>
+
         {/* Add Modal */}
         {addModalOpen && (
           <div
-            id="addModal"
-            className="modal fixed top-0 left-0 w-full h-full bg-gray-800 bg-opacity-75 flex justify-center items-center"
-          >
-            {/* <div className="bg-white p-6 rounded-lg shadow-lg w-1/4">
-              <h3 className="text-center text-lg font-bold mb-4">Create Purchase Order</h3>
-              <div className="mb-4">
-                <label htmlFor="deliveredTo" className="block text-gray-700">Delivered To:</label>
+          id="addModal"
+          className="modal fixed top-0 left-0 w-full h-full bg-gray-800 bg-opacity-75 flex justify-center items-center"
+        >
+          <div className="bg-white p-6 rounded-lg shadow-lg w-1/3">
+            <h3 className="text-center text-lg font-bold mb-4">Create Purchase Order</h3>
+            
+            {/* Delivered To Field */}
+            <div className="mb-4 relative">
+              <input
+                type="text"
+                id="deliveredTo"
+                name="deliveredTo"
+                placeholder="Delivered To"
+                className="w-full p-4 rounded-lg shadow-2xl mt-4 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+                value={newOrder.deliveredTo}
+                onChange={handleAddOrderChange}
+              />
+            </div>
+            
+            {/* Address Fields */}
+            <div className="grid grid-cols-4 gap-4 mb-4">
+              <div>
                 <input
                   type="text"
-                  id="deliveredTo"
-                  name="deliveredTo"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                  value={newOrder.deliveredTo}
+                  id="street"
+                  name="street"
+                  placeholder="Street"
+                  className="w-full p-4 rounded-lg shadow-2xl mt-4 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  value={newOrder.street}
                   onChange={handleAddOrderChange}
                 />
               </div>
-              <div className="mb-4">
-                <label htmlFor="address" className="block text-gray-700">Address:</label>
+              <div>
                 <input
                   type="text"
-                  id="address"
-                  name="address"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                  value={newOrder.address}
+                  id="city"
+                  name="city"
+                  placeholder="City"
+                  className="w-full p-4 rounded-lg shadow-2xl mt-4 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  value={newOrder.city}
                   onChange={handleAddOrderChange}
                 />
               </div>
-              <div className="mb-4">
-                <label htmlFor="date" className="block text-gray-700">Date:</label>
+              <div>
+                <input
+                  type="text"
+                  id="barangay"
+                  name="barangay"
+                  placeholder="Barangay"
+                  className="w-full p-4 rounded-lg shadow-2xl mt-4 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  value={newOrder.barangay}
+                  onChange={handleAddOrderChange}
+                />
+              </div>
+              <div>
+                <input
+                  type="text"
+                  id="zipcode"
+                  name="zipcode"
+                  placeholder="Zipcode"
+                  className="w-full p-4 rounded-lg shadow-2xl mt-4 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  value={newOrder.zipcode}
+                  onChange={handleAddOrderChange}
+                />
+              </div>
+            </div>
+            
+            {/* Deadline Date Field */}
+            <div className="mb-4">
+                <label htmlFor="date" className="block text-gray-700">Deadline Date:</label>
                 <input
                   type="date"
                   id="date"
                   name="date"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                  className="w-full p-4 rounded-lg shadow-2xl mt-4 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   value={newOrder.date}
                   onChange={handleAddOrderChange}
                 />
               </div>
-              <div className="flex justify-end space-x-4">
+            
+            {/* Action Buttons */}
+            <div className="flex justify-end p-4">
+              <div className="flex flex-col items-end space-y-2">
                 <button
-                  className="bg-gray-500 text-white px-4 py-2 rounded-md shadow-md"
+                  className="bg-blue-500 text-white px-4 py-2 rounded-md shadow-md w-32"
+                  onClick={() => console.log('View')}
+                >
+                View
+                </button>               
+                <div className="flex items-center space-x-2">
+                  <button
+                  className="bg-white-500 text-black px-4 py-2 rounded-md shadow-md w-32"
                   onClick={closeAddModal}
                 >
-                  Close
+                Cancel
                 </button>
                 <button
-                  className="bg-blue-500 text-white px-4 py-2 rounded-md shadow-md"
+                  className="bg-blue-500 text-white px-4 py-2 rounded-md shadow-md w-32"
                   onClick={submitAddModal}
                 >
-                  Create
+                Create
                 </button>
-              </div>
-            </div> */}
-          </div>
-        )}
-
-        {/* Edit Modal */}
-        {editModalOpen && (
-          <div
-            id="editModal"
-            className="modal fixed top-0 left-0 w-full h-full bg-gray-800 bg-opacity-75 flex justify-center items-center"
-          >
-            <div className="bg-white p-6 rounded-lg shadow-lg w-1/4">
-              <h3 className="text-lg font-bold mb-4">Edit Order</h3>
-              <div className="mb-4">
-                <label htmlFor="deliveredTo" className="block text-gray-700">Delivered To:</label>
-                <input
-                  type="text"
-                  id="deliveredTo"
-                  name="deliveredTo"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                  value={editOrder.deliveredTo}
-                  onChange={handleEditOrderChange}
-                />
-              </div>
-              <div className="mb-4">
-                <label htmlFor="address" className="block text-gray-700">Address:</label>
-                <input
-                  type="text"
-                  id="address"
-                  name="address"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                  value={editOrder.address}
-                  onChange={handleEditOrderChange}
-                />
-              </div>
-              <div className="mb-4">
-                <label htmlFor="date" className="block text-gray-700">Date:</label>
-                <input
-                  type="date"
-                  id="date"
-                  name="date"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                  value={editOrder.date}
-                  onChange={handleEditOrderChange}
-                />
-              </div>
-              <div className="flex justify-end space-x-4">
-                <button
-                  className="bg-gray-500 text-white px-4 py-2 rounded-md shadow-md"
-                  onClick={closeEditModal}
-                >
-                  Close
-                </button>
-                <button
-                  className="bg-blue-500 text-white px-4 py-2 rounded-md shadow-md"
-                  onClick={submitEditModal}
-                >
-                  Update
-                </button>
+                </div>
               </div>
             </div>
           </div>
+        </div>       
         )}
       </div>
     </div>
   );
 }
-
 export default Order;
