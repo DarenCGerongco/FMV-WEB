@@ -123,25 +123,23 @@ function Overview() {
             {/* Sales Container */}
             <div className="bg-white p-6 rounded-lg shadow-md">
               <h3 className="text-lg font-bold mb-4">SALES</h3>
-              {/* Adjusted container for the pie chart */}
+              {/* Container for the pie chart */}
               <div className="flex justify-center items-center h-80">
                 <div className="w-full h-full max-w-xs">
                   <Pie data={data} options={options} />
                 </div>
               </div>
               {/* Box container for sales data */}
-              <div className="bg-white text-sm mt-10 flex justify-between">
-                <p className="text-gray-500 ml-3 w-1/3">Item Name</p>
-                <p className="text-gray-500 w-1/3">Item Sold</p>
-                <p className="text-gray-500 mr-3 w-1/10">Item Remaining</p>
+              <div className="bg-white text-sm mt-10 flex border-b">
+                <p className="text-gray-500 w-1/3 font-bold">Item Name</p>
+                <p className="text-gray-500 w-1/3 font-bold text-center">Item Sold</p>
+                <p className="text-gray-500 w-1/3 font-bold text-center">Item Remaining</p>
               </div>
               {salesData.map((item, index) => (
-                <div key={index} className="p-4 rounded-lg shadow-2xl mt-4">
-                  <div className="flex justify-between items-center">
-                    <p className="text-gray-700 w-1/3">{item.itemName}</p>
-                    <p className="text-gray-700 w-1/3">{item.itemSold}</p>
-                    <p className="text-gray-700 w-1/10">{item.itemRemaining}</p>
-                  </div>
+                <div key={index} className="flex justify-between items-center p-4 rounded-lg shadow-2xl mt-4 border-b">
+                  <p className="text-gray-700 w-1/3">{item.itemName}</p>
+                  <p className="text-gray-700 w-1/3 text-center">{item.itemSold}</p>
+                  <p className="text-gray-700 w-1/3 text-center">{item.itemRemaining}</p>
                 </div>
               ))}
             </div>
@@ -150,20 +148,16 @@ function Overview() {
             <div className="bg-white p-6 rounded-lg shadow-md">
               <h3 className="text-lg font-bold mb-4">INVENTORY</h3>
               {/* First Item */}
-              <div className="bg-gray-200 p-4 rounded-lg shadow-sm mt-4">
-                <div className="flex justify-between items-center">
-                  <span className="text-gray-700 text-sm">Submersible Pump</span>
-                  <span className="text-gray-700 text-sm">Pump</span>
-                  <span className="text-gray-700 text-sm">5</span>
-                </div>
+              <div className="bg-gray-200 p-4 rounded-lg shadow-sm mt-4 flex justify-between items-center border-b">
+                <div className="flex-1 text-gray-700 text-sm">Submersible Pump</div>
+                <div className="flex-1 text-gray-700 text-sm text-center">Pump</div>
+                <div className="text-gray-700 text-sm text-right w-1/4">5</div>
               </div>
               {/* Second Item */}
-              <div className="bg-gray-200 p-4 rounded-lg shadow-sm mt-4">
-                <div className="flex justify-between items-center">
-                  <span className="text-gray-700 text-sm">Water Filter</span>
-                  <span className="text-gray-700 text-sm">Filter</span>
-                  <span className="text-gray-700 text-sm">10</span>
-                </div>
+              <div className="bg-gray-200 p-4 rounded-lg shadow-sm mt-4 flex justify-between items-center border-b">
+                <div className="flex-1 text-gray-700 text-sm">Water Filter</div>
+                <div className="flex-1 text-gray-700 text-sm text-center">Filter</div>
+                <div className="text-gray-700 text-sm text-right w-1/4">10</div>
               </div>
             </div>
           </div>

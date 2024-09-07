@@ -4,7 +4,7 @@ import axios from 'axios';
 
 const Navbar = () => {
   const navigate = useNavigate();
-  const location = useLocation(); // Get the current location
+  const location = useLocation();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [message, setMessage] = useState('');
 
@@ -43,51 +43,53 @@ const Navbar = () => {
     closeModal();
   };
 
-  // Function to determine if the current menu item is active
   const isActive = (path) => location.pathname === path;
 
   return (
     <nav className="fixed top-0 left-0 w-1/6 h-screen bg-custom-blue p-4 flex flex-col justify-between items-center">
       <div className="flex flex-col items-center w-full">
         <div className="flex items-center mb-3">
-          <h1 className="text-white text-1xl font-bold mr-3 text-center">FMV Management System</h1>
+          <h1 className="text-white text-3xl font-bold mr-3 text-center">FMV Management System</h1>
           <img src="./src/assets/Logo.png" alt="Client's Company Image" className="max-w-16 h-auto" />
         </div>
-        <ul className="pl-6 flex-grow mt-8 w-full">
-          <li className={`mb-4 flex items-center transition duration-300 group ${isActive('/overview') ? 'bg-white text-black rounded' : 'hover:bg-white hover:text-black hover:rounded'}`}>
-            <div className={`border w-5 h-5 mr-2 ${isActive('/overview') ? 'border-black' : 'border-white group-hover:border-black'}`}></div>
-            <Link to="/overview" className={`text-lg ${isActive('/overview') ? 'text-black' : 'text-white group-hover:text-black'}`}>Dashboard</Link>
-          </li>
-          <li className={`mb-4 flex items-center transition duration-300 group ${isActive('/order') ? 'bg-white text-black rounded' : 'hover:bg-white hover:text-black hover:rounded'}`}>
-            <div className={`border w-5 h-5 mr-2 ${isActive('/order') ? 'border-black' : 'border-white group-hover:border-black'}`}></div>
-            <Link to="/order" className={`text-lg ${isActive('/order') ? 'text-black' : 'text-white group-hover:text-black'}`}>Order</Link>
-          </li>
-          <li className={`mb-4 flex items-center transition duration-300 group ${isActive('/delivery') ? 'bg-white text-black rounded' : 'hover:bg-white hover:text-black hover:rounded'}`}>
-            <div className={`border w-5 h-5 mr-2 ${isActive('/delivery') ? 'border-black' : 'border-white group-hover:border-black'}`}></div>
-            <Link to="/delivery" className={`text-lg ${isActive('/delivery') ? 'text-black' : 'text-white group-hover:text-black'}`}>Delivery</Link>
-          </li>
-          <li className={`mb-4 flex items-center transition duration-300 group ${isActive('/sales') ? 'bg-white text-black rounded' : 'hover:bg-white hover:text-black hover:rounded'}`}>
-            <div className={`border w-5 h-5 mr-2 ${isActive('/sales') ? 'border-black' : 'border-white group-hover:border-black'}`}></div>
-            <Link to="/sales" className={`text-lg ${isActive('/sales') ? 'text-black' : 'text-white group-hover:text-black'}`}>Sales</Link>
-          </li>
-          <li className={`mb-4 flex items-center transition duration-300 group ${isActive('/inventory') ? 'bg-white text-black rounded' : 'hover:bg-white hover:text-black hover:rounded'}`}>
-            <div className={`border w-5 h-5 mr-2 ${isActive('/inventory') ? 'border-black' : 'border-white group-hover:border-black'}`}></div>
-            <Link to="/inventory" className={`text-lg ${isActive('/inventory') ? 'text-black' : 'text-white group-hover:text-black'}`}>Inventory</Link>
-          </li>
-          <li className={`mb-4 flex items-center transition duration-300 group ${isActive('/deliveryman') ? 'bg-white text-black rounded' : 'hover:bg-white hover:text-black hover:rounded'}`}>
-            <div className={`border w-5 h-5 mr-2 ${isActive('/deliveryman') ? 'border-black' : 'border-white group-hover:border-black'}`}></div>
-            <Link to="/deliveryman" className={`text-lg ${isActive('/deliveryman') ? 'text-black' : 'text-white group-hover:text-black'}`}>Delivery man</Link>
-          </li>
-          <li className={`mb-4 flex items-center transition duration-300 group ${isActive('/settings') ? 'bg-white text-black rounded' : 'hover:bg-white hover:text-black hover:rounded'}`}>
-            <div className={`border w-5 h-5 mr-2 ${isActive('/settings') ? 'border-black' : 'border-white group-hover:border-black'}`}></div>
-            <Link to="/settings" className={`text-lg ${isActive('/settings') ? 'text-black' : 'text-white group-hover:text-black'}`}>Settings</Link>
-          </li>
-        </ul>
+        <div className="pl-6 mt-8 w-full">
+          <h2 className="text-white text-2xl mb-5 -ml-6">Dashboard</h2>
+          <ul>
+            <li className={`mb-4 flex items-center transition -ml-4 pl-5 group ${isActive('/overview') ? 'bg-white text-black rounded' : 'hover:bg-white hover:text-black rounded'}`}>
+              <div className={`border w-5 h-5 mr-2 ${isActive('/overview') ? 'border-black' : 'border-white group-hover:border-black '}`}></div>
+              <Link to="/overview" className={`text-xl ${isActive('/overview') ? 'text-black' : 'text-white group-hover:text-black'}`}>Overview</Link>
+            </li>
+            <li className={`mb-4 flex items-center transition -ml-4 pl-5 group ${isActive('/order') ? 'bg-white text-black rounded' : 'hover:bg-white hover:text-black rounded'}`}>
+              <div className={`border w-5 h-5 mr-2 ${isActive('/order') ? 'border-black' : 'border-white group-hover:border-black'}`}></div>
+              <Link to="/order" className={`text-xl ${isActive('/order') ? 'text-black' : 'text-white group-hover:text-black'}`}>Order</Link>
+            </li>
+            <li className={`mb-4 flex items-center transition -ml-4 pl-5 group ${isActive('/delivery') ? 'bg-white text-black rounded' : 'hover:bg-white hover:text-black rounded'}`}>
+              <div className={`border w-5 h-5 mr-2 ${isActive('/delivery') ? 'border-black' : 'border-white group-hover:border-black'}`}></div>
+              <Link to="/delivery" className={`text-xl ${isActive('/delivery') ? 'text-black' : 'text-white group-hover:text-black'}`}>Delivery</Link>
+            </li>
+            <li className={`mb-4 flex items-center transition -ml-4 pl-5 group ${isActive('/sales') ? 'bg-white text-black rounded' : 'hover:bg-white hover:text-black rounded'}`}>
+              <div className={`border w-5 h-5 mr-2 ${isActive('/sales') ? 'border-black' : 'border-white group-hover:border-black'}`}></div>
+              <Link to="/sales" className={`text-xl ${isActive('/sales') ? 'text-black' : 'text-white group-hover:text-black'}`}>Sales</Link>
+            </li>
+            <li className={`mb-4 flex items-center transition -ml-4 pl-5 group ${isActive('/inventory') ? 'bg-white text-black rounded' : 'hover:bg-white hover:text-black rounded'}`}>
+              <div className={`border w-5 h-5 mr-2 ${isActive('/inventory') ? 'border-black' : 'border-white group-hover:border-black'}`}></div>
+              <Link to="/inventory" className={`text-xl ${isActive('/inventory') ? 'text-black' : 'text-white group-hover:text-black'}`}>Inventory</Link>
+            </li>
+            <li className={`mb-4 flex items-center transition -ml-4 pl-5 group ${isActive('/deliveryman') ? 'bg-white text-black rounded' : 'hover:bg-white hover:text-black rounded'}`}>
+              <div className={`border w-5 h-5 mr-2 ${isActive('/deliveryman') ? 'border-black' : 'border-white group-hover:border-black'}`}></div>
+              <Link to="/deliveryman" className={`text-xl ${isActive('/deliveryman') ? 'text-black' : 'text-white group-hover:text-black'}`}>Delivery man</Link>
+            </li>
+            <li className={`mb-4 flex items-center transition -ml-4 pl-5 group ${isActive('/settings') ? 'bg-white text-black rounded' : 'hover:bg-white hover:text-black rounded'}`}>
+              <div className={`border w-5 h-5 mr-2 ${isActive('/settings') ? 'border-black' : 'border-white group-hover:border-black'}`}></div>
+              <Link to="/settings" className={`text-xl ${isActive('/settings') ? 'text-black' : 'text-white group-hover:text-black'}`}>Settings</Link>
+            </li>
+          </ul>
+        </div>
       </div>
       <div className="pl-6 w-full">
-        <li className="mb-4 flex items-center transition duration-300 group hover:bg-white hover:text-black hover:rounded">
+        <li className="mb-4 flex items-center transition duration-300 group hover:bg-white hover:text-black rounded -ml-4 pl-5">
           <div className="border border-white rounded w-5 h-5 mr-2 group-hover:border-black"></div>
-          <button onClick={openModal} className="text-white text-lg group-hover:text-black">Logout</button>
+          <button onClick={openModal} className="text-xl text-white group-hover:text-black">Logout</button>
         </li>
       </div>
       {isModalOpen && (
