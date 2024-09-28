@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
+
 function Index() {
   const url = import.meta.env.VITE_API_URL;
 
