@@ -70,7 +70,7 @@ function Overview() {
     <div className="flex w-full bg-white">
       <Navbar />
       <div className="flex flex-col xl:w-4/5 ml-80 bg-white">
-        <div className="w-11/12 mx-auto bg-white p-6 m-3 rounded-lg shadow-md mb-6">
+        <div className="w-11/12 mx-auto bg-white p-6 m-3 rounded-lg shadow-2xl mb-6 border">
           <h2 className="text-1xl font-bold">Management System Overview</h2>
         </div>
 
@@ -78,7 +78,7 @@ function Overview() {
 
           <div className="flex flex-col space-y-4 w-1/3">
             {/* Order Container */}
-            <div className="bg-white p-6 rounded-lg shadow-md">
+            <div className="bg-white p-6 rounded-lg shadow-2xl">
               <h3 className="text-lg font-bold mb-4">ORDER</h3>
               <div className="bg-gray-200 p-4 rounded-lg shadow-sm mt-4 flex justify-between items-center">
                 <span className="text-gray-700 text-sm">Barangay Lumbia</span>
@@ -87,7 +87,7 @@ function Overview() {
             </div>
 
             {/* Delivery Container */}
-            <div className="bg-white p-6 rounded-lg shadow-md">
+            <div className="bg-white p-6 rounded-lg shadow-2xl">
               <h3 className="text-lg font-bold mb-4">DELIVERY</h3>
               <div className="bg-gray-200 p-4 rounded-lg shadow-sm mt-4 flex justify-between items-center">
                 <span className="text-gray-700 text-sm">Confirm Delivery:</span>
@@ -104,12 +104,12 @@ function Overview() {
             </div>
 
             {/* Delivery Man Container */}
-            <div className="bg-white p-6 rounded-lg shadow-md">
+            <div className="bg-white p-6 rounded-lg shadow-2xl">
               <h3 className="text-lg font-bold mb-4">DELIVERY MAN ACCOUNT</h3>
               <div className="bg-gray-200 p-4 rounded-lg shadow-sm mt-4">
                 <p className="text-gray-700 text-sm whitespace-nowrap">Arlene Cabarrubias</p>
               </div>
-              <div className="bg-gray-200 p-4 rounded-lg shadow-sm mt-4">
+              <div className="bg-gray-200 p-4 rounded-lg shadow-sm mt-4 ">
                 <p className="text-gray-700 text-sm whitespace-nowrap">Arlene Cabarrubias</p>
               </div>
               <div className="bg-gray-200 p-4 rounded-lg shadow-sm mt-4">
@@ -121,7 +121,7 @@ function Overview() {
           {/* Right Column for Larger Containers */}
           <div className="flex flex-col space-y-4 w-2/3">
             {/* Sales Container */}
-            <div className="bg-white p-6 rounded-lg shadow-md">
+            <div className="bg-white p-6 rounded-lg shadow-2xl">
               <h3 className="text-lg font-bold mb-4">SALES</h3>
               {/* Container for the pie chart */}
               <div className="flex justify-center items-center h-80">
@@ -131,7 +131,7 @@ function Overview() {
               </div>
               {/* Box container for sales data */}
               <div className="bg-white text-sm mt-10 flex border-b">
-                <p className="text-gray-500 w-1/3 font-bold">Item Name</p>
+                <p className="text-gray-500 w-1/3 font-bold ">Item Name</p>
                 <p className="text-gray-500 w-1/3 font-bold text-center">Item Sold</p>
                 <p className="text-gray-500 w-1/3 font-bold text-center">Item Remaining</p>
               </div>
@@ -145,7 +145,7 @@ function Overview() {
             </div>
 
             {/* Inventory Container */}
-            <div className="bg-white p-6 rounded-lg shadow-md">
+            <div className="bg-white p-6 rounded-lg shadow-2xl">
               <h3 className="text-lg font-bold mb-4">INVENTORY</h3>
               {/* First Item */}
               <div className="bg-gray-200 p-4 rounded-lg shadow-sm mt-4 flex justify-between items-center border-b">
