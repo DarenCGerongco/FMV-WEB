@@ -119,7 +119,7 @@ function Delivery() {
               <span className="w-1/3 text-left">Delivery Man</span>
               <span className="w-1/6 text-left">Date</span>
             </h3>
-            <div className="bg-white p-4 rounded-lg shadow-2xl flex justify-between items-center bg-[#8EF7A8]">
+            <div className="bg-white p-4 rounded-lg shadow-2xl flex justify-between items-center">
               <span className="w-1/6">5</span>
               <span className="w-1/3">Barangay Talaga</span>
               <span className="w-1/3">Mark Cabarrubias</span>

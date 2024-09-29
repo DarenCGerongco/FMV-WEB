@@ -79,10 +79,6 @@ const Navbar = () => {
               <div className={`border w-4 h-4 md:w-5 md:h-5 mr-2 ${isActive('/deliveryman') ? 'border-black' : 'border-white group-hover:border-black'}`}></div>
               <Link to="/deliveryman" className={`text-base md:text-xl ${isActive('/deliveryman') ? 'text-black' : 'text-white group-hover:text-black'}`}>DELIVERY MAN</Link>
             </li>
-            <li className={`mb-4 flex items-center transition pl-2 md:pl-5 group ${isActive('/walkin') ? 'bg-white text-black rounded' : 'hover:bg-white hover:text-black rounded'}`}>
-              <div className={`border w-4 h-4 md:w-5 md:h-5 mr-2 ${isActive('/walkin') ? 'border-black' : 'border-white group-hover:border-black'}`}></div>
-              <Link to="/walkin" className={`text-base md:text-xl ${isActive('/walkin') ? 'text-black' : 'text-white group-hover:text-black'}`}>WALK IN</Link>
-            </li>
             <li className={`mb-4 flex items-center transition pl-2 md:pl-5 group ${isActive('/settings') ? 'bg-white text-black rounded' : 'hover:bg-white hover:text-black rounded'}`}>
               <div className={`border w-4 h-4 md:w-5 md:h-5 mr-2 ${isActive('/settings') ? 'border-black' : 'border-white group-hover:border-black'}`}></div>
               <Link to="/settings" className={`text-base md:text-xl ${isActive('/settings') ? 'text-black' : 'text-white group-hover:text-black'}`}>SETTINGS</Link>
