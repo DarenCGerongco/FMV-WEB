@@ -3,23 +3,36 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
 
 const Navbar = () => {
+  const url = import.meta.env.VITE_API_URL;
   const navigate = useNavigate();
   const location = useLocation();
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [message, setMessage] = useState('');
+  const [message, setMessage] = useState(''); // For showing messages like "Logout successfully"
+  const [showSuccessMessage, setShowSuccessMessage] = useState(false); // To control the visibility of the success message
 
   const handleLogout = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.post('http://192.168.1.6:3000/api/logout', {}, {
+      const response = await axios.post(`${url}/api/logout`, {}, {
         headers: {
-          'Authorization': `Bearer ${token}`
-        }
+          Authorization: `Bearer ${token}`,
+        },
       });
 
       if (response.data.success) {
+        // Display logout success message
+        setMessage('Logout successfully');
+        setShowSuccessMessage(true); // Show success message
+
+        // Automatically hide the message after 3 seconds
+        setTimeout(() => {
+          setShowSuccessMessage(false);
+          setMessage('');
+          navigate('/'); // Redirect to home page after logout
+        }, 1000);
+
+        // Remove token from localStorage
         localStorage.removeItem('token');
-        navigate('/');
       } else {
         setMessage('Logout failed');
         setIsModalOpen(true);
@@ -92,6 +105,7 @@ const Navbar = () => {
           <button onClick={openModal} className="text-base md:text-xl text-white group-hover:text-black">LOGOUT</button>
         </li>
       </div>
+      {/* Logout Confirmation Modal */}
       {isModalOpen && (
         <div
           id="logoutModal"
@@ -114,6 +128,13 @@ const Navbar = () => {
               Cancel
             </button>
           </div>
+        </div>
+      )}
+
+      {/* Success Message after Logout */}
+      {showSuccessMessage && (
+        <div className="fixed top-4 right-4 bg-green-500 text-white px-4 py-2 rounded-lg shadow-lg">
+          {message}
         </div>
       )}
     </nav>
