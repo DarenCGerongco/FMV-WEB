@@ -7,6 +7,34 @@ ChartJS.register(ArcElement, Tooltip, Legend);
 
 function Overview() {
   const [salesData, setSalesData] = useState([]);
+  const url = import.meta.env.VITE_API_URL;
+  const [userNames, setUserNames] = useState([]);
+
+  
+  useEffect(() => {
+    fetchUserNames(); // Fetch initial user names
+    
+    const intervalId = setInterval(fetchUserNames, 10000); // Update every 10 seconds
+    
+    return () => clearInterval(intervalId); // Clear interval on unmount
+  }, []);
+
+  const fetchUserNames = async () => {
+    try {
+      const response = await fetch(`${url}/api/users`);
+      const data = await response.json();
+      
+      // Log only the names of the users
+      const userNames = data.data.map(user => user.name);
+      console.log(userNames);  // This will log only the names to the console
+  
+      setUserNames(userNames);  // If you want to update state with just the names
+    } catch (error) {
+      console.error('Error fetching user names:', error);
+    }
+  };
+  
+  
 
   // Data for the pie chart
   const data = {
@@ -103,8 +131,20 @@ function Overview() {
               </div>
             </div>
 
+            {/* !!!!!!!!!!!!!!! HERE GPT, I WANT THIS API TO WORK HERE USING THIS: ${url}/api/users !!!!!!!!!!!!!!!!!!*/ }
             {/* Delivery Man Container */}
             <div className="bg-white p-6 rounded-lg shadow-2xl">
+              <h3 className="text-lg font-bold mb-4">DELIVERY MAN ACCOUNT</h3>
+
+              {userNames.map((name, index) => (
+                <div key={index} className="bg-gray-200 p-4 rounded-lg shadow-sm mt-4">
+                  <p className="text-gray-700 text-sm whitespace-nowrap">{name}</p>
+                </div>
+              ))}
+            </div>
+
+
+            {/* <div className="bg-white p-6 rounded-lg shadow-2xl">
               <h3 className="text-lg font-bold mb-4">DELIVERY MAN ACCOUNT</h3>
               <div className="bg-gray-200 p-4 rounded-lg shadow-sm mt-4">
                 <p className="text-gray-700 text-sm whitespace-nowrap">Arlene Cabarrubias</p>
@@ -115,7 +155,7 @@ function Overview() {
               <div className="bg-gray-200 p-4 rounded-lg shadow-sm mt-4">
                 <p className="text-gray-700 text-sm whitespace-nowrap">Arlene Cabarrubias</p>
               </div>
-            </div>
+            </div> */}
           </div>
 
           {/* Right Column for Larger Containers */}
