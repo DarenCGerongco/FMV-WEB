@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import Navbar from '../components/navbar';
 import axios from 'axios';
-import { json } from 'react-router-dom';
-import { stringify } from 'postcss';
+// import { json } from 'react-router-dom';
+// import { stringify } from 'postcss';
 
 function Order() {
   const url = import.meta.env.VITE_API_URL;
@@ -70,16 +70,23 @@ function Order() {
       try {
         const response = await fetch(`${url}/api/purchase-orders-delivery`);
         const data = await response.json();
-        const names = data.map(name => name.customer_name)
+        const names = data.map(name => name.customer_name);
 
-        setCustomerName(names); // Update the state with fetched orders
+        setCustomerName(names); // Update the state with customer names
       } catch (error) {
         console.error('Error fetching orders:', error);
       }
     };
 
-    fetchOrders(); // Fetch orders when the component mounts
-  }, [url]); // Dependency array ensures it only runs on component mount
+    // Fetch orders initially
+    fetchOrders();
+
+    // Set up a recurring interval to fetch the orders periodically
+    const intervalId = setInterval(fetchOrders, 5000); // 10000ms = 10 seconds
+
+    // Cleanup interval when the component is unmounted
+    return () => clearInterval(intervalId);
+  }, [url]); // Dependency array ensures the effect runs only when the URL changes
 
 
   const submitAddModal = async () => {
@@ -238,7 +245,7 @@ function Order() {
           className="w-4/5 mx-auto bg-white p-6 m-6 rounded-lg shadow-2xl mb-1 border cursor-pointer hover:bg-gray-100 transition"
         >
           <h6 className="text-1xl font-bold">
-            Customer Name: {name}
+            {name}
           </h6>
         </div>
       ))}
