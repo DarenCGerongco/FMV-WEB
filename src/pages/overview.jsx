@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react';
 import Navbar from '../components/navbar';
 import { Pie } from 'react-chartjs-2';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom'; // Import useNavigate
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
@@ -9,12 +11,40 @@ function Overview() {
   const [salesData, setSalesData] = useState([]);
   const url = import.meta.env.VITE_API_URL;
   const [userNames, setUserNames] = useState([]);
+  const [inventoryItems, setInventoryItems] = useState([]);
+  const navigate = useNavigate(); // Initialize useNavigate
 
-  
+  // Fetch inventory data
+  const fetchInventoryData = async () => {
+    try {
+      const response = await axios.get(`${url}/api/products`);
+      setInventoryItems(response.data);
+    } catch (error) {
+      console.error('Error fetching inventory data:', error);
+    }
+  };
+
+  // Fetch sales data
+  const fetchSalesData = () => {
+    const salesdata = [
+      { itemName: 'Arlene', itemSold: 'x15', itemRemaining: 'x10' },
+      { itemName: 'Kirk Khien', itemSold: 'x10', itemRemaining: 'x5' },
+      { itemName: 'Steven Ambatablow', itemSold: 'x20', itemRemaining: 'x15' },
+      { itemName: 'Oiled Men', itemSold: 'x30', itemRemaining: 'x20' },
+    ];
+    setSalesData(salesdata); 
+  };
+
   useEffect(() => {
     fetchUserNames(); // Fetch initial user names
+    fetchInventoryData(); // Fetch initial inventory data
+    fetchSalesData(); // Fetch initial sales data
     
-    const intervalId = setInterval(fetchUserNames, 10000); // Update every 10 seconds
+    const intervalId = setInterval(() => {
+      fetchUserNames(); // Update user names
+      fetchInventoryData(); // Update inventory items
+      fetchSalesData(); // Update sales data
+    }, 10000); // Update every 10 seconds
     
     return () => clearInterval(intervalId); // Clear interval on unmount
   }, []);
@@ -23,18 +53,12 @@ function Overview() {
     try {
       const response = await fetch(`${url}/api/users`);
       const data = await response.json();
-      
-      // Log only the names of the users
       const userNames = data.data.map(user => user.name);
-      console.log(userNames);  // This will log only the names to the console
-  
-      setUserNames(userNames);  // If you want to update state with just the names
+      setUserNames(userNames);
     } catch (error) {
       console.error('Error fetching user names:', error);
     }
   };
-  
-  
 
   // Data for the pie chart
   const data = {
@@ -60,7 +84,6 @@ function Overview() {
     ],
   };
 
-  // Options for the pie chart
   const options = {
     plugins: {
       legend: {
@@ -78,21 +101,10 @@ function Overview() {
     maintainAspectRatio: false,
   };
 
-  // Fetch sales data
-  const fetchSalesData = () => {
-    const salesdata = [
-      { itemName: 'Arlene', itemSold: 'x15', itemRemaining: 'x10' },
-      { itemName: 'Kirk Khien', itemSold: 'x10', itemRemaining: 'x5' },
-      { itemName: 'Steven Ambatablow', itemSold: 'x20', itemRemaining: 'x15' },
-      { itemName: 'Oiled Men', itemSold: 'x30', itemRemaining: 'x20' },
-    ];
-    setSalesData(salesdata); // Setting state with fetched data
+  const handleInventoryClick = () => {
+    navigate('/inventory'); // Redirect to Inventory page
+    navigate('/deliveryman');
   };
-
-  // Fetch data when component mounts
-  useEffect(() => {
-    fetchSalesData();
-  }, []);
 
   return (
     <div className="flex w-full bg-white">
@@ -103,7 +115,6 @@ function Overview() {
         </div>
 
         <div className="w-11/12 mx-auto flex space-x-4">
-
           <div className="flex flex-col space-y-4 w-1/3">
             {/* Order Container */}
             <div className="bg-white p-6 rounded-lg shadow-2xl">
@@ -131,31 +142,17 @@ function Overview() {
               </div>
             </div>
 
-            {/* !!!!!!!!!!!!!!! HERE GPT, I WANT THIS API TO WORK HERE USING THIS: ${url}/api/users !!!!!!!!!!!!!!!!!!*/ }
             {/* Delivery Man Container */}
-            <div className="bg-white p-6 rounded-lg shadow-2xl">
+            <div className="bg-white p-6 rounded-lg shadow-2xl cursor-pointer"
+            onClick={handleInventoryClick}
+            >
               <h3 className="text-lg font-bold mb-4">DELIVERY MAN ACCOUNT</h3>
-
               {userNames.map((name, index) => (
                 <div key={index} className="bg-gray-200 p-4 rounded-lg shadow-sm mt-4">
                   <p className="text-gray-700 text-sm whitespace-nowrap">{name}</p>
                 </div>
               ))}
             </div>
-
-
-            {/* <div className="bg-white p-6 rounded-lg shadow-2xl">
-              <h3 className="text-lg font-bold mb-4">DELIVERY MAN ACCOUNT</h3>
-              <div className="bg-gray-200 p-4 rounded-lg shadow-sm mt-4">
-                <p className="text-gray-700 text-sm whitespace-nowrap">Arlene Cabarrubias</p>
-              </div>
-              <div className="bg-gray-200 p-4 rounded-lg shadow-sm mt-4 ">
-                <p className="text-gray-700 text-sm whitespace-nowrap">Arlene Cabarrubias</p>
-              </div>
-              <div className="bg-gray-200 p-4 rounded-lg shadow-sm mt-4">
-                <p className="text-gray-700 text-sm whitespace-nowrap">Arlene Cabarrubias</p>
-              </div>
-            </div> */}
           </div>
 
           {/* Right Column for Larger Containers */}
@@ -163,13 +160,11 @@ function Overview() {
             {/* Sales Container */}
             <div className="bg-white p-6 rounded-lg shadow-2xl">
               <h3 className="text-lg font-bold mb-4">SALES</h3>
-              {/* Container for the pie chart */}
               <div className="flex justify-center items-center h-80">
                 <div className="w-full h-full max-w-xs">
                   <Pie data={data} options={options} />
                 </div>
               </div>
-              {/* Box container for sales data */}
               <div className="bg-white text-sm mt-10 flex border-b">
                 <p className="text-gray-500 w-1/3 font-bold ">Item Name</p>
                 <p className="text-gray-500 w-1/3 font-bold text-center">Item Sold</p>
@@ -184,22 +179,21 @@ function Overview() {
               ))}
             </div>
 
-            {/* Inventory Container */}
-            <div className="bg-white p-6 rounded-lg shadow-2xl">
+            {/* Inventory Container */}   
+            <div className="bg-white p-6 rounded-lg shadow-2xl cursor-pointer"
+                onClick={handleInventoryClick}
+            > 
               <h3 className="text-lg font-bold mb-4">INVENTORY</h3>
-              {/* First Item */}
-              <div className="bg-gray-200 p-4 rounded-lg shadow-sm mt-4 flex justify-between items-center border-b">
-                <div className="flex-1 text-gray-700 text-sm">Submersible Pump</div>
-                <div className="flex-1 text-gray-700 text-sm text-center">Pump</div>
-                <div className="text-gray-700 text-sm text-right w-1/4">5</div>
+              <div className="bg-white text-sm mt-10 flex border-b">
               </div>
-              {/* Second Item */}
-              <div className="bg-gray-200 p-4 rounded-lg shadow-sm mt-4 flex justify-between items-center border-b">
-                <div className="flex-1 text-gray-700 text-sm">Water Filter</div>
-                <div className="flex-1 text-gray-700 text-sm text-center">Filter</div>
-                <div className="text-gray-700 text-sm text-right w-1/4">10</div>
-              </div>
-            </div>
+              {inventoryItems.map((item, index) => (
+                <div key={index} className="bg-gray-200 p-4 rounded-lg shadow-sm mt-4 flex justify-between items-center border-b">
+                  <div className="flex-1">{item.product_name}</div>
+                  <div className="flex-1 text-center">{item.category_name}</div>
+                  <div className="flex-1 text-right">{item.quantity}</div>
+                </div>
+              ))}
+              </div>           
           </div>
         </div>
       </div>

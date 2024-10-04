@@ -61,7 +61,7 @@ function Delivery() {
               <span className="w-1/3 text-left">Delivery Man</span>
               <span className="w-1/6 text-left">Date</span>
             </h3>
-            <div className="bg-white p-4 rounded-lg shadow-2xl flex justify-between items-center bg-[#8EF7A8]">
+            <div className="p-4 rounded-lg shadow-2xl flex justify-between items-center bg-[#8ef7a8]">
               <span className="w-1/6">2</span>
               <span className="w-1/3">Barangay Lumbia</span>
               <span className="w-1/3">Arlene Abad</span>
@@ -73,7 +73,7 @@ function Delivery() {
                 onClick={() => handleOpenConfirmationModal({ deliveryNo: 2, deliveredTo: 'Barangay Lumbia', deliveryMan: 'Arlene Abad', date: '06/04/2024' })}
               />
             </div>    
-            <div className="bg-white mt-3 p-4 rounded-lg shadow-2xl flex justify-between items-center bg-[#8EF7A8]">
+            <div className="mt-3 p-4 rounded-lg shadow-2xl flex justify-between items-center bg-[#8EF7A8]">
               <span className="w-1/6">3</span>
               <span className="w-1/3">Barangay Iponan</span>
               <span className="w-1/3">John Smith</span>
@@ -96,7 +96,7 @@ function Delivery() {
               <span className="w-1/3 text-left">Delivery Man</span>
               <span className="w-1/6 text-left">Date</span>
             </h3>
-            <div className="bg-white p-4 rounded-lg shadow-2xl flex justify-between items-center bg-[#E6FCE6]">
+            <div className="p-4 rounded-lg shadow-2xl flex justify-between items-center bg-[#E6FCE6]">
               <span className="w-1/6">4</span>
               <span className="w-1/3">Iponan</span>
               <span className="w-1/3">Edelcris Cabarrubias</span>
