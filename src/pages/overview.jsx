@@ -103,7 +103,9 @@ function Overview() {
 
   const handleInventoryClick = () => {
     navigate('/inventory'); // Redirect to Inventory page
-    navigate('/deliveryman');
+  };
+  const handleDeliveryManClick = () => {
+    navigate('/deliveryman'); // Redirect to deliveryman page
   };
 
   return (
@@ -144,7 +146,7 @@ function Overview() {
 
             {/* Delivery Man Container */}
             <div className="bg-white p-6 rounded-lg shadow-2xl cursor-pointer"
-            onClick={handleInventoryClick}
+            onClick={handleDeliveryManClick}
             >
               <h3 className="text-lg font-bold mb-4">DELIVERY MAN ACCOUNT</h3>
               {userNames.map((name, index) => (

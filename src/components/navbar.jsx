@@ -7,8 +7,8 @@ const Navbar = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [message, setMessage] = useState(''); // For showing messages like "Logout successfully"
-  const [showSuccessMessage, setShowSuccessMessage] = useState(false); // To control the visibility of the success message
+  const [message, setMessage] = useState('');
+  const [showSuccessMessage, setShowSuccessMessage] = useState(false);
 
   const handleLogout = async () => {
     try {
@@ -20,18 +20,15 @@ const Navbar = () => {
       });
 
       if (response.data.success) {
-        // Display logout success message
         setMessage('Logout successfully');
-        setShowSuccessMessage(true); // Show success message
+        setShowSuccessMessage(true);
 
-        // Automatically hide the message after 3 seconds
         setTimeout(() => {
           setShowSuccessMessage(false);
           setMessage('');
-          navigate('/'); // Redirect to home page after logout
+          navigate('/');
         }, 1000);
 
-        // Remove token from localStorage
         localStorage.removeItem('token');
       } else {
         setMessage('Logout failed');
@@ -62,8 +59,14 @@ const Navbar = () => {
     <nav className="rounded-[20px] shadow-[20px] fixed top-0 left-0 w-full md:w-1/6 h-auto md:h-screen bg-custom-blue p-4 flex flex-col justify-between items-center md:items-start border-t-[5px] border-b-[5px] border-l-[5px]">
       <div className="flex flex-col items-center md:items-start w-full">
         <div className="flex items-center mb-3 justify-center md:justify-start">
-          <h1 className="text-white text-2xl md:text-3xl font-bold mr-3 text-center">FMV Management System</h1>
-          <img src="./src/assets/Logo.png" alt="Client's Company Image" className="w-20 h-auto md:max-w-16" />
+          <h1 className="text-white text-2xl md:text-3xl font-bold mr-3 text-center">
+            FMV Management System
+          </h1>
+          <img
+            src="./src/assets/Logo.png"
+            alt="Client's Company Image"
+            className="w-20 h-auto md:max-w-16"
+          />
         </div>
         <div className="mt-8 w-full">
           <h2 className="text-white text-xl md:text-2xl mb-5 md:ml-0 ml-2 text-center md:text-left">DASHBOARD</h2>
