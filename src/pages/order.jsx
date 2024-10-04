@@ -669,10 +669,6 @@ function Order() {
     </div>
   </div>
 )}
-
-
-
-
       </div>
     </div>
   );
