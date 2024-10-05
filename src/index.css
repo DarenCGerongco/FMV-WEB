@@ -8,8 +8,3 @@ body {
   .bg-custom-blue {
     background-color: #2955BB;
   }
-
-.fixed-navbar {
-    width: 300px; /* Adjust width as needed */
-    height: 100vh; /* Full height */
-}

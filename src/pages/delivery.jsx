@@ -30,7 +30,7 @@ function Delivery() {
   };
 
   return (
-    <div className="flex w-full bg-gray-100">
+    <div className="flex w-full bg-white-100">
       <Navbar />
       <div className="w-full ml-80 bg-white">
         <div className="w-4/5 mx-auto bg-white p-6 m-3 rounded-lg shadow-2xl mb-6 border">
