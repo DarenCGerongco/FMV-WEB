@@ -171,14 +171,14 @@ function Inventory() {
                 onChange={handleInputChange} // Update state on change
               />
               <button
-                className="text-white px-4 py-2 rounded-md shadow-2xl focus:outline-none bg-blue-600"
+                className="text-white px-4 py-2 rounded-md shadow-2xl focus:outline-none bg-blue-500"
                 onClick={handleSearch} // Call search handler on click
               >
                 Search
               </button>
             </div>
             <button
-              className="text-white px-4 py-2 rounded-md shadow-2xl focus:outline-none bg-blue-600"
+              className="text-white px-4 py-2 rounded-md shadow-2xl focus:outline-none bg-blue-500"
               onClick={openRestockModal}
             >
               Restock
@@ -186,7 +186,7 @@ function Inventory() {
   
             {/* Add Item Button */}
             <button
-              className="text-white px-4 py-2 rounded-md shadow-2xl focus:outline-none bg-blue-600"
+              className="text-white px-4 py-2 rounded-md shadow-2xl focus:outline-none bg-blue-500"
               onClick={openAddItemModal}
             >
               Register
