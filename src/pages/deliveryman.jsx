@@ -186,25 +186,25 @@ function DeliveryMan() {
     <div className="flex w-full bg-white">
       <Navbar/>
       <div className="flex flex-col w-full ml-72 bg-white">
-        <div className="w-4/5 mx-auto bg-white p-6 m-3 rounded-lg shadow-md mb-6">
+        <div className="w-4/5 mx-auto bg-white p-6 m-3 rounded-lg shadow-2xl mb-6 border">
           <h2 className="text-1xl font-bold">DELIVERY MAN</h2>
         </div>
-        <div className="w-4/5 mx-auto bg-white p-5 m-3 rounded-lg shadow-xl">
+        <div className="w-4/5 mx-auto bg-white p-5 m-3 rounded-lg shadow-2xl">
           <div className="relative mt-4 flex items-center space-x-4">
-            <div className="flex items-center w-full px-4 py-3 border border-gray-300 rounded-md shadow-xl focus-within:border-blue-500 relative h-12">
+            <div className="flex items-center w-full px-4 py-3 border border-gray-300 rounded-md shadow-2xl focus-within:border-blue-500 relative h-12">
               <span className="text-black-500 whitespace-nowrap">DELIVERY MAN</span>
               <div className="border-l border-gray-300 h-10 mx-2"></div>
               <input
                 type="text"
-                className="flex-grow focus:outline-none px-4 py-2 rounded-md shadow-sm sm:text-sm border-gray-300 focus:ring-blue-500 focus:border-blue-500 block w-full"
+                className="flex-grow focus:outline-none px-4 py-2 rounded-md shadow-2xl sm:text-sm border-gray-300 focus:ring-blue-500 focus:border-blue-500 block w-full"
                 placeholder="Search for Delivery man"
               />
-              <button className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-blue-500 text-white px-4 py-2 rounded-md shadow-md focus:outline-none">
+              <button className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-blue-500 text-white px-4 py-2 rounded-md shadow-2xl focus:outline-none">
                 Search
               </button>
             </div>
             <button
-              className="bg-blue-500 text-black px-4 py-2 bg-blue-500 text-white rounded-md shadow-md focus:outline-none"
+              className="bg-blue-500 text-black px-4 py-2 bg-blue-500 text-white rounded-md shadow-2xl focus:outline-none"
               onClick={openAddModal}
             >
               +
@@ -214,7 +214,7 @@ function DeliveryMan() {
           {deliveryMen.map((deliveryMan, index) => (
             <div
               key={index}
-              className="flex items-center justify-between bg-white-200 p-4 rounded-lg shadow-lg relative"
+              className="flex items-center justify-between bg-white-200 p-4 rounded-lg shadow-2xl relative"
             >
             <div className="information flex">
               <div className='font-bold'>
@@ -253,7 +253,7 @@ function DeliveryMan() {
             id="addModal"
             className="modal fixed top-0 left-0 w-full h-full bg-gray-800 bg-opacity-75 flex justify-center items-center"
           >
-            <div className="bg-white p-6 rounded-lg shadow-lg w-1/4">
+            <div className="bg-white p-6 rounded-lg shadow-2xl w-1/4">
               <h3 className="text-lg font-bold mb-4">Add Delivery Man</h3>
               <div className="mb-4">
                 <label htmlFor="usertype" className="block text-gray-700">Usertype:</label>
@@ -337,13 +337,13 @@ function DeliveryMan() {
               </div>
               <div className="flex justify-end space-x-4">
                 <button
-                  className="bg-gray-500 text-white px-4 py-2 rounded-md shadow-md"
+                  className="bg-gray-500 text-white px-4 py-2 rounded-md shadow-2xl"
                   onClick={closeAddModal}
                 >
                   Close
                 </button>
                 <button
-                  className="bg-blue-500 text-white px-4 py-2 rounded-md shadow-md"
+                  className="bg-blue-500 text-white px-4 py-2 rounded-md shadow-2xl"
                   onClick={submitAddModal}
                 >
                   Create
@@ -359,7 +359,7 @@ function DeliveryMan() {
             id="editModal"
             className="modal fixed top-0 left-0 w-full h-full bg-gray-800 bg-opacity-75 flex justify-center items-center"
           >
-            <div className="bg-white p-6 rounded-lg shadow-lg w-1/4">
+            <div className="bg-white p-6 rounded-lg shadow-2xl w-1/4">
               <h3 className="text-lg font-bold mb-4">Edit Delivery Man</h3>
               <div className="mb-4">
                 <label htmlFor="editName" className="block text-gray-700">Name:</label>
@@ -429,13 +429,13 @@ function DeliveryMan() {
               </div>
               <div className="flex justify-end space-x-4">
                 <button
-                  className="bg-gray-500 text-white px-4 py-2 rounded-md shadow-md"
+                  className="bg-gray-500 text-white px-4 py-2 rounded-md shadow-2xl"
                   onClick={closeEditModal}
                 >
                   Close
                 </button>
                 <button
-                  className="bg-blue-500 text-white px-4 py-2 rounded-md shadow-md"
+                  className="bg-blue-500 text-white px-4 py-2 rounded-md shadow-2xl"
                   onClick={submitEditModal}
                 >
                   Save

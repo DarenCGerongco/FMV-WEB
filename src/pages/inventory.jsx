@@ -2,8 +2,6 @@ import { useState, useEffect } from 'react';
 import Navbar from '../components/navbar'; 
 import axios from 'axios';
 
-
-
 function Inventory() {
   const url = import.meta.env.VITE_API_URL;
   
@@ -15,37 +13,36 @@ function Inventory() {
   const [newItemPrice, setNewItemPrice] = useState('');
   const [newItemAmount, setNewItemAmount] = useState('');
   const [categories, setCategories] = useState([]); // State for categories
+  const [searchInput, setSearchInput] = useState(''); // State for search input
+  const [searchResults, setSearchResults] = useState([]); // State for search results
 
   // Fetch categories when the component mounts
-useEffect(() => {
-  const fetchCategories = async () => {
-    try {
-      const response = await axios.get(`${url}/api/categories`);
-      setCategories(response.data.data);
-    } catch (error) {
-      console.error('Error fetching categories:', error);
-    }
-  };
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await axios.get(`${url}/api/categories`);
+        setCategories(response.data.data);
+      } catch (error) {
+        console.error('Error fetching categories:', error);
+      }
+    };
 
-  fetchCategories();
-}, [url]);
+    fetchCategories();
+  }, [url]);
 
-// Fetch products when the component mounts
-useEffect(() => {
-  const fetchProducts = async () => {
-    try {
-      const response = await axios.get(`${url}/api/products`);
-      setItems(response.data);
-      
-    } catch (error) {
-      console.error('Error fetching products:', error);
-    }
-  };
+  // Fetch products when the component mounts
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const response = await axios.get(`${url}/api/products`);
+        setItems(response.data);
+      } catch (error) {
+        console.error('Error fetching products:', error);
+      }
+    };
 
-  fetchProducts();
-}, [url]);
-
-  
+    fetchProducts();
+  }, [url]);
 
   // Handlers for opening and closing modals
   const openAddItemModal = () => setAddItemModalOpen(true);
@@ -69,11 +66,21 @@ useEffect(() => {
       case 'newitemamount':
         setNewItemAmount(value);
         break;
+      case 'search': // Capture search input
+        setSearchInput(value);
+        break;
       default:
         break;
     }
   };
 
+  // Function to handle search
+  const handleSearch = () => {
+    const filteredResults = items.filter(item => 
+      item.product_name.toLowerCase().includes(searchInput.toLowerCase())
+    );
+    setSearchResults(filteredResults);
+  };
 
   // Function to add a new item
   const addItem = async () => {
@@ -102,17 +109,16 @@ useEffect(() => {
     }
   };
 
-
   // Function to restock an item
   const restockItem = () => {
     const itemName = document.getElementById('itemname').value;
     const itemAmount = parseInt(document.getElementById('itemamount').value);
 
     const updatedItems = items.map(item => {
-      if (item.name === itemName) {
+      if (item.product_name === itemName) { // Updated to match product_name
         return {
           ...item,
-          amount: parseInt(item.amount) + itemAmount
+          quantity: parseInt(item.quantity) + itemAmount // Updated to match quantity
         };
       }
       return item;
@@ -128,35 +134,51 @@ useEffect(() => {
     console.log(`Editing item: ${itemName}`);
   };
 
+  // Function to highlight matching text
+  const highlightText = (text, search) => {
+    if (!search) return text;
+
+    const regex = new RegExp(`(${search})`, 'gi');
+    const parts = text.split(regex);
+    
+    return parts.map((part, index) => 
+      part.toLowerCase() === search.toLowerCase() 
+        ? <span key={index} className="bg-yellow-300">{part}</span> 
+        : part
+    );
+  };
 
   return (
     <div className="flex w-full bg-white">
       <Navbar />
       <div className="flex flex-col w-full ml-72 bg-white"> {/* Adjust margin-left */}
-        <div className="w-4/5 mx-auto bg-white p-6 m-3 rounded-lg shadow-md mb-6">
+        <div className="w-4/5 mx-auto bg-white p-6 m-3 rounded-lg shadow-2xl mb-6 border">
           <h2 className="text-1xl font-bold">INVENTORY</h2>
         </div>
 
-  
         {/* Searchbar and Restock Button */}
-        <div className="w-4/5 mx-auto bg-white p-5 m-3 rounded-lg shadow-xl">
+        <div className="w-4/5 mx-auto bg-white p-5 m-3 rounded-lg shadow-2xl">
           <div className="relative mt-4 flex items-center space-x-4">
-            <div className="flex items-center w-full px-4 py-3 border border-gray-300 rounded-md shadow-xl focus-within:border-blue-500 relative h-12">
+            <div className="flex items-center w-full px-4 py-3 border border-gray-300 rounded-md shadow-2xl focus-within:border-blue-500 relative h-12">
               <span className="text-black-500 whitespace-nowrap">INVENTORY</span>
               <div className="border-l border-gray-300 h-10 mx-2"></div>
               <input
                 type="text"
-                className="flex-grow focus:outline-none px-4 py-2 rounded-md shadow-sm sm:text-sm border-gray-300 focus:ring-blue-500 focus:border-blue-500 block w-full"
+                id="search" // Add id to search input
+                className="flex-grow focus:outline-none px-4 py-2 rounded-md shadow-2xl sm:text-sm border-gray-300 focus:ring-blue-500 focus:border-blue-500 block w-full"
                 placeholder="Search for items"
+                value={searchInput} // Bind search input to state
+                onChange={handleInputChange} // Update state on change
               />
               <button
-                className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-blue-600 text-white px-4 py-2 rounded-md shadow-md focus:outline-none"
+                className="text-white px-4 py-2 rounded-md shadow-2xl focus:outline-none bg-blue-600"
+                onClick={handleSearch} // Call search handler on click
               >
                 Search
               </button>
             </div>
             <button
-              className="text-white px-4 py-2 rounded-md shadow-md focus:outline-none bg-blue-600"
+              className="text-white px-4 py-2 rounded-md shadow-2xl focus:outline-none bg-blue-600"
               onClick={openRestockModal}
             >
               Restock
@@ -164,131 +186,128 @@ useEffect(() => {
   
             {/* Add Item Button */}
             <button
-              className="text-white px-4 py-2 rounded-md shadow-md focus:outline-none bg-blue-600"
+              className="text-white px-4 py-2 rounded-md shadow-2xl focus:outline-none bg-blue-600"
               onClick={openAddItemModal}
             >
               Register
             </button>
           </div>
-  
-          {/* Labels */}
-          <h3 className="text-sm mt-6 px-4 text-gray-400 flex justify-between"> {/* Updated padding */}
-            <span className="w-1/5">Item Name</span>
-            <span className="w-1/5">Item Category</span>
-            <span className="w-1/5">Item Price</span> {/* Updated width for better alignment */}
-            <span className="w-1/5">Item Amount</span>
-            <span className="w-1/12">Edit</span>
-          </h3>
 
-          <div className="mt-4 space-y-4 mb-10 px-4"> {/* Added consistent padding */}
-            {items.map((item, index) => (
-              <div key={index} className="flex items-center justify-between bg-white p-4 rounded-lg shadow-lg">
-                <div className="w-1/5">{item.product_name}</div>
+          {/* Labels */}
+          <div>
+            <h3 className="text-sm mt-6 px-4 text-gray-400 flex justify-between"> 
+              <div className="w-1/5">Item Name</div>
+              <div className="relative left-[10px] w-1/5">Item Category</div>
+              <div className="w-1/5">Item Price</div>
+              <div className="relative left-[-10px] w-1/5">Item Amount</div>
+              <div className="relative left-[-15px] w-1/13">Edit</div>
+            </h3>
+          </div>
+
+          <div className="mt-4 space-y-4 mb-10 px-4">
+            {(searchResults.length > 0 ? searchResults : items).map((item, index) => (
+              <div key={index} className="flex items-center justify-between bg-white p-4 rounded-lg shadow-2xl">
+                <div className="w-1/5">{highlightText(item.product_name, searchInput)}</div>
                 <div className="w-1/5">{item.category_name}</div>
                 <div className="w-1/5">{item.original_price ? item.original_price : 'N/A'}</div>
                 <div className="w-1/5">{item.quantity}</div>
-                <img
-                  src="./src/assets/edit.png"
-                  alt="Edit"
-                  className="w-6 h-6 cursor-pointer"
-                  onClick={() => openEditModal(item.product_name)}
-                />
+                <div className="w-1/13">
+                  <img
+                    src="./src/assets/edit.png"
+                    alt="Edit"
+                    className="w-6 h-6 cursor-pointer"
+                    onClick={() => openEditModal(item.product_name)}
+                  />
+                </div>
               </div>
             ))}
           </div>
         </div>
-  
+
         {/* Add Item Modal */}
         {addItemModalOpen && (
-          <div className="modal fixed top-0 left-0 w-full h-full bg-gray-800 bg-opacity-75 flex justify-center items-center">
-            <div className="bg-white p-8 rounded-lg shadow-lg w-96 flex flex-col items-center">
-              <h2 className="text-lg font-semibold mb-6 text-center">Add New Item</h2>
+          <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+            <div className="bg-white rounded-lg shadow-2xl p-6">
+              <h2 className="text-xl font-bold mb-4">Add Item</h2>
               <input
                 type="text"
                 id="newitemname"
-                className="w-full px-3 py-2 border border-gray-300 rounded-md mb-4"
                 placeholder="Item Name"
                 value={newItemName}
                 onChange={handleInputChange}
+                className="w-full border border-gray-300 rounded-md p-2 mb-4"
               />
               <select
                 id="newitemcategory"
-                className="w-full px-3 py-2 border border-gray-300 rounded-md mb-4"
                 value={newItemCategory}
                 onChange={handleInputChange}
+                className="w-full border border-gray-300 rounded-md p-2 mb-4"
               >
                 <option value="">Select Category</option>
                 {categories.map((category) => (
-                  <option key={category.id} value={category.id}>
-                    {category.category_name}
-                  </option>
+                  <option key={category.id} value={category.id}>{category.name}</option>
                 ))}
               </select>
               <input
                 type="number"
                 id="newitemprice"
-                className="w-full px-3 py-2 border border-gray-300 rounded-md mb-4"
                 placeholder="Item Price"
                 value={newItemPrice}
                 onChange={handleInputChange}
+                className="w-full border border-gray-300 rounded-md p-2 mb-4"
               />
               <input
                 type="number"
                 id="newitemamount"
-                className="w-full px-3 py-2 border border-gray-300 rounded-md mb-4"
                 placeholder="Item Amount"
                 value={newItemAmount}
                 onChange={handleInputChange}
+                className="w-full border border-gray-300 rounded-md p-2 mb-4"
               />
-              <div className="flex justify-end space-x-4">
+              <div className="flex justify-end">
                 <button
-                  className="bg-gray-500 text-white px-4 py-2 rounded-md shadow-md"
+                  className="bg-blue-500 text-white px-4 py-2 rounded-md mr-2"
+                  onClick={addItem}
+                >
+                  Add
+                </button>
+                <button
+                  className="bg-gray-300 px-4 py-2 rounded-md"
                   onClick={closeAddItemModal}
                 >
                   Cancel
-                </button>
-                <button
-                  className="bg-blue-500 text-white px-4 py-2 rounded-md shadow-md"
-                  onClick={addItem}
-                >
-                  Add Item
                 </button>
               </div>
             </div>
           </div>
         )}
-  
+
         {/* Restock Modal */}
         {restockModalOpen && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-900 bg-opacity-50">
-            <div className="bg-white p-12 rounded-lg shadow-lg w-112 flex flex-col items-center">
-              <h2 className="text-lg font-semibold mb-10 text-center">Restock Items</h2>
-              <div className="relative mb-8">
-                <div className="flex items-center border border-gray-300 rounded-md shadow-sm mb-16">
-                  <input
-                    type="text"
-                    id="itemname"
-                    className="flex-1 px-3 py-2 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                    placeholder="Enter Item Name"
-                  />
-                  <input
-                    type="number"
-                    id="itemamount"
-                    className="w-28 px-3 py-2 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                    placeholder="Amount"
-                    min="0"
-                  />
-                  <button
-                    className="bg-blue-600 text-white px-4 py-2 ml-2 rounded-md shadow-md focus:outline-none"
-                    onClick={restockItem}
-                  >
-                    Restock
-                  </button>
-                </div>
-              </div>
-              <div className="absolute bottom-4 right-4 flex">
+          <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+            <div className="bg-white rounded-lg shadow-2xl p-6">
+              <h2 className="text-xl font-bold mb-4">Restock Item</h2>
+              <input
+                type="text"
+                id="itemname"
+                placeholder="Item Name"
+                className="w-full border border-gray-300 rounded-md p-2 mb-4"
+              />
+              <input
+                type="number"
+                id="itemamount"
+                placeholder="Amount to Add"
+                className="w-full border border-gray-300 rounded-md p-2 mb-4"
+              />
+              <div className="flex justify-end">
                 <button
-                  className="bg-gray-300 text-gray-700 px-4 py-2 rounded-md shadow-md focus:outline-none mr-2"
+                  className="bg-blue-500 text-white px-4 py-2 rounded-md mr-2"
+                  onClick={restockItem}
+                >
+                  Restock
+                </button>
+                <button
+                  className="bg-gray-300 px-4 py-2 rounded-md"
                   onClick={closeRestockModal}
                 >
                   Cancel
@@ -300,7 +319,6 @@ useEffect(() => {
       </div>
     </div>
   );
-  
 }
 
 export default Inventory;
