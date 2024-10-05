@@ -226,56 +226,58 @@ function Inventory() {
 
         {/* Add Item Modal */}
         {addItemModalOpen && (
-          <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-            <div className="bg-white rounded-lg shadow-2xl p-6">
-              <h2 className="text-xl font-bold mb-4">Add Item</h2>
+          <div className="modal fixed top-0 left-0 w-full h-full bg-gray-800 bg-opacity-75 flex justify-center items-center">
+            <div className="bg-white p-8 rounded-lg shadow-lg w-96 flex flex-col items-center">
+              <h2 className="text-lg font-semibold mb-6 text-center">Add New Item</h2>
               <input
                 type="text"
                 id="newitemname"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md mb-4"
                 placeholder="Item Name"
                 value={newItemName}
                 onChange={handleInputChange}
-                className="w-full border border-gray-300 rounded-md p-2 mb-4"
               />
               <select
                 id="newitemcategory"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md mb-4"
                 value={newItemCategory}
                 onChange={handleInputChange}
-                className="w-full border border-gray-300 rounded-md p-2 mb-4"
               >
                 <option value="">Select Category</option>
                 {categories.map((category) => (
-                  <option key={category.id} value={category.id}>{category.name}</option>
+                  <option key={category.id} value={category.id}>
+                    {category.category_name}
+                  </option>
                 ))}
               </select>
               <input
                 type="number"
                 id="newitemprice"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md mb-4"
                 placeholder="Item Price"
                 value={newItemPrice}
                 onChange={handleInputChange}
-                className="w-full border border-gray-300 rounded-md p-2 mb-4"
               />
               <input
                 type="number"
                 id="newitemamount"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md mb-4"
                 placeholder="Item Amount"
                 value={newItemAmount}
                 onChange={handleInputChange}
-                className="w-full border border-gray-300 rounded-md p-2 mb-4"
               />
-              <div className="flex justify-end">
+              <div className="flex justify-end space-x-4">
                 <button
-                  className="bg-blue-500 text-white px-4 py-2 rounded-md mr-2"
-                  onClick={addItem}
-                >
-                  Add
-                </button>
-                <button
-                  className="bg-gray-300 px-4 py-2 rounded-md"
+                  className="bg-gray-500 text-white px-4 py-2 rounded-md shadow-md"
                   onClick={closeAddItemModal}
                 >
                   Cancel
+                </button>
+                <button
+                  className="bg-blue-500 text-white px-4 py-2 rounded-md shadow-md"
+                  onClick={addItem}
+                >
+                  Add Item
                 </button>
               </div>
             </div>
