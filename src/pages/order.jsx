@@ -16,9 +16,9 @@ function Order() {
   const [newDeliveryModalOpen, setNewDeliveryModalOpen] = useState(false);
   const [createItemsOrderedModalOpen, setCreateItemsOrderedModalOpen] = useState(false);
 
-  const [purchaseOrderData, setPurchaseOrderData] = useState([]);
-  // const []
-
+  // Start - THIS IS THE DATA OF Purchase Order Record
+    const [purchaseOrderData, setPurchaseOrderData] = useState([]);
+  // End - THIS IS THE DATA OF Purchase Order Record
 
   // New state variables for Item Name, Price, and Amount
   const [newItemName, setNewItemName] = useState('');
@@ -51,7 +51,14 @@ function Order() {
     });
   };
 
-  const closeAddModal = () => setAddModalOpen(false);
+  //START -  THIS WILL CLOSE BOTH THE VIEW AREA AND THE CREATE PO 
+    const closeAddModal = () => {
+      setAddModalOpen(false);
+      closeViewModal();
+    }
+  //END -  THIS WILL CLOSE BOTH THE VIEW AREA AND THE CREATE PO 
+
+
   const closeViewModal = () => setViewModalOpen(false);
 
   const closeItemsOrderedModal = () => {
@@ -69,7 +76,7 @@ function Order() {
 
 
 
-        //YAW SA HILABTI NI DIRE 
+        //! YAW SA HILABTI NI DIRE 
           useEffect(() => {
             const fetchOrders = async () => {
               try {
@@ -77,6 +84,7 @@ function Order() {
                 const data = await response.json();
 
                 const combinedData = data.map(purchaseOrderData =>({
+                  purchase_order_id: purchaseOrderData.purchase_order_id,
                   customer_name: purchaseOrderData.customer_name,
                   street: purchaseOrderData.address.street,
                   barangay: purchaseOrderData.address.barangay,
@@ -85,7 +93,7 @@ function Order() {
 
                 setPurchaseOrderData(combinedData);
 
-                // console.log(combinedData);
+                console.log(combinedData);
                 // const names = data.map(name => name.customer_name);
                 // console.log(data);
                 // const addresses = data.map(byAddress => byAddress.address)
@@ -93,8 +101,7 @@ function Order() {
                 //   console.log(byAddress.barangay)
                 // })
 
-
-                setCustomerName(names); // Update the state with customer names
+                // setCustomerName(names); // Update the state with customer names
               } catch (error) {
                 console.error('Error fetching orders:', error);
               }
@@ -109,8 +116,12 @@ function Order() {
             // Cleanup interval when the component is unmounted
             return () => clearInterval(intervalId);
           }, [url]); // Dependency array ensures the effect runs only when the URL changes
-        //YAW SA HILABTI NI DIRE 
+        //! YAW SA HILABTI NI DIRE 
+          
 
+        const handlePurchaseOrderClick = (purchaseOrderId) => {
+          console.log(purchaseOrderId)
+        }
 
 
 
@@ -263,9 +274,12 @@ const submitAddModal = async () => {
         </div>
       
 
+      
+        {/* AYAW NI HILABTI */}
           {purchaseOrderData.map((customerData, index) => (
             <div
               key={index}
+              onClick={() => handlePurchaseOrderClick(customerData.purchase_order_id)}
               className="w-4/5 mx-auto bg-white p-6 m-6 rounded-lg shadow-2xl mb-1 border cursor-pointer hover:bg-gray-100 transition"
             >
               <h6 className="text-1xl font-bold">{customerData.customer_name}</h6>
@@ -274,7 +288,7 @@ const submitAddModal = async () => {
               <p className="text-sm text-gray-700">Province: {customerData.province}</p>
             </div>
           ))}
-          {/* AYAW NI HILABTI  */} 
+        {/* AYAW NI HILABTI  */}
 
 
 
