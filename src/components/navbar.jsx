@@ -13,6 +13,11 @@ const Navbar = () => {
   const handleLogout = async () => {
     try {
       const token = localStorage.getItem('token');
+      if (!token) {
+        setMessage('No active session found.'); // Handle case where token is not present
+        return;
+      }
+      
       const response = await axios.post(`${url}/api/logout`, {}, {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -22,14 +27,13 @@ const Navbar = () => {
       if (response.data.success) {
         setMessage('Logout successfully');
         setShowSuccessMessage(true);
-
+        localStorage.removeItem('token'); // Remove token after successful logout
+        
         setTimeout(() => {
           setShowSuccessMessage(false);
           setMessage('');
-          navigate('/');
+          navigate('/'); // Redirect to the home page
         }, 1000);
-
-        localStorage.removeItem('token');
       } else {
         setMessage('Logout failed');
         setIsModalOpen(true);
@@ -56,7 +60,7 @@ const Navbar = () => {
   const isActive = (path) => location.pathname === path;
 
   return (
-    <nav className="rounded-[20px] shadow-[20px] fixed top-0 left-0 w-72 h-screen bg-custom-blue p-4 flex flex-col justify-between items-center border-t-[5px] border-b-[5px] border-l-[5px]">
+    <nav className="rounded-[20px] shadow-[20px] fixed top-0 left-0 w-72 h-screen bg-custom-blue p-4 flex flex-col justify-between items-center border-t-[5px] border-b-[5px] border-l-[5px] z-50">
       <div className="flex flex-col items-center md:items-start w-full">
         <div className="flex items-center mb-3 justify-center md:justify-start">
           
