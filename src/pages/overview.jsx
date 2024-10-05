@@ -130,11 +130,11 @@ function Overview() {
             {/* Delivery Container */}
             <div className="bg-white p-6 rounded-lg shadow-2xl">
               <h3 className="text-lg font-bold mb-4">DELIVERY</h3>
-              <div className="bg-gray-200 p-4 rounded-lg shadow-sm mt-4 flex justify-between items-center">
+              <div className="p-4 rounded-lg shadow-sm mt-4 flex justify-between items-center bg-[#8ef7a8]">
                 <span className="text-gray-700 text-sm">Confirm Delivery:</span>
                 <span className="text-gray-700 text-sm">2</span>
               </div>
-              <div className="bg-gray-200 p-4 rounded-lg shadow-sm mt-4 flex justify-between items-center">
+              <div className="p-4 rounded-lg shadow-sm mt-4 flex justify-between items-center bg-[#E6FCE6]">
                 <span className="text-gray-700 text-sm">On Delivery:</span>
                 <span className="text-gray-700 text-sm">2</span>
               </div>
