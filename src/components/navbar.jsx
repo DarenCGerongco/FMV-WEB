@@ -141,7 +141,7 @@ const Navbar = () => {
 
       {/* Success Message after Logout */}
       {showSuccessMessage && (
-        <div className="fixed top-4 left-1/2 transform -translate-x-1/2 bg-green-500 text-white p-3">
+        <div className="fixed top-0 left-1/2 transform -translate-x-1/2 bg-green-500 text-white p-3 w-full items-center text-center rounded-lg">
           {message}
         </div>
       )}

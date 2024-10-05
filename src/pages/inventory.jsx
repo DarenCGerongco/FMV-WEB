@@ -74,40 +74,56 @@ function Inventory() {
     }
   };
 
-  // Function to handle search
-  const handleSearch = () => {
-    const filteredResults = items.filter(item => 
-      item.product_name.toLowerCase().includes(searchInput.toLowerCase())
-    );
-    setSearchResults(filteredResults);
-  };
+      const handleSearch = () => {
+        if (searchInput === '') {
+          // If the search input is empty, reset the search results to the full list of items
+          setSearchResults(items);
+        } else {
+          // Otherwise, filter the items based on the search input
+          const filteredResults = items.filter(item =>
+            item.product_name.toLowerCase().includes(searchInput.toLowerCase())
+          );
+          setSearchResults(filteredResults);
+        }
+      };
 
-  // Function to add a new item
-  const addItem = async () => {
-    const newItem = {
-      product_name: newItemName,
-      category_id: newItemCategory,
-      original_price: parseFloat(newItemPrice),
-      quantity: parseInt(newItemAmount),
-    };
-  
-    try {
-      const response = await axios.post(`${url}/api/products`, newItem);
-      if (response.status === 201) {
-        setItems([...items, response.data]);
-        closeAddItemModal();
-        // Clear input fields after adding item
-        setNewItemName('');
-        setNewItemCategory('');
-        setNewItemPrice('');
-        setNewItemAmount('');
-      } else {
-        console.error('Failed to add item');
+ // Function to fetch the list of items (you can call this after adding a new item)
+const fetchProducts = async () => {
+  try {
+    const response = await axios.get(`${url}/api/products`);
+    setItems(response.data);
+  } catch (error) {
+    console.error('Error fetching products:', error);
+  }
+};
+
+    // Function to add a new item
+    const addItem = async () => {
+      const newItem = {
+        product_name: newItemName,
+        category_id: newItemCategory,
+        original_price: parseFloat(newItemPrice) || 0, // Ensure price is valid
+        quantity: parseInt(newItemAmount) || 0, // Ensure amount is valid
+      };
+
+      try {
+        const response = await axios.post(`${url}/api/products`, newItem);
+        if (response.status === 201) {
+          // Refetch the products to get the latest data
+          fetchProducts();
+          closeAddItemModal();
+          // Clear input fields after adding item
+          setNewItemName('');
+          setNewItemCategory('');
+          setNewItemPrice('');
+          setNewItemAmount('');
+        } else {
+          console.error('Failed to add item');
+        }
+      } catch (error) {
+        console.error('Error adding item:', error.response ? error.response.data : error.message);
       }
-    } catch (error) {
-      console.error('Error adding item:', error.response ? error.response.data : error.message);
-    }
-  };
+    };
 
   // Function to restock an item
   const restockItem = () => {
@@ -168,7 +184,13 @@ function Inventory() {
                 className="flex-grow focus:outline-none px-4 py-2 rounded-md shadow-2xl sm:text-sm border-gray-300 focus:ring-blue-500 focus:border-blue-500 block w-full"
                 placeholder="Search for items"
                 value={searchInput} // Bind search input to state
-                onChange={handleInputChange} // Update state on change
+                onChange={(e) => {
+                  handleInputChange(e); // Update state on change
+                  if (e.target.value === '') {
+                    // If the input is cleared, reset the search results to all items
+                    setSearchResults(items);
+                  }
+                }}
               />
               <button
                 className="text-white px-4 py-2 rounded-md shadow-2xl focus:outline-none bg-blue-500"
