@@ -16,7 +16,9 @@ function Order() {
   const [newDeliveryModalOpen, setNewDeliveryModalOpen] = useState(false);
   const [createItemsOrderedModalOpen, setCreateItemsOrderedModalOpen] = useState(false);
 
-  const [customerName, setCustomerName] = useState([]);
+  const [purchaseOrderData, setPurchaseOrderData] = useState([]);
+  // const []
+
 
   // New state variables for Item Name, Price, and Amount
   const [newItemName, setNewItemName] = useState('');
@@ -65,31 +67,54 @@ function Order() {
     }));
   };
 
-  useEffect(() => {
-    const fetchOrders = async () => {
-      try {
-        const response = await fetch(`${url}/api/purchase-orders-delivery`);
-        const data = await response.json();
-        const names = data.map(name => name.customer_name);
-
-        setCustomerName(names); // Update the state with customer names
-      } catch (error) {
-        console.error('Error fetching orders:', error);
-      }
-    };
-
-    // Fetch orders initially
-    fetchOrders();
-
-    // Set up a recurring interval to fetch the orders periodically
-    const intervalId = setInterval(fetchOrders, 5000); // 10000ms = 10 seconds
-
-    // Cleanup interval when the component is unmounted
-    return () => clearInterval(intervalId);
-  }, [url]); // Dependency array ensures the effect runs only when the URL changes
 
 
-  const submitAddModal = async () => {
+        //YAW SA HILABTI NI DIRE 
+          useEffect(() => {
+            const fetchOrders = async () => {
+              try {
+                const response = await fetch(`${url}/api/purchase-orders-delivery`);
+                const data = await response.json();
+
+                const combinedData = data.map(purchaseOrderData =>({
+                  customer_name: purchaseOrderData.customer_name,
+                  street: purchaseOrderData.address.street,
+                  barangay: purchaseOrderData.address.barangay,
+                  province: purchaseOrderData.address.province
+                }));
+
+                setPurchaseOrderData(combinedData);
+
+                // console.log(combinedData);
+                // const names = data.map(name => name.customer_name);
+                // console.log(data);
+                // const addresses = data.map(byAddress => byAddress.address)
+                // addresses.forEach(byAddress => {
+                //   console.log(byAddress.barangay)
+                // })
+
+
+                setCustomerName(names); // Update the state with customer names
+              } catch (error) {
+                console.error('Error fetching orders:', error);
+              }
+            };
+
+            // Fetch orders initially
+            fetchOrders();
+
+            // Set up a recurring interval to fetch the orders periodically
+            const intervalId = setInterval(fetchOrders, 10000); // 10000ms = 10 seconds
+
+            // Cleanup interval when the component is unmounted
+            return () => clearInterval(intervalId);
+          }, [url]); // Dependency array ensures the effect runs only when the URL changes
+        //YAW SA HILABTI NI DIRE 
+
+
+
+
+const submitAddModal = async () => {
     try {
       const response = await axios.post(`${url}/api/orders`, newOrder);
       if (response.status === 201) {
@@ -237,18 +262,21 @@ function Order() {
           </div>
         </div>
       
-        
-        {customerName.map((name, index) => (
-        <div
-          key={index}
-          onClick={() => handleClick(name)} // Make the div clickable
-          className="w-4/5 mx-auto bg-white p-6 m-6 rounded-lg shadow-2xl mb-1 border cursor-pointer hover:bg-gray-100 transition"
-        >
-          <h6 className="text-1xl font-bold">
-            {name}
-          </h6>
-        </div>
-      ))}
+
+          {purchaseOrderData.map((customerData, index) => (
+            <div
+              key={index}
+              className="w-4/5 mx-auto bg-white p-6 m-6 rounded-lg shadow-2xl mb-1 border cursor-pointer hover:bg-gray-100 transition"
+            >
+              <h6 className="text-1xl font-bold">{customerData.customer_name}</h6>
+              <p className="text-sm text-gray-700">Street: {customerData.street}</p>
+              <p className="text-sm text-gray-700">Barangay: {customerData.barangay}</p>
+              <p className="text-sm text-gray-700">Province: {customerData.province}</p>
+            </div>
+          ))}
+          {/* AYAW NI HILABTI  */} 
+
+
 
         {/* Add Modal */}
         {addModalOpen && (
@@ -363,53 +391,53 @@ function Order() {
         )}
 
 {/* View Modal */}
-{viewModalOpen && (
-  <div
-    id="viewModal"
-    className="modal fixed top-0 right-10 w-1/4 h-full flex justify-start items-center"
-  >
-    <div className="bg-white p-6 rounded-lg shadow-2xl w-full">
-      <div className="bg-blue-500 text-white text-center py-2 mb-4 rounded-md">
-        <h3 className="text-lg font-bold">View Options</h3>
-      </div>
-      <ul className="list-none pl-0">
-      <li
+      {viewModalOpen && (
+        <div
+          id="viewModal"
+          className="modal fixed top-0 right-10 w-1/4 h-full flex justify-start items-center"
+        >
+          <div className="bg-white p-6 rounded-lg shadow-2xl w-full">
+            <div className="bg-blue-500 text-white text-center py-2 mb-4 rounded-md">
+              <h3 className="text-lg font-bold">View Options</h3>
+            </div>
+            <ul className="list-none pl-0">
+            <li
+                      className="mb-4 cursor-pointer hover:bg-blue-500 hover:text-white px-4 py-2 rounded-md text-center transition-all"
+                      onClick={openCreateItemsOrderedModal} // Open create items ordered modal
+              >
+                      Create items ordered
+                    </li>
+              <li
                 className="mb-4 cursor-pointer hover:bg-blue-500 hover:text-white px-4 py-2 rounded-md text-center transition-all"
-                onClick={openCreateItemsOrderedModal} // Open create items ordered modal
-        >
-                Create items ordered
+                onClick={openItemsOrderedModal} // Open items ordered modal
+              >
+                View items ordered
               </li>
-        <li
-          className="mb-4 cursor-pointer hover:bg-blue-500 hover:text-white px-4 py-2 rounded-md text-center transition-all"
-          onClick={openItemsOrderedModal} // Open items ordered modal
-        >
-          View items ordered
-        </li>
-        <li className="mb-4">
-          <button
-            className="bg-blue-500 text-white w-full hover:bg-blue-700 px-4 py-2 rounded-md transition-all"
-            onClick={openCreateDeliveryModal} // Function to open create delivery modal
-          >
-            Create deliveries
-          </button>
-        </li>
+              <li className="mb-4">
+                <button
+                  className="bg-blue-500 text-white w-full hover:bg-blue-700 px-4 py-2 rounded-md transition-all"
+                  onClick={openCreateDeliveryModal} // Function to open create delivery modal
+                >
+                  Create deliveries
+                </button>
+              </li>
 
-        <li className="mb-4 cursor-pointer hover:bg-blue-500 hover:text-white px-4 py-2 rounded-md text-center transition-all">
-          View Deliveries
-        </li>
-     
-      </ul>
-      <div className="flex justify-end p-4">
-        <button
-          className="bg-blue-500 text-white hover:bg-blue-700 px-4 py-2 rounded-md shadow-2xl w-32 transition-all"
-          onClick={closeViewModal}
-        >
-          Close
-        </button>
-      </div>
-    </div>
-  </div>
-)}
+              <li className="mb-4 cursor-pointer hover:bg-blue-500 hover:text-white px-4 py-2 rounded-md text-center transition-all">
+                View Deliveries
+              </li>
+          
+            </ul>
+            <div className="flex justify-end p-4">
+              <button
+                className="bg-blue-500 text-white hover:bg-blue-700 px-4 py-2 rounded-md shadow-2xl w-32 transition-all"
+                onClick={closeViewModal}
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
 
 {createItemsOrderedModalOpen && (
