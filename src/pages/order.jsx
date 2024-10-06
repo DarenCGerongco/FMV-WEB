@@ -229,18 +229,38 @@ const closeViewDeliveriesModal = () => setViewDeliveriesModalOpen(false);
       
 
       
-        {/* AYAW NI HILABTI */}
+            {/* AYAW NI HILABTI */}
+            <div className="w-4/5 mx-auto mt-6">
+            {/* Header */}
+            <div>
+              <h3 className="text-sm px-4 text-gray-400 flex justify-between">
+                <div className="relative left-[30px] flex-1 text-left">Delivered to</div>
+                <div className="relative left-[10px] flex-1 text-left">Address</div>
+                <div className="relative left-[-10px] flex-1 text-left">Date</div>
+              </h3>
+            </div>
+
+          {/* Customer Data */}
           {purchaseOrderData.map((customerData, index) => (
             <div
               key={index}
               onClick={() => handlePurchaseOrderClick(customerData.purchase_order_id)}
-              className="w-4/5 mx-auto bg-white p-6 m-6 rounded-lg shadow-2xl mb-1 border cursor-pointer transition"
+              className="bg-white p-6 m-6 rounded-lg shadow-2xl mb-1 border transition"
             >
-              <h6 className="text-1xl font-bold">{customerData.customer_name}</h6>
-              <p className="text-sm text-gray-700">Address: {customerData.street}, {customerData.barangay}, {customerData.province}</p>
-              <p className="text-sm text-gray-700">Date: {customerData.created_at}</p>
+              <div className="flex justify-between">
+                {/* Delivered to */}
+                <p className="flex-1 text-1xl text-left">{index + 1}. {customerData.customer_name}</p>
+                
+                {/* Address */}
+                <p className="flex-1 text-sm text-gray-700 text-left">{customerData.street}, {customerData.barangay}, {customerData.province}</p>
+                
+                {/* Date */}
+                <p className="flex-1 text-sm text-gray-700 text-left">{customerData.created_at}</p>
+              </div>
             </div>
           ))}
+        </div>
+
         {/* AYAW NI HILABTI  */}
 
 
