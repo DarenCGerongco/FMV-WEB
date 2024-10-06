@@ -55,7 +55,7 @@ function Sales() {
       <Navbar />
 
      
-      <div className="w-5/6 ml-auto bg-gray-100">
+      <div className="w-5/6 ml-auto bg-white-100">
         <div className="w-4/5 mx-auto bg-white p-6 m-3 rounded-lg shadow-md mb-6">
           <h2 className="text-1xl font-bold">Management System Sales</h2>
         </div>

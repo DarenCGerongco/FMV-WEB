@@ -30,7 +30,7 @@ function Delivery() {
   };
 
   return (
-    <div className="flex w-full bg-gray-100">
+    <div className="flex w-full bg-white-100">
       <Navbar />
       <div className="w-full ml-80 bg-white">
         <div className="w-4/5 mx-auto bg-white p-6 m-3 rounded-lg shadow-2xl mb-6 border">
@@ -61,7 +61,7 @@ function Delivery() {
               <span className="w-1/3 text-left">Delivery Man</span>
               <span className="w-1/6 text-left">Date</span>
             </h3>
-            <div className="p-4 rounded-lg shadow-2xl flex justify-between items-center bg-[#8ef7a8]">
+            <div className="p-4 rounded-lg shadow-2xl flex justify-between items-center bg-[#8EF7A8]">
               <span className="w-1/6">2</span>
               <span className="w-1/3">Barangay Lumbia</span>
               <span className="w-1/3">Arlene Abad</span>
