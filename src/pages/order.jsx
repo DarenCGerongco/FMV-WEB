@@ -80,12 +80,13 @@ function Order() {
                   customer_name: purchaseOrderData.customer_name,
                   street: purchaseOrderData.address.street,
                   barangay: purchaseOrderData.address.barangay,
-                  province: purchaseOrderData.address.province
+                  province: purchaseOrderData.address.province,
+                  created_at: purchaseOrderData.created_at,
                 }));
 
                 setPurchaseOrderData(combinedData);
 
-                // console.log(combinedData);
+                console.log(combinedData);
                 // const names = data.map(name => name.customer_name);
                 // console.log(data);
                 // const addresses = data.map(byAddress => byAddress.address)
@@ -262,6 +263,16 @@ const submitAddModal = async () => {
           </div>
         </div>
       
+           
+          {/* <div>
+            <h3 className="text-sm mt-6 px-4 text-gray-400 flex justify-between"> 
+              <div className="w-1/5">Item Name</div>
+              <div className="relative left-[10px] w-1/5">Item Category</div>
+              <div className="w-1/5">Item Price</div>
+              <div className="relative left-[-10px] w-1/5">Item Amount</div>
+              <div className="relative left-[-15px] w-1/13">Edit</div>
+            </h3>
+          </div> */}
 
           {purchaseOrderData.map((customerData, index) => (
             <div
@@ -269,9 +280,8 @@ const submitAddModal = async () => {
               className="w-4/5 mx-auto bg-white p-6 m-6 rounded-lg shadow-2xl mb-1 border cursor-pointer hover:bg-gray-100 transition"
             >
               <h6 className="text-1xl font-bold">{customerData.customer_name}</h6>
-              <p className="text-sm text-gray-700">Street: {customerData.street}</p>
-              <p className="text-sm text-gray-700">Barangay: {customerData.barangay}</p>
-              <p className="text-sm text-gray-700">Province: {customerData.province}</p>
+              <p className="text-sm text-gray-700">Address: {customerData.street} , {customerData.barangay}, {customerData.province}</p>
+              <p className="text-sm text-gray-700">Date: {customerData.created_at}</p>
             </div>
           ))}
           {/* AYAW NI HILABTI  */} 
