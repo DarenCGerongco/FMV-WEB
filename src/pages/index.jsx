@@ -1,10 +1,12 @@
-import { useState } from 'react';
+import { useState, useContext } from 'react';  // Import useContext
+import { GlobalContext } from '../../GlobalContext';  // Import GlobalContext
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
-
 function Index() {
   const url = import.meta.env.VITE_API_URL;
+  const { setID } = useContext(GlobalContext);  // Access setID from the global context
+  const { id } = useContext(GlobalContext);  // Access the global id
 
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -16,29 +18,20 @@ function Index() {
     e.preventDefault();
 
     try {
-      const response = await axios.post(`${url}/api/login`, {
-        username,
-        password,
-      });
+      const response = await axios.post(`${url}/api/login`, { username, password });
 
       if (response.status === 200) {
         localStorage.setItem('token', response.data.token);
-        navigate('/overview');
+        setID(response.data.user.id);  // Store the ID globally
+        // console.log(id) 
+        navigate('/overview');  // Navigate without passing the id
       } else {
         setMessage('Invalid login credentials.');
         setShowMessageBox(true);
       }
     } catch (error) {
       const errorResponse = error.response?.data?.error || 'An error occurred during login.';
-      let errorMessage = '';
-
-      if (typeof errorResponse === 'object') {
-        errorMessage = Object.values(errorResponse).flat().join(' ');
-      } else {
-        errorMessage = errorResponse;
-      }
-
-      setMessage(errorMessage);
+      setMessage(errorResponse);
       setShowMessageBox(true);
     }
   };
