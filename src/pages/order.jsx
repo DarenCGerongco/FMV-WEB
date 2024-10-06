@@ -234,7 +234,7 @@ const closeViewDeliveriesModal = () => setViewDeliveriesModalOpen(false);
             <div
               key={index}
               onClick={() => handlePurchaseOrderClick(customerData.purchase_order_id)}
-              className="w-4/5 mx-auto bg-white p-6 m-6 rounded-lg shadow-2xl mb-1 border cursor-pointer hover:bg-gray-100 transition"
+              className="w-4/5 mx-auto bg-white p-6 m-6 rounded-lg shadow-2xl mb-1 border cursor-pointer transition"
             >
               <h6 className="text-1xl font-bold">{customerData.customer_name}</h6>
               <p className="text-sm text-gray-700">Address: {customerData.street}, {customerData.barangay}, {customerData.province}</p>
