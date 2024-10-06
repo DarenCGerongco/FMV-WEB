@@ -72,7 +72,8 @@ function Order() {
                   customer_name: purchaseOrderData.customer_name,
                   street: purchaseOrderData.address.street,
                   barangay: purchaseOrderData.address.barangay,
-                  province: purchaseOrderData.address.province
+                  province: purchaseOrderData.address.province,
+                  created_at: purchaseOrderData.created_at,
                 }));
 
                 setPurchaseOrderData(combinedData);
@@ -86,17 +87,26 @@ function Order() {
                 // })
 
                 // setCustomerName(names); // Update the state with customer names
+
+                
+                combinedData.forEach(order => {
+                  console.log('Order Date:', order.created_at); // Log the date in the console
+                });
+          
+                // If you still want to log the customer names separately:
+                const names = data.map(name => name.customer_name);
+                setCustomerName(names); // Update the state with customer names
               } catch (error) {
                 console.error('Error fetching orders:', error);
               }
             };
-
+          
             // Fetch orders initially
             fetchOrders();
-
+          
             // Set up a recurring interval to fetch the orders periodically
             const intervalId = setInterval(fetchOrders, 10000); // 10000ms = 10 seconds
-
+          
             // Cleanup interval when the component is unmounted
             return () => clearInterval(intervalId);
           }, [url]); // Dependency array ensures the effect runs only when the URL changes
@@ -227,9 +237,8 @@ const closeViewDeliveriesModal = () => setViewDeliveriesModalOpen(false);
               className="w-4/5 mx-auto bg-white p-6 m-6 rounded-lg shadow-2xl mb-1 border cursor-pointer hover:bg-gray-100 transition"
             >
               <h6 className="text-1xl font-bold">{customerData.customer_name}</h6>
-              <p className="text-sm text-gray-700">Street: {customerData.street}</p>
-              <p className="text-sm text-gray-700">Barangay: {customerData.barangay}</p>
-              <p className="text-sm text-gray-700">Province: {customerData.province}</p>
+              <p className="text-sm text-gray-700">Address: {customerData.street}, {customerData.barangay}, {customerData.province}</p>
+              <p className="text-sm text-gray-700">Date: {customerData.created_at}</p>
             </div>
           ))}
         {/* AYAW NI HILABTI  */}
