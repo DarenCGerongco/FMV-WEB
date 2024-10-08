@@ -1,9 +1,12 @@
 import { useState, useEffect } from 'react';
 import Navbar from '../components/navbar';
 import axios from 'axios';
+// import { GlobalContext } from '../../GlobalContext';  // Import GlobalContext
 
 function Order() {
   const url = import.meta.env.VITE_API_URL;
+
+  // const { id } = useContext(GlobalContext);  // Access the global id
 
   const [addModalOpen, setAddModalOpen] = useState(false);
   const [viewModalOpen, setViewModalOpen] = useState(false);
@@ -11,7 +14,11 @@ function Order() {
   const [itemsOrderedModalOpen, setItemsOrderedModalOpen] = useState(false);
   const [createDeliveryModalOpen, setCreateDeliveryModalOpen] = useState(false);
   const [newDeliveryModalOpen, setNewDeliveryModalOpen] = useState(false);
-  const [createItemsOrderedModalOpen, setCreateItemsOrderedModalOpen] = useState(false);
+  const [productsListed, setProductsListed] = useState([]); // State for stored products
+  //   product_id: product.product_ID,
+
+  // ])
+  // const [createItemsOrderedModalOpen, setCreateItemsOrderedModalOpen] = useState(false);
   const [viewDeliveriesModalOpen, setViewDeliveriesModalOpen] = useState(false);
 
   // Start - THIS IS THE DATA OF Purchase Order Record
@@ -89,13 +96,13 @@ function Order() {
                 // setCustomerName(names); // Update the state with customer names
 
                 
-                combinedData.forEach(order => {
-                  console.log('Order Date:', order.created_at); // Log the date in the console
-                });
+                // combinedData.forEach(order => {
+                //   console.log('Order Date:', order.created_at); // Log the date in the console
+                // });
           
-                // If you still want to log the customer names separately:
-                const names = data.map(name => name.customer_name);
-                setCustomerName(names); // Update the state with customer names
+                //! If you still want to log the customer names separately:
+                // const names = data.map(name => name.customer_name);
+                // setCustomerName(names); // Update the state with customer names
               } catch (error) {
                 console.error('Error fetching orders:', error);
               }
@@ -113,36 +120,140 @@ function Order() {
         //! YAW SA HILABTI NI DIRE 
           
 
-        const handlePurchaseOrderClick = (purchaseOrderId) => {
-          console.log(purchaseOrderId)
-        }
+  const handlePurchaseOrderClick = (purchaseOrderId) => {
+    console.log(purchaseOrderId)
+  }
 
 
-const submitAddModal = async () => {
-    try {
-      const response = await axios.post(`${url}/api/orders`, newOrder);
-      if (response.status === 201) {
-        setOrders([...orders, response.data.data]);
-        closeAddModal();
-      } else {
-        console.error('Error creating order');
-      }
-    } catch (error) {
-      console.error('An error occurred while creating an order:', error.response.data.error);
-    }
-  };
+  // const createOrder = async () => {
+  //   const orderData = {
+  //     user_id: userId, // Assuming you have this in your state
+  //     customer_name: customerName, // From your state/input
+  //     status: orderStatus, // From your state/input
+  //     sale_type_id: saleTypeId, // From your state/input
+  //     address: {
+  //       street: address.street,
+  //       barangay: address.barangay,
+  //       zip_code: address.zip_code,
+  //       province: address.province,
+  //     },
+  //     product_details: orderedItems.map(item => ({
+  //       product_id: item.product_id,
+  //       quantity: item.quantity,
+  //       price: item.price,
+  //     })),
+  //   };
+  
+  //   try {
+  //     const response = await axios.post(`${url}/api/purchase-orders-delivery`, orderData, {
+  //       headers: {
+  //         'Content-Type': 'application/json',
+  //       },
+  //     });
+  
+  //     // Handle successful response
+  //     console.log('Order created successfully:', response.data);
+  //     // You can also perform further actions like closing the modal or resetting the state here.
+  
+  //   } catch (error) {
+  //     // Handle error response
+  //     if (error.response) {
+  //       // Server responded with a status other than 200 range
+  //       console.error('Error creating order:', error.response.data);
+  //     } else {
+  //       // Network error or other issues
+  //       console.error('Error creating order:', error.message);
+  //     }
+  //   }
+  // };
+  
+  
 
 
   // View Modal
-const openViewModal = () => {
+
+
+  const openViewModal = () => {
   setViewModalOpen(true);
 };
 const closeViewModal = () => setViewModalOpen(false);
 
- // Create Items Ordered Modal
-const openCreateItemsOrderedModal = () => {
-  setCreateItemsOrderedModalOpen(true);
-};
+
+ // START Create Items Ordered AREA
+
+  // START BY SHOWING IT IN MODAL
+
+
+  const [createItemsOrderedModalOpen, setCreateItemsOrderedModalOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [showDropdown, setShowDropdown] = useState(false);
+  const [quantity, setQuantity] = useState(1); // Default quantity to 1
+  const [price, setPrice] = useState(''); // State for price
+  const [selectedProduct, setSelectedProduct] = useState(null); // Temporarily hold selected product
+  const [selectedProducts, setSelectedProducts] = useState([]);
+  const [products, setProducts] = useState([]); // Define state for products
+  const [orderedItems, setOrderedItems] = useState([]); // State for products to order
+
+
+    const openCreateItemsOrderedModal = () => {
+      setCreateItemsOrderedModalOpen(true);
+    };
+
+
+  // Handle product selection
+  const handleProductSelect = (product) => {
+    setSelectedProduct(product);
+    setSearchTerm(product.product_name);
+    setShowDropdown(false);
+  };
+
+  const handleAddProduct = () => {
+    if (selectedProduct && quantity > 0 && price > 0) {
+      const newProduct = {
+        product_id: selectedProduct.product_id,
+        product_name: selectedProduct.product_name,
+        quantity: Number(quantity),
+        price: Number(price),
+      };
+
+      setProductsListed([...productsListed, newProduct]); // Add new product to the list
+
+      // Reset fields
+      setSelectedProduct(null);
+      setQuantity(1);
+      setPrice(0); // Reset price
+    }
+  };
+  
+    
+    // START FETCH DATA
+    useEffect(() => {
+      const fetchProducts = async () => {
+        try {
+          const response = await axios.get(`${url}/api/products`);
+          setProducts(response.data);
+        } catch (error) {
+          console.error('Error fetching products:', error);
+        }
+      };
+  
+      fetchProducts();
+    }, []);
+  
+    // Function to save products
+    const handleSave = () => {
+      console.log('Products Listed:', productsListed);
+      // Here you can add functionality to send productsListed to your API
+    };
+
+  // END BY SHOWING IT IN MODAL
+
+
+// END Create Items Ordered AREA
+
+
+
+
 const closeCreateItemsOrderedModal = () => {
   setCreateItemsOrderedModalOpen(false);
 };
@@ -165,7 +276,7 @@ const closeCreateDeliveryModal = () => {
 const openViewDeliveriesModal = () => setViewDeliveriesModalOpen(true);
 const closeViewDeliveriesModal = () => setViewDeliveriesModalOpen(false);
 
-  return (
+return (
     <div className="flex w-full bg-white">
       <Navbar />
       <div className="flex flex-col w-full ml-72 bg-white">
@@ -226,158 +337,157 @@ const closeViewDeliveriesModal = () => setViewDeliveriesModalOpen(false);
             ))}
           </div>
         </div>
-      
-
-      
-            {/* AYAW NI HILABTI */}
-            <div className="w-4/5 mx-auto mt-6">
+  
+        {/* START SHOW PURCHASE ORDERS */}
+          <div className="w-4/5 mx-auto mt-6">
             {/* Header */}
-            <div>
-              <h3 className="text-sm px-4 text-gray-400 flex justify-between">
-                <div className="relative left-[30px] flex-1 text-left">Delivered to</div>
-                <div className="relative left-[10px] flex-1 text-left">Address</div>
-                <div className="relative left-[-10px] flex-1 text-left">Date</div>
-              </h3>
-            </div>
-
-          {/* Customer Data */}
-          {purchaseOrderData.map((customerData, index) => (
-            <div
-              key={index}
-              onClick={() => handlePurchaseOrderClick(customerData.purchase_order_id)}
-              className="bg-white p-6 m-6 rounded-lg shadow-2xl mb-1 border transition"
-            >
-              <div className="flex justify-between">
-                {/* Delivered to */}
-                <p className="flex-1 text-1xl text-left">{index + 1}. {customerData.customer_name}</p>
-                
-                {/* Address */}
-                <p className="flex-1 text-sm text-gray-700 text-left">{customerData.street}, {customerData.barangay}, {customerData.province}</p>
-                
-                {/* Date */}
-                <p className="flex-1 text-sm text-gray-700 text-left">{customerData.created_at}</p>
+              <div>
+                <h3 className="text-sm px-4 text-gray-400 flex justify-between">
+                  <div className="relative left-[30px] flex-1 text-left">Delivered to</div>
+                  <div className="relative left-[10px] flex-1 text-left">Address</div>
+                  <div className="relative left-[-10px] flex-1 text-left">Date</div>
+                </h3>
               </div>
+            {/* Header */}
+
+            {/* Customer's Data */}
+              {purchaseOrderData.map((customerData, index) => (
+                <div
+                  key={index}
+                  onClick={() => handlePurchaseOrderClick(customerData.purchase_order_id)}
+                  className="bg-white p-6 m-6 rounded-lg shadow-2xl mb-1 border transition"
+                >
+                  <div className="flex justify-between">
+                    {/* Delivered to */}
+                    <p className="flex-1 text-1xl text-left">{index + 1}. {customerData.customer_name}</p>
+                    
+                    {/* Address */}
+                    <p className="flex-1 text-sm text-gray-700 text-left">{customerData.street}, {customerData.barangay}, {customerData.province}</p>
+                    
+                    {/* Date */}
+                    <p className="flex-1 text-sm text-gray-700 text-left">{customerData.created_at}</p>
+                  </div>
+                </div>
+              ))}
+            {/* Customer's Data */}
+          </div>
+        {/* END SHOW PURCHASE ORDERS */}
+
+
+
+      {/* Add Modal */}
+      {addModalOpen && (
+        <div
+          id="addModal"
+          className="modal fixed top-0 left-0 w-full h-full bg-gray-800 bg-opacity-75 flex justify-center items-center"
+        >
+          <div className="bg-white p-6 rounded-lg shadow-2xl w-1/3">
+            <h3 className="text-center text-lg font-bold mb-4">Create Purchase Order</h3>
+            
+            {/* Delivered To Field */}
+            <div className="mb-4 relative">
+              <input
+                type="text"
+                id="deliveredTo"
+                name="deliveredTo"
+                placeholder="Delivered To"
+                className="w-full p-4 rounded-lg shadow-2xl mt-4 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+                value={newOrder.deliveredTo}
+                onChange={handleAddOrderChange}
+              />
             </div>
-          ))}
-        </div>
-
-        {/* AYAW NI HILABTI  */}
-
-
-
-        {/* Add Modal */}
-        {addModalOpen && (
-          <div
-            id="addModal"
-            className="modal fixed top-0 left-0 w-full h-full bg-gray-800 bg-opacity-75 flex justify-center items-center"
-          >
-            <div className="bg-white p-6 rounded-lg shadow-2xl w-1/3">
-              <h3 className="text-center text-lg font-bold mb-4">Create Purchase Order</h3>
-              
-              {/* Delivered To Field */}
-              <div className="mb-4 relative">
+            
+            {/* Address Fields */}
+            <div className="grid grid-cols-4 gap-4 mb-4">
+              <div>
                 <input
                   type="text"
-                  id="deliveredTo"
-                  name="deliveredTo"
-                  placeholder="Delivered To"
-                  className="w-full p-4 rounded-lg shadow-2xl mt-4 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  value={newOrder.deliveredTo}
-                  onChange={handleAddOrderChange}
-                />
-              </div>
-              
-              {/* Address Fields */}
-              <div className="grid grid-cols-4 gap-4 mb-4">
-                <div>
-                  <input
-                    type="text"
-                    id="street"
-                    name="street"
-                    placeholder="Street"
-                    className="w-full p-4 rounded-lg shadow-2xl mt-4 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    value={newOrder.street}
-                    onChange={handleAddOrderChange}
-                  />
-                </div>
-                <div>
-                  <input
-                    type="text"
-                    id="city"
-                    name="city"
-                    placeholder="City"
-                    className="w-full p-4 rounded-lg shadow-2xl mt-4 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    value={newOrder.city}
-                    onChange={handleAddOrderChange}
-                  />
-                </div>
-                <div>
-                  <input
-                    type="text"
-                    id="barangay"
-                    name="barangay"
-                    placeholder="Barangay"
-                    className="w-full p-4 rounded-lg shadow-2xl mt-4 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    value={newOrder.barangay}
-                    onChange={handleAddOrderChange}
-                  />
-                </div>
-                <div>
-                  <input
-                    type="text"
-                    id="zipcode"
-                    name="zipcode"
-                    placeholder="Zipcode"
-                    className="w-full p-4 rounded-lg shadow-2xl mt-4 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    value={newOrder.zipcode}
-                    onChange={handleAddOrderChange}
-                  />
-                </div>
-              </div>
-              
-              {/* Deadline Date Field */}
-              <div className="mb-4">
-                <label htmlFor="date" className="block text-gray-700">Deadline Date:</label>
-                <input
-                  type="date"
-                  id="date"
-                  name="date"
+                  id="street"
+                  name="street"
+                  placeholder="Street"
                   className="w-full p-4 rounded-lg shadow-2xl mt-4 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  value={newOrder.date}
+                  value={newOrder.street}
                   onChange={handleAddOrderChange}
                 />
               </div>
-              
-              {/* Action Buttons */}
-              <div className="flex justify-end p-4">
-                <div className="flex flex-col items-end space-y-2">
+              <div>
+                <input
+                  type="text"
+                  id="city"
+                  name="city"
+                  placeholder="City"
+                  className="w-full p-4 rounded-lg shadow-2xl mt-4 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  value={newOrder.city}
+                  onChange={handleAddOrderChange}
+                />
+              </div>
+              <div>
+                <input
+                  type="text"
+                  id="barangay"
+                  name="barangay"
+                  placeholder="Barangay"
+                  className="w-full p-4 rounded-lg shadow-2xl mt-4 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  value={newOrder.barangay}
+                  onChange={handleAddOrderChange}
+                />
+              </div>
+              <div>
+                <input
+                  type="text"
+                  id="zipcode"
+                  name="zipcode"
+                  placeholder="Zipcode"
+                  className="w-full p-4 rounded-lg shadow-2xl mt-4 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  value={newOrder.zipcode}
+                  onChange={handleAddOrderChange}
+                />
+              </div>
+            </div>
+            
+            {/* Deadline Date Field */}
+            <div className="mb-4">
+              <label htmlFor="date" className="block text-gray-700">Deadline Date:</label>
+              <input
+                type="date"
+                id="date"
+                name="date"
+                className="w-full p-4 rounded-lg shadow-2xl mt-4 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                value={newOrder.date}
+                onChange={handleAddOrderChange}
+              />
+            </div>
+            
+            {/* Action Buttons */}
+            <div className="flex justify-end p-4">
+              <div className="flex flex-col items-end space-y-2">
+                <button
+                  className="bg-blue-500 text-white px-4 py-2 rounded-md shadow-2xl w-32"
+                  onClick={openViewModal}
+                >
+                  View
+                </button>
+                <div className="flex items-center space-x-2">
+                  <button
+                    className="bg-white-500 text-black px-4 py-2 border border-gray-300 rounded-md shadow-2xl w-32"
+                    onClick={closeAddModal}
+                  >
+                    Cancel
+                  </button>
                   <button
                     className="bg-blue-500 text-white px-4 py-2 rounded-md shadow-2xl w-32"
-                    onClick={openViewModal}
+                    // onClick={submitAddModal}
                   >
-                    View
+                    Submit
                   </button>
-                  <div className="flex items-center space-x-2">
-                    <button
-                      className="bg-white-500 text-black px-4 py-2 border border-gray-300 rounded-md shadow-2xl w-32"
-                      onClick={closeAddModal}
-                    >
-                      Cancel
-                    </button>
-                    <button
-                      className="bg-blue-500 text-white px-4 py-2 rounded-md shadow-2xl w-32"
-                      onClick={submitAddModal}
-                    >
-                      Submit
-                    </button>
-                  </div>
                 </div>
               </div>
             </div>
           </div>
-        )}
+        </div>
+      )}
 
-{/* View Modal */}
+      {/* View Modal */}
       {viewModalOpen && (
         <div
           id="viewModal"
@@ -389,25 +499,25 @@ const closeViewDeliveriesModal = () => setViewDeliveriesModalOpen(false);
             </div>
             <ul className="list-none pl-0">
             <li
-                      className="mb-4 cursor-pointer hover:bg-blue-500 hover:text-white px-4 py-2 rounded-md text-center transition-all"
-                      onClick={openCreateItemsOrderedModal} // Open create items ordered modal
-              >
-                      Create items ordered
-                    </li>
-              <li
                 className="mb-4 cursor-pointer hover:bg-blue-500 hover:text-white px-4 py-2 rounded-md text-center transition-all"
-                onClick={openItemsOrderedModal} // Open items ordered modal
+                onClick={openCreateItemsOrderedModal} // Open create items ordered modal
               >
-                View items ordered
-              </li>
-              <li className="mb-4">
-                <button
-                  className="bg-blue-500 text-white w-full hover:bg-blue-700 px-4 py-2 rounded-md transition-all"
-                  onClick={openCreateDeliveryModal} // Function to open create delivery modal
-                >
-                  Create deliveries
-                </button>
-              </li>
+                Create items ordered
+            </li>
+            <li
+              className="mb-4 cursor-pointer hover:bg-blue-500 hover:text-white px-4 py-2 rounded-md text-center transition-all"
+              onClick={openItemsOrderedModal} // Open items ordered modal
+            >
+              View items ordered
+            </li>
+            <li className="mb-4">
+              <button
+                className="bg-blue-500 text-white w-full hover:bg-blue-700 px-4 py-2 rounded-md transition-all"
+                onClick={openCreateDeliveryModal} // Function to open create delivery modal
+              >
+                Create deliveries
+              </button>
+            </li>
 
               <li
           className="mb-4 cursor-pointer hover:bg-blue-500 hover:text-white px-4 py-2 rounded-md text-center transition-all"
@@ -429,93 +539,152 @@ const closeViewDeliveriesModal = () => setViewDeliveriesModalOpen(false);
         </div>
       )}
 
+      {/* Start listing of products */}
+      {createItemsOrderedModalOpen && (
+        <div className="modal fixed inset-0 flex justify-center items-center z-50">
+          <div className="bg-white p-6 rounded-lg shadow-2xl w-1/2">
+            <h3 className="text-lg font-bold text-center mb-4">Create Items Ordered</h3>
 
-{createItemsOrderedModalOpen && (
-  <div className="modal fixed inset-0 flex justify-center items-center z-50">
-    <div className="bg-white p-6 rounded-lg shadow-2xl w-1/2">
-      <h3 className="text-lg font-bold text-center mb-4">Create Items Ordered</h3>
-      
-      {/* Static container for items */}
-      <div className="mt-6">
-        <div className="border-t border-gray-300 pt-2">
-          <div className="flex justify-between border-b border-gray-300 py-2">
-            <span>$100</span>
-            <span>Item 1</span>
-            <span>x2</span>
-          </div>
-          <div className="flex justify-between border-b border-gray-300 py-2">
-            <span>$200</span>
-            <span>Item 2</span>
-            <span>x1</span>
-          </div>
-          <div className="flex justify-between border-b border-gray-300 py-2">
-            <span>$50</span>
-            <span>Item 3</span>
-            <span>x5</span>
+            <div className="flex p-4 items-center space-between">
+              <div className="relative w-100 flex">
+                <input
+                  type="number"
+                  placeholder="Price"
+                  className="border border-gray-300 p-2 rounded-md w-full mb-2"
+                  value={price}
+                  onChange={(e) => setPrice(e.target.value)}
+                  min="0"
+                />
+                <input
+                  type="text"
+                  placeholder="Search for a product"
+                  className="border border-gray-300 p-2 rounded-md w-full mb-2"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  onFocus={() => setShowDropdown(true)}
+                  onBlur={() => setShowDropdown(false)}
+                />
+
+                <input
+                  type="number"
+                  placeholder="Quantity"
+                  className="border border-gray-300 p-2 rounded-md w-full mb-2"
+                  value={quantity}
+                  onChange={(e) => setQuantity(e.target.value)}
+                  min="1"
+                />
+
+
+                {showDropdown && (
+                  <div className="absolute left-0 right-0 mt-11 border border-gray-300 rounded-md bg-white z-10 max-h-48 overflow-y-auto shadow-lg">
+                    {products
+                      .filter(product =>
+                        product.product_name.toLowerCase().includes(searchTerm.toLowerCase())
+                      )
+                      .map(product => (
+                        <div
+                          key={product.product_id}
+                          className="flex p-3 justify-between border-b border-gray-300 py-2 cursor-pointer hover:bg-gray-100"
+                          onMouseDown={() => handleProductSelect(product)}
+                        >
+                          <span>{product.product_id}. {product.product_name}</span>
+                          <span>Available: {product.quantity}</span>
+                        </div>
+                      ))}
+                  </div>
+                )}
+              </div>
+
+              <div className='flex items-center bg-custom-blue rounded-md p-2 ml-2'>
+                <button className='md:text-white' onClick={handleAddProduct}>
+                  Add
+                </button>
+              </div>
+            </div>
+
+            <div className="mt-6">
+              <h3>Products Listed:</h3>
+              <div className="border-t border-gray-300">
+                {productsListed.map((item, index) => (
+                  <div key={index} className="flex justify-between border-b border-gray-300 py-2">
+                    <span>₱ {item.price.toFixed(2)}</span>
+                    <span>{item.product_name}</span>
+                    <span>x{item.quantity}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="flex justify-end mt-4">
+              <button
+                className="bg-gray-500 text-white hover:bg-gray-700 px-4 py-2 rounded-md"
+                onClick={handleSave} // Call handleSave on click
+              >
+                Save
+              </button>
+            </div>
+
+            <div className="flex justify-end mt-4">
+              <button
+                className="bg-gray-500 text-white hover:bg-gray-700 px-4 py-2 rounded-md"
+                onClick={() => setCreateItemsOrderedModalOpen(false)} // Closing the modal
+              >
+                Close
+              </button>
+            </div>
           </div>
         </div>
-      </div>
+      )}
+      {/* Start listing of products */}
 
-      <div className="flex justify-end mt-4">
-        {/* Close button */}
-        <button
-          className="bg-gray-500 text-white hover:bg-gray-700 px-4 py-2 rounded-md"
-          onClick={closeCreateItemsOrderedModal}
+
+      {itemsOrderedModalOpen && (
+        <div
+          id="itemsOrderedModal"
+          className="modal fixed top-0 left-0 w-full h-full bg-gray-800 bg-opacity-75 flex justify-center items-center"
         >
-          Close
-        </button>
-      </div>
-    </div>
-  </div>
-)}
+          <div className="bg-white p-6 rounded-lg shadow-2xl w-1/3">
+            <h3 className="text-center text-lg font-bold mb-5">Items Ordered</h3>
+            
+            {/* Static container for items */}
+            <div className="bg-gray-100 p-4 rounded-md shadow-md">
+              <div className="flex flex-col">
+                <div className="border-b border-gray-300 pb-2 mb-2 flex justify-between items-start">
+                  <div className="flex flex-col">
+                    <h4 className="font-semibold">Item 1</h4>
+                    <p className="text-gray-500">Amount: 2</p> {/* Amount below item name */}
+                  </div>
+                  <p className="ml-4">Price: $100</p> {/* Price on the right */}
+                </div>
+                <div className="border-b border-gray-300 pb-2 mb-2 flex justify-between items-start">
+                  <div className="flex flex-col">
+                    <h4 className="font-semibold">Item 2</h4>
+                    <p className="text-gray-500">Amount: 1</p> {/* Amount below item name */}
+                  </div>
+                  <p className="ml-4">Price: $200</p> {/* Price on the right */}
+                </div>
+                <div className="border-b border-gray-300 pb-2 mb-2 flex justify-between items-start">
+                  <div className="flex flex-col">
+                    <h4 className="font-semibold">Item 3</h4>
+                    <p className="text-gray-500">Amount: 5</p> {/* Amount below item name */}
+                  </div>
+                  <p className="ml-4">Price: $50</p> {/* Price on the right */}
+                </div>
+              </div>
+            </div>
 
-
-{itemsOrderedModalOpen && (
-  <div
-    id="itemsOrderedModal"
-    className="modal fixed top-0 left-0 w-full h-full bg-gray-800 bg-opacity-75 flex justify-center items-center"
-  >
-    <div className="bg-white p-6 rounded-lg shadow-2xl w-1/3">
-      <h3 className="text-center text-lg font-bold mb-5">Items Ordered</h3>
-      
-      {/* Static container for items */}
-      <div className="bg-gray-100 p-4 rounded-md shadow-md">
-        <div className="flex flex-col">
-          <div className="border-b border-gray-300 pb-2 mb-2 flex justify-between items-start">
-            <div className="flex flex-col">
-              <h4 className="font-semibold">Item 1</h4>
-              <p className="text-gray-500">Amount: 2</p> {/* Amount below item name */}
+            <div className="flex justify-end mt-4">
+              <button
+                className="bg-blue-600 text-white hover:bg-blue-700 px-4 py-2 rounded-md"
+                onClick={closeItemsOrderedModal}
+              >
+                Close
+              </button>
             </div>
-            <p className="ml-4">Price: $100</p> {/* Price on the right */}
-          </div>
-          <div className="border-b border-gray-300 pb-2 mb-2 flex justify-between items-start">
-            <div className="flex flex-col">
-              <h4 className="font-semibold">Item 2</h4>
-              <p className="text-gray-500">Amount: 1</p> {/* Amount below item name */}
-            </div>
-            <p className="ml-4">Price: $200</p> {/* Price on the right */}
-          </div>
-          <div className="border-b border-gray-300 pb-2 mb-2 flex justify-between items-start">
-            <div className="flex flex-col">
-              <h4 className="font-semibold">Item 3</h4>
-              <p className="text-gray-500">Amount: 5</p> {/* Amount below item name */}
-            </div>
-            <p className="ml-4">Price: $50</p> {/* Price on the right */}
           </div>
         </div>
-      </div>
+      )}
 
-      <div className="flex justify-end mt-4">
-        <button
-          className="bg-blue-600 text-white hover:bg-blue-700 px-4 py-2 rounded-md"
-          onClick={closeItemsOrderedModal}
-        >
-          Close
-        </button>
-      </div>
-    </div>
-  </div>
-)}
 
 
 
@@ -611,6 +780,11 @@ const closeViewDeliveriesModal = () => setViewDeliveriesModalOpen(false);
           </button>
         </div>
         <div className="flex mt-20 justify-end space-x-2">
+          <button
+            className="bg-gray-500 text-white hover:bg-gray-700 px-3 py-1 rounded-md shadow-2xl transition-all"
+          >
+            Save
+          </button>
           <button
             className="bg-gray-500 text-white hover:bg-gray-700 px-3 py-1 rounded-md shadow-2xl transition-all"
             onClick={closeCreateDeliveryModal}

@@ -12,6 +12,8 @@ Currently, two official plugins are available:
 - `npm install`
 - `npm install axios`
 - `npm install vite --save-dev`
+- `npm install vite @vitejs/plugin-react --save-dev`
+- `npm install vite-plugin-node-polyfills --save-dev`
 
 
 # To run the Code:
