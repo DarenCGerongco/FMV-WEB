@@ -1,9 +1,10 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import Navbar from '../components/navbar';
 import { Pie } from 'react-chartjs-2';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom'; // Import useNavigate
+import { GlobalContext } from '../../GlobalContext';  // Import GlobalContext
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
@@ -13,6 +14,13 @@ function Overview() {
   const [userNames, setUserNames] = useState([]);
   const [inventoryItems, setInventoryItems] = useState([]);
   const navigate = useNavigate(); // Initialize useNavigate
+  const { id, userName } = useContext(GlobalContext);  // Retrieve id and userName
+
+  // Debugging - log the `id` and `userName` values
+  useEffect(() => {
+    console.log("Global Context ID:", id);
+    console.log("Global Context userName:", userName);
+  }, [id, userName]);
 
   // Fetch inventory data
   const fetchInventoryData = async () => {
@@ -23,6 +31,8 @@ function Overview() {
       console.error('Error fetching inventory data:', error);
     }
   };
+
+  // console.log("This is from Overview: " + userName);
 
   // Fetch sales data
   const fetchSalesData = () => {
@@ -113,8 +123,14 @@ function Overview() {
       <Navbar />
       <div className="flex flex-col xl:w-4/5 ml-80 bg-white">
         <div className="w-11/12 mx-auto bg-white p-6 m-3 rounded-lg shadow-2xl mb-6 border">
-          <h2 className="text-1xl font-bold">Management System Overview</h2>
+          <h2 className="text-1xl font-bold">
+            Management System Overviews   {/* Handle empty userName case */}
+          </h2>
+          <h2>
+            Welcome, {userName || "Unknown User"}
+          </h2>
         </div>
+
 
         <div className="w-11/12 mx-auto flex space-x-4">
           <div className="flex flex-col space-y-4 w-1/3">
@@ -146,8 +162,8 @@ function Overview() {
 
             {/* Delivery Man Container */}
             <div className="bg-white p-6 rounded-lg shadow-2xl cursor-pointer"
-            onClick={handleDeliveryManClick}
-            // style={{ maxHeight: '400px', overflowY: 'auto' }}
+              onClick={handleDeliveryManClick}
+              // style={{ maxHeight: '400px', overflowY: 'auto' }}
             >
               <h3 className="text-lg font-bold mb-4">DELIVERY MAN ACCOUNT</h3>
               {userNames.map((name, index) => (

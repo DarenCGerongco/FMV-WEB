@@ -11,10 +11,12 @@ function Index() {
   const [password, setPassword] = useState('');
   const [message, setMessage] = useState('');
   const [showMessageBox, setShowMessageBox] = useState(false);
+  const [loading, setLoading] = useState(false);  // Declare loading state
   const navigate = useNavigate();
 
   const validateForm = async (e) => {
     e.preventDefault();
+    setLoading(true);  // Set loading to true while the request is being processed
 
     try {
       const response = await axios.post(`${url}/api/login`, { username, password });
@@ -35,6 +37,8 @@ function Index() {
       const errorResponse = error.response?.data?.error || 'An error occurred during login.';
       setMessage(errorResponse);
       setShowMessageBox(true);
+    } finally {
+      setLoading(false);  // Stop loading after the request is done
     }
   };
 
