@@ -6,23 +6,30 @@ import { GlobalContext } from '../../GlobalContext';  // Import GlobalContext
 function Order() {
   const url = import.meta.env.VITE_API_URL;
 
-  const { id: userID, setID } = useContext(GlobalContext);  // This will fetch the stored ID from logging in of a admin
   
-    // Ensure userID is set
-    useEffect(() => {
-      if (!userID) {
-        const storedID = localStorage.getItem('userID');
-        if (storedID) {
-          setID(storedID);  // Now setID is correctly called here
-        }
-      } else {
-        localStorage.setItem('userID', userID);  // Save the ID when logged in
-      }
-    }, [userID, setID]);  // Add setID to the dependency array
+  /** `START`
+   * THIS ENSURES THAT THE PURCHASE ORDER(PO) AND WHO CREATED THE `PO` WILL BE RECORDED
+   * EVEN WITH MULTIPLE TIMES
+   */ 
+    const { id: userID, setID } = useContext(GlobalContext);  // This will fetch the stored ID from logging in of a admin
     
-    const admin_id = userID;
-
-
+      // Ensure userID is set
+      useEffect(() => {
+        if (!userID) {
+          const storedID = localStorage.getItem('userID');
+          if (storedID) {
+            setID(storedID);  // Now setID is correctly called here
+          }
+        } else {
+          localStorage.setItem('userID', userID);  // Save the ID when logged in
+        }
+      }, [userID, setID]);  // Add setID to the dependency array
+      
+      const admin_id = userID;
+  /** `END`
+   * THIS ENSURES THAT THE PURCHASE ORDER(PO) AND WHO CREATED THE `PO` WILL BE RECORDED
+   * EVEN WITH MULTIPLE TIMES
+   */ 
 
   const [addModalOpen, setAddModalOpen] = useState(false);
   const [viewModalOpen, setViewModalOpen] = useState(false);
@@ -49,7 +56,6 @@ function Order() {
     city: '',
     zipcode: '',
     province: '',
-    // delivery_date: '',
     products: [], // To hold the list of ordered products
   });
 
@@ -141,7 +147,7 @@ function Order() {
             fetchOrders();
           
             // Set up a recurring interval to fetch the orders periodically
-            const intervalId = setInterval(fetchOrders, 100000); // 10000ms = 10 seconds
+            const intervalId = setInterval(fetchOrders, 10000); // 10000ms = 10 seconds
           
             // Cleanup interval when the component is unmounted
             return () => clearInterval(intervalId);
@@ -196,11 +202,6 @@ function Order() {
       }
     }
   };
-  
-  
-  
-  
-
 
   // View Modal
 
