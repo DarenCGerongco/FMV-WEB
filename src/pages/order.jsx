@@ -1,12 +1,28 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';  // Add useContext to the import
 import Navbar from '../components/navbar';
 import axios from 'axios';
-// import { GlobalContext } from '../../GlobalContext';  // Import GlobalContext
+import { GlobalContext } from '../../GlobalContext';  // Import GlobalContext
 
 function Order() {
   const url = import.meta.env.VITE_API_URL;
 
-  // const { id } = useContext(GlobalContext);  // Access the global id
+  const { id: userID, setID } = useContext(GlobalContext);  // This will fetch the stored ID from logging in of a admin
+  
+    // Ensure userID is set
+    useEffect(() => {
+      if (!userID) {
+        const storedID = localStorage.getItem('userID');
+        if (storedID) {
+          setID(storedID);  // Now setID is correctly called here
+        }
+      } else {
+        localStorage.setItem('userID', userID);  // Save the ID when logged in
+      }
+    }, [userID, setID]);  // Add setID to the dependency array
+    
+    const admin_id = userID;
+
+
 
   const [addModalOpen, setAddModalOpen] = useState(false);
   const [viewModalOpen, setViewModalOpen] = useState(false);
@@ -15,43 +31,56 @@ function Order() {
   const [createDeliveryModalOpen, setCreateDeliveryModalOpen] = useState(false);
   const [newDeliveryModalOpen, setNewDeliveryModalOpen] = useState(false);
   const [productsListed, setProductsListed] = useState([]); // State for stored products
-  //   product_id: product.product_ID,
-
-  // ])
-  // const [createItemsOrderedModalOpen, setCreateItemsOrderedModalOpen] = useState(false);
   const [viewDeliveriesModalOpen, setViewDeliveriesModalOpen] = useState(false);
+  const [createItemsOrderedModalOpen, setCreateItemsOrderedModalOpen] = useState(false);
+  const [purchaseOrderData, setPurchaseOrderData] = useState([]);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [quantity, setQuantity] = useState(1);
+  const [price, setPrice] = useState('');
+  const [selectedProduct, setSelectedProduct] = useState(null);
+  const [showDropdown, setShowDropdown] = useState(false);
+  const [products, setProducts] = useState([]); // Available products
 
-  // Start - THIS IS THE DATA OF Purchase Order Record
-    const [purchaseOrderData, setPurchaseOrderData] = useState([]);
-  // End - THIS IS THE DATA OF Purchase Order Record
-
-  const [newOrder, setNewOrder] = useState({
-    deliveredTo: '',
+  // START CUSTOMER ORDER'S INFORMATION
+  const [purchaseOrderDetails, setPurchaseOrderDetails] = useState({
+    customer_name: '',
     street: '',
-    city: '',
     barangay: '',
+    city: '',
     zipcode: '',
-    date: '',
-    items: [],
+    province: '',
+    // delivery_date: '',
+    products: [], // To hold the list of ordered products
   });
+
 
   const openAddModal = () => {
     setAddModalOpen(true);
-    setNewOrder({
-      deliveredTo: '',
-      street: '',
-      city: '',
-      barangay: '',
-      zipcode: '',
-      date: '',
-      items: [],
-    });
   };
+
+    // Handle customer input changes
+    const handleCustomerChange = (e) => {
+      const { name, value } = e.target;
+      setPurchaseOrderDetails((prevOrder) => ({
+        ...prevOrder,
+        [name]: value,
+      }));
+    };
+  
+    const handleChange = (e) => {
+      const { name, value } = e.target;
+      setPurchaseOrderDetails((prevDetails) => ({
+        ...prevDetails,
+        [name]: value,
+      }));
+    };
+    
 
   //START -  THIS WILL CLOSE BOTH THE VIEW AREA AND THE CREATE PO 
     const closeAddModal = () => {
       setAddModalOpen(false);
       closeViewModal();
+      closeCreateItemsOrderedModal();
     }
   //END -  THIS WILL CLOSE BOTH THE VIEW AREA AND THE CREATE PO 
 
@@ -112,7 +141,7 @@ function Order() {
             fetchOrders();
           
             // Set up a recurring interval to fetch the orders periodically
-            const intervalId = setInterval(fetchOrders, 10000); // 10000ms = 10 seconds
+            const intervalId = setInterval(fetchOrders, 100000); // 10000ms = 10 seconds
           
             // Cleanup interval when the component is unmounted
             return () => clearInterval(intervalId);
@@ -125,47 +154,50 @@ function Order() {
   }
 
 
-  // const createOrder = async () => {
-  //   const orderData = {
-  //     user_id: userId, // Assuming you have this in your state
-  //     customer_name: customerName, // From your state/input
-  //     status: orderStatus, // From your state/input
-  //     sale_type_id: saleTypeId, // From your state/input
-  //     address: {
-  //       street: address.street,
-  //       barangay: address.barangay,
-  //       zip_code: address.zip_code,
-  //       province: address.province,
-  //     },
-  //     product_details: orderedItems.map(item => ({
-  //       product_id: item.product_id,
-  //       quantity: item.quantity,
-  //       price: item.price,
-  //     })),
-  //   };
+  const createOrder = async () => {
+    if (!admin_id) {
+      console.error('User ID is missing.');
+      return;
+    }
   
-  //   try {
-  //     const response = await axios.post(`${url}/api/purchase-orders-delivery`, orderData, {
-  //       headers: {
-  //         'Content-Type': 'application/json',
-  //       },
-  //     });
+    const orderData = {
+      user_id: admin_id,
+      sale_type_id: 1,
+      customer_name: purchaseOrderDetails.customer_name,
+      status: 'P',
+      address: {
+        street: purchaseOrderDetails.street,
+        barangay: purchaseOrderDetails.barangay,
+        city: purchaseOrderDetails.city,
+        province: purchaseOrderDetails.province,
+        zip_code: purchaseOrderDetails.zipcode,
+      },
+      product_details: productsListed.map(product => ({
+        product_id: product.product_id,
+        price: product.price,
+        quantity: product.quantity,
+      })),
+    };
   
-  //     // Handle successful response
-  //     console.log('Order created successfully:', response.data);
-  //     // You can also perform further actions like closing the modal or resetting the state here.
+    try {
+      const response = await axios.post(`${url}/api/purchase-orders-delivery`, orderData, {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
   
-  //   } catch (error) {
-  //     // Handle error response
-  //     if (error.response) {
-  //       // Server responded with a status other than 200 range
-  //       console.error('Error creating order:', error.response.data);
-  //     } else {
-  //       // Network error or other issues
-  //       console.error('Error creating order:', error.message);
-  //     }
-  //   }
-  // };
+      console.log('Order created successfully:', response.data);
+      closeAddModal();
+    } catch (error) {
+      if (error.response) {
+        console.error('Error creating order:', error.response.data);
+      } else {
+        console.error('Error creating order:', error.message);
+      }
+    }
+  };
+  
+  
   
   
 
@@ -181,82 +213,126 @@ const closeViewModal = () => setViewModalOpen(false);
 
  // START Create Items Ordered AREA
 
-  // START BY SHOWING IT IN MODAL
+    // START BY SHOWING IT IN MODAL
+      const openCreateItemsOrderedModal = () => {
+        setCreateItemsOrderedModalOpen(true);
+      };
+      const closeCreateItemsOrderedModal = () => {
+        setCreateItemsOrderedModalOpen(false);
+      };
 
+    // Handle product selection
+    const handleProductSelect = (product) => {
+      setSelectedProduct(product);
+      setSearchTerm(product.product_name);
+      setShowDropdown(false);
+    };
+  
+    // Function to check if a product is already listed
+    const isProductListed = (product_id) => {
+      return productsListed.some(product => product.product_id === product_id);
+    };
+  
+  // Filter products to exclude those already listed
+    const filteredProducts = products.filter(product => {
+      return (
+        product.product_name.toLowerCase().includes(searchTerm.toLowerCase()) &&
+        !isProductListed(product.product_id) // Exclude products already in productsListed
+      );
+    });
 
-  const [createItemsOrderedModalOpen, setCreateItemsOrderedModalOpen] = useState(false);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [showDropdown, setShowDropdown] = useState(false);
-  const [quantity, setQuantity] = useState(1); // Default quantity to 1
-  const [price, setPrice] = useState(''); // State for price
-  const [selectedProduct, setSelectedProduct] = useState(null); // Temporarily hold selected product
-  const [selectedProducts, setSelectedProducts] = useState([]);
-  const [products, setProducts] = useState([]); // Define state for products
-  const [orderedItems, setOrderedItems] = useState([]); // State for products to order
+    // Function to add or edit a product
+    const handleAddProduct = () => {
+      if (selectedProduct && quantity > 0 && price > 0) {
+        const newProduct = {
+          product_id: selectedProduct.product_id,
+          product_name: selectedProduct.product_name,
+          quantity: Number(quantity),
+          price: Number(price),
+        };
 
+        // Check if the product is already listed (editing mode)
+        const existingProductIndex = productsListed.findIndex(
+          (item) => item.product_id === selectedProduct.product_id
+        );
 
-    const openCreateItemsOrderedModal = () => {
-      setCreateItemsOrderedModalOpen(true);
+        if (existingProductIndex !== -1) {
+          // Edit the existing product
+          const updatedProducts = [...productsListed];
+          updatedProducts[existingProductIndex] = newProduct;
+          setProductsListed(updatedProducts);
+        } else {
+          // Add a new product
+          setProductsListed([...productsListed, newProduct]);
+        }
+
+        // Reset fields after adding/editing
+        setSelectedProduct(null);
+        setSearchTerm(''); // Clear search field
+        setQuantity(1);
+        setPrice(0);
+      }
     };
 
+    // Function to handle product edit
+    const handleEditProduct = (product) => {
+      setSelectedProduct(product); // Set the selected product for editing
+      setSearchTerm(product.product_name); // Populate search term with product name
+      setQuantity(product.quantity); // Set quantity for editing
+      setPrice(product.price); // Set price for editing
+    };
 
-  // Handle product selection
-  const handleProductSelect = (product) => {
-    setSelectedProduct(product);
-    setSearchTerm(product.product_name);
-    setShowDropdown(false);
-  };
+    // Function to delete a product
+    const handleDeleteProduct = (product_id) => {
+      const updatedProducts = productsListed.filter(
+        (item) => item.product_id !== product_id
+      );
+      setProductsListed(updatedProducts); // Update the state without the deleted product
+    };
 
-  const handleAddProduct = () => {
-    if (selectedProduct && quantity > 0 && price > 0) {
-      const newProduct = {
-        product_id: selectedProduct.product_id,
-        product_name: selectedProduct.product_name,
-        quantity: Number(quantity),
-        price: Number(price),
-      };
+    // Modify the products filter to exclude already listed products from search
+    const availableProducts = products.filter(
+      (product) =>
+        !productsListed.some((listedProduct) => listedProduct.product_id === product.product_id)
+    );
 
-      setProductsListed([...productsListed, newProduct]); // Add new product to the list
 
-      // Reset fields
-      setSelectedProduct(null);
-      setQuantity(1);
-      setPrice(0); // Reset price
-    }
-  };
-  
-    
-    // START FETCH DATA
-    useEffect(() => {
-      const fetchProducts = async () => {
-        try {
-          const response = await axios.get(`${url}/api/products`);
-          setProducts(response.data);
-        } catch (error) {
-          console.error('Error fetching products:', error);
-        }
-      };
-  
-      fetchProducts();
-    }, []);
+
+  // Fetch available products
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const response = await axios.get(`${url}/api/products`);
+        setProducts(response.data);
+        // console.log(response.data);
+      } catch (error) {
+        console.error('Error fetching products:', error);
+      }
+    };
+
+    fetchProducts();
+  }, []);
   
     // Function to save products
     const handleSave = () => {
+      // Update the purchaseOrderDetails state to include the listed products
+      setPurchaseOrderDetails((prevDetails) => ({
+        ...prevDetails,
+        products: productsListed, // Add the products listed into purchase order details
+      }));
+    
       console.log('Products Listed:', productsListed);
-      // Here you can add functionality to send productsListed to your API
+      console.log('Purchase Order Details:', purchaseOrderDetails);
+    
+      // Here you can add functionality to send purchaseOrderDetails to your API
     };
+    
 
   // END BY SHOWING IT IN MODAL
 
 
 // END Create Items Ordered AREA
 
-
-
-
-const closeCreateItemsOrderedModal = () => {
-  setCreateItemsOrderedModalOpen(false);
-};
 
 // Items Ordered Modal
 const openItemsOrderedModal = () => setItemsOrderedModalOpen(true);
@@ -268,6 +344,7 @@ const closeItemsOrderedModal = () => {
 const openCreateDeliveryModal = () => {
   setCreateDeliveryModalOpen(true);
 };
+
 const closeCreateDeliveryModal = () => {
   setCreateDeliveryModalOpen(false);
 };
@@ -388,12 +465,12 @@ return (
             <div className="mb-4 relative">
               <input
                 type="text"
-                id="deliveredTo"
-                name="deliveredTo"
-                placeholder="Delivered To"
+                id="customer_name"
+                name="customer_name"
+                placeholder="Customer's Name"
                 className="w-full p-4 rounded-lg shadow-2xl mt-4 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500"
-                value={newOrder.deliveredTo}
-                onChange={handleAddOrderChange}
+                value={purchaseOrderDetails.customer_name}
+                onChange={handleChange}
               />
             </div>
             
@@ -406,19 +483,8 @@ return (
                   name="street"
                   placeholder="Street"
                   className="w-full p-4 rounded-lg shadow-2xl mt-4 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  value={newOrder.street}
-                  onChange={handleAddOrderChange}
-                />
-              </div>
-              <div>
-                <input
-                  type="text"
-                  id="city"
-                  name="city"
-                  placeholder="City"
-                  className="w-full p-4 rounded-lg shadow-2xl mt-4 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  value={newOrder.city}
-                  onChange={handleAddOrderChange}
+                  value={purchaseOrderDetails.street}
+                  onChange={handleChange}
                 />
               </div>
               <div>
@@ -428,8 +494,30 @@ return (
                   name="barangay"
                   placeholder="Barangay"
                   className="w-full p-4 rounded-lg shadow-2xl mt-4 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  value={newOrder.barangay}
-                  onChange={handleAddOrderChange}
+                  value={purchaseOrderDetails.barangay}
+                  onChange={handleChange}
+                />
+              </div>
+              <div>
+                <input
+                  type="text"
+                  id="city"
+                  name="city"
+                  placeholder="City"
+                  className="w-full p-4 rounded-lg shadow-2xl mt-4 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  value={purchaseOrderDetails.city}
+                  onChange={handleChange}
+                />
+              </div>
+              <div>
+                <input
+                  type="text"
+                  id="province"
+                  name="province"
+                  placeholder="province"
+                  className="w-full p-4 rounded-lg shadow-2xl mt-4 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  value={purchaseOrderDetails.province}
+                  onChange={handleChange}
                 />
               </div>
               <div>
@@ -439,24 +527,24 @@ return (
                   name="zipcode"
                   placeholder="Zipcode"
                   className="w-full p-4 rounded-lg shadow-2xl mt-4 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  value={newOrder.zipcode}
-                  onChange={handleAddOrderChange}
+                  value={purchaseOrderDetails.zipcode}
+                  onChange={handleChange}
                 />
               </div>
             </div>
             
             {/* Deadline Date Field */}
-            <div className="mb-4">
+            {/* <div className="mb-4">
               <label htmlFor="date" className="block text-gray-700">Deadline Date:</label>
               <input
                 type="date"
                 id="date"
                 name="date"
                 className="w-full p-4 rounded-lg shadow-2xl mt-4 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                value={newOrder.date}
+                value={customerDetails.date}
                 onChange={handleAddOrderChange}
               />
-            </div>
+            </div> */}
             
             {/* Action Buttons */}
             <div className="flex justify-end p-4">
@@ -476,7 +564,10 @@ return (
                   </button>
                   <button
                     className="bg-blue-500 text-white px-4 py-2 rounded-md shadow-2xl w-32"
-                    // onClick={submitAddModal}
+                    onClick={()=>{
+                      handleSave();
+                      createOrder();
+                    }}
                   >
                     Submit
                   </button>
@@ -574,12 +665,12 @@ return (
                   min="1"
                 />
 
-
                 {showDropdown && (
                   <div className="absolute left-0 right-0 mt-11 border border-gray-300 rounded-md bg-white z-10 max-h-48 overflow-y-auto shadow-lg">
                     {products
                       .filter(product =>
-                        product.product_name.toLowerCase().includes(searchTerm.toLowerCase())
+                        product.product_name.toLowerCase().includes(searchTerm.toLowerCase()) &&
+                        !productsListed.some(item => item.product_id === product.product_id) // Filtering out already listed products
                       )
                       .map(product => (
                         <div
@@ -605,13 +696,27 @@ return (
             <div className="mt-6">
               <h3>Products Listed:</h3>
               <div className="border-t border-gray-300">
-                {productsListed.map((item, index) => (
-                  <div key={index} className="flex justify-between border-b border-gray-300 py-2">
-                    <span>₱ {item.price.toFixed(2)}</span>
-                    <span>{item.product_name}</span>
-                    <span>x{item.quantity}</span>
-                  </div>
-                ))}
+              {productsListed.map((item, index) => (
+                <div key={index} className="flex justify-between border-b border-gray-300 py-2">
+                  <span>₱ {item.price.toFixed(2)}</span>
+                  <span>{item.product_name}</span>
+                  <span>x{item.quantity}</span>
+                  {/* Edit Button */}
+                  <button
+                    className="text-blue-500 hover:underline ml-2"
+                    onClick={() => handleEditProduct(item)}
+                  >
+                    Edit
+                  </button>
+                  {/* Delete Button */}
+                  <button
+                    className="text-red-500 hover:underline ml-2"
+                    onClick={() => handleDeleteProduct(item.product_id)}
+                  >
+                    Delete
+                  </button>
+                </div>
+              ))}
               </div>
             </div>
 
@@ -627,7 +732,7 @@ return (
             <div className="flex justify-end mt-4">
               <button
                 className="bg-gray-500 text-white hover:bg-gray-700 px-4 py-2 rounded-md"
-                onClick={() => setCreateItemsOrderedModalOpen(false)} // Closing the modal
+                onClick={closeCreateItemsOrderedModal} // Closing the modal
               >
                 Close
               </button>
@@ -635,7 +740,8 @@ return (
           </div>
         </div>
       )}
-      {/* Start listing of products */}
+      {/* End listing of products */}
+
 
 
       {itemsOrderedModalOpen && (
@@ -684,12 +790,6 @@ return (
           </div>
         </div>
       )}
-
-
-
-
-
-
 
  {/* Create Delivery Modal */}
 {createDeliveryModalOpen && (
@@ -742,7 +842,7 @@ return (
             />
           </div>
         </div>
-        <div className="mb-4">
+        {/* <div className="mb-4">
           <label className="block text-gray-700" htmlFor="deliveryDate"></label>
           <input
             type="text"
@@ -750,7 +850,7 @@ return (
             className="border border-gray-300 p-2 w-full rounded-md"
             placeholder="Enter delivery date"
           />
-        </div>
+        </div> */}
 
         {/* Static Delivery Man Section */}
         <div className="mb-4">

@@ -6,7 +6,6 @@ import axios from 'axios';
 function Index() {
   const url = import.meta.env.VITE_API_URL;
   const { setID } = useContext(GlobalContext);  // Access setID from the global context
-  const { id } = useContext(GlobalContext);  // Access the global id
 
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -22,8 +21,11 @@ function Index() {
 
       if (response.status === 200) {
         localStorage.setItem('token', response.data.token);
-        setID(response.data.user.id);  // Store the ID globally
-        // console.log(id) 
+        
+        // Save userID in localStorage and GlobalContext after login
+        localStorage.setItem('userID', response.data.user.id);  
+        setID(response.data.user.id);  // Also set it in the global context
+
         navigate('/overview');  // Navigate without passing the id
       } else {
         setMessage('Invalid login credentials.');
@@ -62,6 +64,7 @@ function Index() {
                       placeholder="Username"
                       value={username}
                       onChange={(e) => setUsername(e.target.value)}
+                      disabled={loading}  // Disable input while loading
                     />
                   </div>
                   <div className="mb-4 flex items-center border rounded-lg">
@@ -74,13 +77,20 @@ function Index() {
                       placeholder="Password"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
+                      disabled={loading}  // Disable input while loading
                     />
                   </div>
                   <button
                     type="submit"
-                    className="w-36 bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-3xl focus:outline-none focus:bg-blue-600"
+                    className="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-3xl focus:outline-none focus:bg-blue-600 flex items-center justify-center"
+                    disabled={loading}  // Disable button while loading
                   >
-                    Login
+                    {loading ? (
+                      <>
+                        <div className="spinner"></div>  {/* Spinner animation */}
+                        Loading...
+                      </>
+                    ) : 'Login'}  {/* Show Loading while processing */}
                   </button>
                 </form>
               </div>

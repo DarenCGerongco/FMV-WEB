@@ -8,3 +8,21 @@ body {
   .bg-custom-blue {
     background-color: #2955BB;
   }
+
+
+.spinner {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border: 3px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top-color: white;
+  animation: spin 1s ease-in-out infinite;
+  margin-right: 8px; /* Add some space between spinner and text */
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
