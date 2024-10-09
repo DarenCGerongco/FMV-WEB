@@ -644,7 +644,7 @@ return (
                 <input
                   type="number"
                   placeholder="Price"
-                  className="border border-gray-300 p-2 rounded-md w-full mb-2"
+                  className="m-1 border border-gray-300 p-2 rounded-md w-full mb-2"
                   value={price}
                   onChange={(e) => setPrice(e.target.value)}
                   min="0"
@@ -652,7 +652,7 @@ return (
                 <input
                   type="text"
                   placeholder="Search for a product"
-                  className="border border-gray-300 p-2 rounded-md w-full mb-2"
+                  className="m-1 border border-gray-300 p-2 rounded-md w-full mb-2"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   onFocus={() => setShowDropdown(true)}
@@ -662,7 +662,7 @@ return (
                 <input
                   type="number"
                   placeholder="Quantity"
-                  className="border border-gray-300 p-2 rounded-md w-full mb-2"
+                  className="m-1 border border-gray-300 p-2 rounded-md w-full mb-2"
                   value={quantity}
                   onChange={(e) => setQuantity(e.target.value)}
                   min="1"
@@ -689,7 +689,7 @@ return (
                 )}
               </div>
 
-              <div className='flex items-center bg-custom-blue rounded-md p-2 ml-2'>
+              <div className='flex items-center bg-custom-blue rounded-md p-2 ml-1'>
                 <button className='md:text-white' onClick={handleAddProduct}>
                   Add
                 </button>
@@ -742,14 +742,14 @@ return (
               </button>
             </div>
 
-            <div className="flex justify-end mt-4">
+            {/* <div className="flex justify-end mt-4">
               <button
                 className="bg-gray-500 text-white hover:bg-gray-700 px-4 py-2 rounded-md"
                 onClick={closeCreateItemsOrderedModal} // Closing the modal
               >
                 Close
               </button>
-            </div>
+            </div> */}
           </div>
         </div>
       )}
