@@ -428,6 +428,8 @@ return (
               </div>
             {/* Header */}
 
+              {/* TITOYYYYYYYYYYYYYYYYYYYYYYYYYYY */}
+
             {/* Customer's Data */}
               {purchaseOrderData.map((customerData, index) => (
                 <div
@@ -695,31 +697,41 @@ return (
             </div>
 
             <div className="mt-6">
-              <h3>Products Listed:</h3>
-              <div className="border-t border-gray-300">
-              {productsListed.map((item, index) => (
-                <div key={index} className="flex justify-between border-b border-gray-300 py-2">
-                  <span>₱ {item.price.toFixed(2)}</span>
-                  <span>{item.product_name}</span>
-                  <span>x{item.quantity}</span>
-                  {/* Edit Button */}
-                  <button
-                    className="text-blue-500 hover:underline ml-2"
-                    onClick={() => handleEditProduct(item)}
-                  >
-                    Edit
-                  </button>
-                  {/* Delete Button */}
-                  <button
-                    className="text-red-500 hover:underline ml-2"
-                    onClick={() => handleDeleteProduct(item.product_id)}
-                  >
-                    Delete
-                  </button>
-                </div>
-              ))}
-              </div>
-            </div>
+  <h3>Products Listed:</h3>
+  <div>
+    <h3 className="grid grid-cols-5 text-sm px-4 text-gray-400">
+      <span className="relative left-[1px] col-span-1">Price</span>
+      <span className="relative left-[-10px] col-span-2">Product Name</span>
+      <span className="col-span-1">Quantity</span>
+    </h3>
+  </div>
+  <div className="border-t border-gray-300">
+    {productsListed.map((item, index) => (
+      <div key={index} className="grid grid-cols-5 border-b border-gray-300 py-2 items-center">
+        <span className="col-span-1">₱ {item.price.toFixed(2)}</span>
+        <span className="col-span-2">{item.product_name}</span>
+        <span className="col-span-1">x{item.quantity}</span>
+        {/* Actions: Edit and Delete Buttons */}
+        <div className="col-span-1.5 justify-end flex space-x-3">
+          <button
+            className="text-blue-500 hover:underline"
+            onClick={() => handleEditProduct(item)}
+          >
+            Edit
+          </button>
+          <button
+            className="text-red-500 hover:underline"
+            onClick={() => handleDeleteProduct(item.product_id)}
+          >
+            Delete
+          </button>
+        </div>
+      </div>
+    ))}
+  </div>
+</div>
+
+
 
             <div className="flex justify-end mt-4">
               <button

@@ -13,6 +13,7 @@ function Overview() {
   const url = import.meta.env.VITE_API_URL;
   const [userNames, setUserNames] = useState([]);
   const [inventoryItems, setInventoryItems] = useState([]);
+  const [orders, setOrders] = useState([]);  // Add state for orders
   const navigate = useNavigate(); // Initialize useNavigate
   const { id, userName } = useContext(GlobalContext);  // Retrieve id and userName
 
@@ -21,6 +22,19 @@ function Overview() {
     console.log("Global Context ID:", id);
     console.log("Global Context userName:", userName);
   }, [id, userName]);
+
+  // Fetch order data
+  const fetchOrderData = async () => {
+    try {
+      const response = await axios.get(`${url}/api/purchase-orders-delivery`);
+      console.log('Fetched Orders:', response.data); // Log the fetched orders
+      setOrders(response.data);  // Set the fetched orders
+    } catch (error) {
+      console.error('Error fetching order data:', error);
+    }
+  };
+
+
 
   // Fetch inventory data
   const fetchInventoryData = async () => {
@@ -48,11 +62,13 @@ function Overview() {
   useEffect(() => {
     fetchUserNames(); // Fetch initial user names
     fetchInventoryData(); // Fetch initial inventory data
+    fetchOrderData();  // Fetch initial order data
     fetchSalesData(); // Fetch initial sales data
     
     const intervalId = setInterval(() => {
       fetchUserNames(); // Update user names
       fetchInventoryData(); // Update inventory items
+      fetchOrderData(); // Update orders
       fetchSalesData(); // Update sales data
     }, 10000); // Update every 10 seconds
     
@@ -137,11 +153,19 @@ function Overview() {
             {/* Order Container */}
             <div className="bg-white p-6 rounded-lg shadow-2xl">
               <h3 className="text-lg font-bold mb-4">ORDER</h3>
-              <div className="bg-gray-200 p-4 rounded-lg shadow-sm mt-4 flex justify-between items-center">
-                <span className="text-gray-700 text-sm">Barangay Lumbia</span>
-                <span className="text-gray-700 text-sm">06/04/2024</span>
-              </div>
+              {orders.map((customerData, index) => (
+                <div key={index} className="bg-gray-200 p-4 rounded-lg shadow-sm mt-4 flex justify-between items-start">
+                  <div className="text-gray-700 text-sm">
+                    {/* Render each part of the address on a new line */}
+                    {customerData.address.street && <div>{customerData.address.street},</div>}
+                    {customerData.address.barangay && <div>{customerData.address.barangay},</div>}
+                    {customerData.address.province && <div>{customerData.address.province}</div>}
+                  </div>
+                  <span className="text-gray-700 text-sm">{customerData.created_at}</span>
+                </div>
+              ))}
             </div>
+
 
             {/* Delivery Container */}
             <div className="bg-white p-6 rounded-lg shadow-2xl">
