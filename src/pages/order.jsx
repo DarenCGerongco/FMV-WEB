@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';  // Add useContext to the import
+import React, { useState, useEffect, useContext, useRef } from 'react';  // Add useContext to the import
 import Navbar from '../components/navbar';
 import axios from 'axios';
 import { GlobalContext } from '../../GlobalContext';  // Import GlobalContext
@@ -113,6 +113,7 @@ function Order() {
                   purchase_order_id: purchaseOrderData.purchase_order_id,
                   customer_name: purchaseOrderData.customer_name,
                   street: purchaseOrderData.address.street,
+                  city: purchaseOrderData.address.city,
                   barangay: purchaseOrderData.address.barangay,
                   province: purchaseOrderData.address.province,
                   created_at: purchaseOrderData.created_at,
@@ -354,6 +355,37 @@ const closeCreateDeliveryModal = () => {
 const openViewDeliveriesModal = () => setViewDeliveriesModalOpen(true);
 const closeViewDeliveriesModal = () => setViewDeliveriesModalOpen(false);
 
+// VIEW - 
+  const [openDropDowns, setOpenDropDowns] = useState({});
+  const [viewDropDown, setViewDropDown] = useState(false);
+  const dropDownRef = useRef(null);
+
+  const toggleDropDown = (id) => {
+    setOpenDropDowns((prevState)=> ({
+      ...prevState,
+      [id]: !prevState[id],
+    }));
+  }
+
+  // const toggleDropDown = () => {
+  //   setViewDropDown(!viewDropDown);
+  // };
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropDownRef.current && !dropDownRef.current.contains(even.target)) {
+        setViewDropDown(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+    };
+  }, []);
+// VIEW
+
+
 return (
     <div className="flex w-full bg-white">
       <Navbar />
@@ -431,24 +463,51 @@ return (
               {/* TITOYYYYYYYYYYYYYYYYYYYYYYYYYYY */}
 
             {/* Customer's Data */}
-              {purchaseOrderData.map((customerData, index) => (
-                <div
-                  key={index}
-                  onClick={() => handlePurchaseOrderClick(customerData.purchase_order_id)}
-                  className="bg-white p-6 m-6 rounded-lg shadow-2xl mb-1 border transition"
-                >
-                  <div className="flex justify-between">
-                    {/* Delivered to */}
-                    <p className="flex-1 text-1xl text-left">{index + 1}. {customerData.customer_name}</p>
+            {purchaseOrderData.map((customerData, index) => (
+              <div
+                key={index}
+                onClick={() => handlePurchaseOrderClick(customerData.purchase_order_id)}
+                className="bg-white p-6 m-6 rounded-lg shadow-2xl mb-1 border transition"
+              >
+                <div className="flex justify-between">
+                  {/* Delivered to */}
+                  <p className="flex-1 text-1xl text-left">{index + 1}. {customerData.customer_name}</p>
+                  {/* Address */}
+                  <p className="flex-1 text-sm text-gray-700 text-left">{customerData.street}, {customerData.barangay},{customerData.city}, {customerData.province}</p>
+                  {/* Date */}
+                  <p className="flex-1 text-sm text-gray-700 text-left">{customerData.created_at}</p>
+
+                  <div className="buttons">
+                    <button 
+                      className='bg-sky-400 hover:bg-cyan-400 rounded p-1.5 shadow-lg mr-10 '
+                    >
+                      Create Deliveries
+                    </button>
+                    <button 
+                      className='bg-sky-400 hover:bg-sky-500 rounded p-1.5 shadow-lg mr-10'
+                      onClick={() => toggleDropDown(customerData.purchase_order_id)} // Pass specific purchase_order_id
+                    >
+                      View
+                    </button>
                     
-                    {/* Address */}
-                    <p className="flex-1 text-sm text-gray-700 text-left">{customerData.street}, {customerData.barangay}, {customerData.province}</p>
                     
-                    {/* Date */}
-                    <p className="flex-1 text-sm text-gray-700 text-left">{customerData.created_at}</p>
+                    {/* GREG / DARREN  */}
+                    {openDropDowns[customerData.purchase_order_id] && (
+                      <div className='absolute mt-2 w-48 bg-white border border-gray-300 rounded shadow-lg z-50'>
+                        <ul className="py-1">
+                          <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">Option 1</li>
+                          <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">Option 2</li>
+                          <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">Option 3</li>
+                        </ul>
+                      </div>
+                    )}
+
+
                   </div>
                 </div>
-              ))}
+              </div>
+            ))}
+
             {/* Customer's Data */}
           </div>
         {/* END SHOW PURCHASE ORDERS */}
@@ -697,39 +756,39 @@ return (
             </div>
 
             <div className="mt-6">
-  <h3>Products Listed:</h3>
-  <div>
-    <h3 className="grid grid-cols-5 text-sm px-4 text-gray-400">
-      <span className="relative left-[1px] col-span-1">Price</span>
-      <span className="relative left-[-10px] col-span-2">Product Name</span>
-      <span className="col-span-1">Quantity</span>
-    </h3>
-  </div>
-  <div className="border-t border-gray-300">
-    {productsListed.map((item, index) => (
-      <div key={index} className="grid grid-cols-5 border-b border-gray-300 py-2 items-center">
-        <span className="col-span-1">₱ {item.price.toFixed(2)}</span>
-        <span className="col-span-2">{item.product_name}</span>
-        <span className="col-span-1">x{item.quantity}</span>
-        {/* Actions: Edit and Delete Buttons */}
-        <div className="col-span-1.5 justify-end flex space-x-3">
-          <button
-            className="text-blue-500 hover:underline"
-            onClick={() => handleEditProduct(item)}
-          >
-            Edit
-          </button>
-          <button
-            className="text-red-500 hover:underline"
-            onClick={() => handleDeleteProduct(item.product_id)}
-          >
-            Delete
-          </button>
+          <h3>Products Listed:</h3>
+          <div>
+            <h3 className="grid grid-cols-5 text-sm px-4 text-gray-400">
+              <span className="relative left-[1px] col-span-1">Price</span>
+              <span className="relative left-[-10px] col-span-2">Product Name</span>
+              <span className="col-span-1">Quantity</span>
+            </h3>
+          </div>
+          <div className="border-t border-gray-300">
+            {productsListed.map((item, index) => (
+              <div key={index} className="grid grid-cols-5 border-b border-gray-300 py-2 items-center">
+                <span className="col-span-1">₱ {item.price.toFixed(2)}</span>
+                <span className="col-span-2">{item.product_name}</span>
+                <span className="col-span-1">x{item.quantity}</span>
+                {/* Actions: Edit and Delete Buttons */}
+                <div className="col-span-1.5 justify-end flex space-x-3">
+                  <button
+                    className="text-blue-500 hover:underline"
+                    onClick={() => handleEditProduct(item)}
+                  >
+                    Edit
+                  </button>
+                  <button
+                    className="text-red-500 hover:underline"
+                    onClick={() => handleDeleteProduct(item.product_id)}
+                  >
+                    Delete
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
-      </div>
-    ))}
-  </div>
-</div>
 
 
 
