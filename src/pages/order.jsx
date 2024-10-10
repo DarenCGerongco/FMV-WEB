@@ -453,7 +453,7 @@ return (
             {/* Header */}
               <div>
                 <h3 className="text-sm px-4 text-gray-400 flex justify-between">
-                  <div className="relative left-[30px] flex-1 text-left">Delivered to</div>
+                  <div className="relative left-[30px] flex-1 text-left">Customer's Name</div>
                   <div className="relative left-[10px] flex-1 text-left">Address</div>
                   <div className="relative left-[-10px] flex-1 text-left">Date</div>
                 </h3>
@@ -473,7 +473,7 @@ return (
                   {/* Delivered to */}
                   <p className="flex-1 text-1xl text-left">{index + 1}. {customerData.customer_name}</p>
                   {/* Address */}
-                  <p className="flex-1 text-sm text-gray-700 text-left">{customerData.street}, {customerData.barangay},{customerData.city}, {customerData.province}</p>
+                  <p className="flex-1 text-sm text-gray-700 text-left">{customerData.street}, {customerData.barangay},{customerData.city || ` "" `}, {customerData.province}</p>
                   {/* Date */}
                   <p className="flex-1 text-sm text-gray-700 text-left">{customerData.created_at}</p>
 
