@@ -26,8 +26,8 @@ export const GlobalProvider = ({ children }) => {
         try {
           console.log(`Fetching user name for ID: ${id}`); // Debugging
           const response = await axios.get(`${url}/api/users/${id}`);
-          console.log('API Response:', response.data);  // Log the response
-
+          console.log('API Response from GlobalContext.jsx:', response.data);  // Log the response
+          console.log('Welcome,', response.data.data.name)
           const { name } = response.data.data;  // Access the 'name' from response.data.data
           setUserName(name);
         } catch (error) {

@@ -1,11 +1,25 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Navbar from '../components/navbar';
+import axios from 'axios';
+
 
 function Delivery() {
+  const url = import.meta.env.VITE_API_URL;
+
   const [isConfirmationModalOpen, setIsConfirmationModalOpen] = useState(false);
   const [isOngoingModalOpen, setIsOngoingModalOpen] = useState(false);
   const [isOrderDeliveredModalOpen, setIsOrderDeliveredModalOpen] = useState(false);
   const [selectedDelivery, setSelectedDelivery] = useState(null);
+
+// Start Status Data 
+
+  const [onDelivery, setOnDelivery] = useState([]);
+  const [pendingDeliveries, setPendingDeliveries] = useState([]); // <-- This is the data that manager will look and confirm. 
+  const [successDelivery, setSuccessDelivery] = useState([]);
+  const [failedDelivery, setFailedDelivery] = useState([]);
+
+// End Status Data
+
 
   const handleOpenConfirmationModal = (delivery) => {
     setSelectedDelivery(delivery);
@@ -28,6 +42,51 @@ function Delivery() {
     setIsOrderDeliveredModalOpen(false);
     setSelectedDelivery(null);
   };
+
+  // START FETCH DELIVERIES 
+    useEffect(() => {
+      const fetchOnDeliveryData = async () => {
+        try{
+          const response = await axios.get(`${url}/api/my-deliveries/on-delivery`);
+          setOnDelivery(response.data);
+          console.log('On Delivery:', response.data);
+        } catch (error){
+          console.log(error);
+        }
+      }
+
+      const fetchPendingData = async () => {
+        try{
+          const response = await axios.get(`${url}/api/my-deliveries/pending`);
+          setPendingDeliveries(response.data);
+          console.log('Pending data: ', response.data);
+        }catch (error){
+          console.log(error);
+        }
+      };
+
+      const fetchSuccessData = async () => {
+        try{
+          const response = await axios.get(`${url}/api/my-deliveries/successful`);
+          setSuccessDelivery(response.data);
+        }catch (error){
+          console.log(error)
+        }
+      }
+
+
+      fetchOnDeliveryData();
+      fetchPendingData();
+      // fetchSuccessData();
+      const timeInterval = setInterval(fetchPendingData, 20000);
+
+      return () => clearInterval(timeInterval);
+    }, [url]); 
+
+    
+    
+  // END FETCH DELIVERIES
+
 
   return (
     <div className="flex w-full bg-white-100">
@@ -62,10 +121,28 @@ function Delivery() {
               <span className="w-1/6 text-left">Date</span>
             </h3>
             <div className="p-4 rounded-lg shadow-2xl flex justify-between items-center bg-[#8EF7A8]">
-              <span className="w-1/6">2</span>
+            <ul>
+                {pendingDeliveries && Object.values(pendingDeliveries).length > 0 ? (
+                  Object.values(pendingDeliveries).map((pendingData, index)=> (
+                    <div key={index}>
+                      <li>
+                        {pendingData.purchase_order_id} {pendingData.address.street}, {pendingData.address.barangay}, AmangKokak ka {pendingData.address.province}
+
+                      </li>
+                      <li>
+                      </li>
+                    </div>
+                  ))
+                ): (
+                  <li>
+                    No Pending Deliveries
+                  </li>
+                )}
+              </ul>
+              {/* <span className="w-1/6">2</span>
               <span className="w-1/3">Barangay Lumbia</span>
               <span className="w-1/3">Arlene Abad</span>
-              <span className="w-1/6">06/04/2024</span>
+              <span className="w-1/6">06/04/2024</span> */}
               <img
                 src="./src/assets/info.png"
                 alt="Delivery Image"
@@ -97,10 +174,25 @@ function Delivery() {
               <span className="w-1/6 text-left">Date</span>
             </h3>
             <div className="p-4 rounded-lg shadow-2xl flex justify-between items-center bg-[#E6FCE6]">
-              <span className="w-1/6">4</span>
+              <ul>
+                {onDelivery && Object.values(onDelivery).length > 0 ? (
+                  Object.values(onDelivery).map((onDeliveryData, index)=> (
+                    <div key={index}>
+                      <li>
+                        Purchase order ID: {onDeliveryData.purchase_order_id} customer name:{onDeliveryData.customer_name}
+                      </li>
+                    </div>
+                  ))
+                ): (
+                  <li>
+                    No On-delivery.
+                  </li>
+                )}
+              </ul>
+              {/* <span className="w-1/6">4</span>
               <span className="w-1/3">Iponan</span>
               <span className="w-1/3">Edelcris Cabarrubias</span>
-              <span className="w-1/6">07/04/2024</span>
+              <span className="w-1/6">07/04/2024</span> */}
               <img
                 src="./src/assets/info.png"
                 alt="Delivery Image"

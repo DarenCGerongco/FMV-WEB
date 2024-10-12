@@ -9,7 +9,7 @@ function Order() {
   
   /** `START`
    * THIS ENSURES THAT THE PURCHASE ORDER(PO) AND WHO CREATED THE `PO` WILL BE RECORDED
-   * EVEN WITH MULTIPLE TIMES
+   * EVEN WITH MULTIPLE TIMES OF TRANSACTIONS HAPPEN IN A SINGLE SESSION
    */ 
     const { id: userID, setID } = useContext(GlobalContext);  // This will fetch the stored ID from logging in of a admin
     
@@ -28,7 +28,7 @@ function Order() {
       const admin_id = userID;
   /** `END`
    * THIS ENSURES THAT THE PURCHASE ORDER(PO) AND WHO CREATED THE `PO` WILL BE RECORDED
-   * EVEN WITH MULTIPLE TIMES
+   * EVEN WITH MULTIPLE TIMES OF TRANSACTIONS HAPPEN IN A SINGLE SESSION
    */ 
 
   const [addModalOpen, setAddModalOpen] = useState(false);
