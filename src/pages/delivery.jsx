@@ -20,17 +20,23 @@ function Delivery() {
 
 // End Status Data
 
-
-  const handleOpenConfirmationModal = (delivery) => {
+// PENDING
+  const handleOpenConfirmationModal = () => {
     setSelectedDelivery(delivery);
     setIsConfirmationModalOpen(true);
   };
-
-  const handleOpenOngoingModal = (delivery) => {
+// ON GOING 
+  const handleOpenOngoingDeliveryModal = (delivery) => {
     setSelectedDelivery(delivery);
     setIsOngoingModalOpen(true);
   };
 
+  // const handleOpenOngoingModal = (delivery) => {
+  //   setSelectedDelivery(delivery);  // Set the clicked delivery
+  //   setIsOngoingModalOpen(true);    // Open the modal
+  // };
+
+// SUCCESS DELIVERY
   const handleOpenOrderDeliveredModal = (delivery) => {
     setSelectedDelivery(delivery);
     setIsOrderDeliveredModalOpen(true);
@@ -49,7 +55,10 @@ function Delivery() {
         try{
           const response = await axios.get(`${url}/api/my-deliveries/on-delivery`);
           setOnDelivery(response.data);
-          console.log('On Delivery:', response.data);
+          console.log('On-going', response.data)
+          // Object.values(response.data).forEach((order) => {
+          //   console.log('Purchase Order ID:', order.purchase_order_id)
+          // })
         } catch (error){
           console.log(error);
         }
@@ -173,33 +182,29 @@ function Delivery() {
               <span className="w-1/3 text-left">Delivery Man</span>
               <span className="w-1/6 text-left">Date</span>
             </h3>
-            <div className="p-4 rounded-lg shadow-2xl flex justify-between items-center bg-[#E6FCE6]">
-              <ul>
-                {onDelivery && Object.values(onDelivery).length > 0 ? (
-                  Object.values(onDelivery).map((onDeliveryData, index)=> (
-                    <div key={index}>
-                      <li>
-                        Purchase order ID: {onDeliveryData.purchase_order_id} customer name:{onDeliveryData.customer_name}
-                      </li>
-                    </div>
-                  ))
-                ): (
-                  <li>
-                    No On-delivery.
-                  </li>
-                )}
-              </ul>
+            {onDelivery && Object.values(onDelivery).length > 0 ? (
+              Object.values(onDelivery).map((onDeliveryData, index)=> (
+                <div key={index} className='m-3 p-4 rounded-lg shadow-2xl flex justify-between items-center bg-[#E6FCE6] '>
+                  <span>
+                    Purchase order ID: {onDeliveryData.purchase_order_id} | customer name: {onDeliveryData.customer_name}
+                  </span>
+                  <img
+                    src="./src/assets/info.png"
+                    alt="Delivery Image"
+                    className="w-7 h-7 rounded-full cursor-pointer"
+                    onClick={() => handleOpenOngoingDeliveryModal(onDeliveryData)}  // Pass specific delivery
+                  />
+                </div>
+              ))
+            ): (
+              <span>
+                No On-delivery.
+              </span>
+            )}
               {/* <span className="w-1/6">4</span>
               <span className="w-1/3">Iponan</span>
               <span className="w-1/3">Edelcris Cabarrubias</span>
               <span className="w-1/6">07/04/2024</span> */}
-              <img
-                src="./src/assets/info.png"
-                alt="Delivery Image"
-                className="w-7 h-7 rounded-full cursor-pointer"
-                onClick={() => handleOpenOngoingModal({ deliveryNo: 4, deliveredTo: 'Iponan', deliveryMan: 'Edelcris Cabarrubias', date: '07/04/2024' })}
-              />
-            </div>
           </div>
 
           {/* 3rd Container - Delivered Order */}
@@ -220,7 +225,7 @@ function Delivery() {
                 src="./src/assets/info.png"
                 alt="Delivery Image"
                 className="w-7 h-7 rounded-full cursor-pointer"
-                onClick={() => handleOpenOrderDeliveredModal({ deliveryNo: 5, deliveredTo: 'Barangay Talaga', deliveryMan: 'Mark Cabarrubias', date: '09/04/2024' })}
+                onClick={() => handleOpenOrderDeliveredModal()}
               />
             </div>
           </div>
@@ -231,7 +236,7 @@ function Delivery() {
               <div className="bg-white p-6 rounded-lg shadow-lg w-1/3 max-h-screen overflow-y-auto">
                 <h2 className="text-xl font-bold mb-4">Order Delivered Details</h2>
                 <p><strong>Delivery Number:</strong> {selectedDelivery.deliveryNo}</p>
-                <p><strong>Delivered to:</strong> {selectedDelivery.deliveredTo}</p>
+                 <p><strong>Delivered to:</strong> {selectedDelivery.deliveredTo}</p>
                 <p><strong>Delivery Man:</strong> {selectedDelivery.deliveryMan}</p>
                 <p><strong>Date:</strong> {selectedDelivery.date}</p>
 
@@ -273,7 +278,7 @@ function Delivery() {
             </div>
           )}
 
-         {/* Confirm Delivery modal */}
+         {/* Confirm Delivery modal */} ✅✅✅✅✅
          {isConfirmationModalOpen && selectedDelivery && (
             <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
               <div className="bg-white p-6 rounded-lg shadow-lg w-1/3 max-h-screen overflow-y-auto">
@@ -309,8 +314,12 @@ function Delivery() {
                 </div>
 
                 <div className="mt-4">
-                  <h3 className="text-lg font-semibold mb-2">Note:</h3>
-                  <p>Hello Guten Morge Por que novenas achomera micasa oi?</p>
+                  <h3 className="text-lg font-semibold mb-2">
+                    Note:
+                  </h3>
+                  <p>
+                    Hello Guten Morge Por que novenas achomera micasa oi?
+                  </p>
                 </div>
 
                 <button
@@ -325,97 +334,105 @@ function Delivery() {
 
         {/* Ongoing Delivery modal */}
         {isOngoingModalOpen && selectedDelivery && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
+            <div
+              className="bg-white p-6 rounded-lg shadow-lg w-1/3 max-h-screen overflow-y-auto"
+            >
+              <h2 className="text-xl font-bold mb-4">Ongoing Delivery Details</h2>
+              <p>
+                <strong>Delivery Number:</strong> {selectedDelivery.delivery_no}
+              </p>
+              <p>
+                <strong>Delivered to:</strong> {selectedDelivery.customer_name}
+              </p>
+              <p>
+                <strong>Delivery Man:</strong> {selectedDelivery.deliveryman_name}
+              </p>
+              <p>
+                <strong>Date:</strong> {new Date().toLocaleDateString()}
+              </p>
+
+              <div className="mt-4">
+                <h3 className="text-lg font-semibold mb-2">Order List:</h3>
+                {selectedDelivery.products.map((product, productIndex) => (
+                  <div
+                    className="p-4 bg-gray-100 rounded-lg shadow-2xl"
+                    key={productIndex}
+                  >
+                    <div className="flex justify-between">
+                      <span>₱{product.price}</span>
+                      <span>{product.product_name}</span>
+                      <span>x{product.quantity}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              <button
+                className="mt-4 bg-blue-500 text-white ml-80 px-4 py-2 rounded-md shadow-2xl focus:outline-none"
+                onClick={handleCloseModal}
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        )}
+
+
+
+    {/* Order Delivered modal */}
+      {isOrderDeliveredModalOpen && selectedDelivery && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
-            <div className="bg-white p-6 rounded-lg shadow-lg w-1/3 max-h-screen overflow-y-auto">
-            <h2 className="text-xl font-bold mb-4">Ongoing Delivery Details</h2>
+          <div className="bg-white p-6 rounded-lg shadow-lg w-1/3 max-h-screen overflow-y-auto">
+            <h2 className="text-xl font-bold mb-4">Order Delivered Details</h2>
             <p><strong>Delivery Number:</strong> {selectedDelivery.deliveryNo}</p>
             <p><strong>Delivered to:</strong> {selectedDelivery.deliveredTo}</p>
             <p><strong>Delivery Man:</strong> {selectedDelivery.deliveryMan}</p>
             <p><strong>Date:</strong> {selectedDelivery.date}</p>
 
-            <div className="mt-4">
-                <h3 className="text-lg font-semibold mb-2">Order List:</h3>
-                <div className="p-4 bg-gray-100 rounded-lg shadow-2xl">
-                <div className="flex justify-between">
-                    <span>₱1500</span>
-                    <span>Submersible Pump</span>
-                    <span>x5</span>
-                </div>
-                </div>
-            </div>
-
-        <div className="mt-4">
-        <div className="p-4 bg-gray-100 rounded-lg shadow-2xl">
-          <div className="flex justify-between">
-            <span>₱2500</span>
-            <span>Water Heater</span>
-            <span>x2</span>
-          </div>
-         </div>
-         </div>
-
-         <button
-        className="mt-4 bg-blue-500 text-white ml-80 px-4 py-2 rounded-md shadow-2xl focus:outline-none"
-        onClick={handleCloseModal} >
-        Close
-         </button>
-        </div>
-     </div>
-        )}
-
-    {/* Order Delivered modal */}
-    {isOrderDeliveredModalOpen && selectedDelivery && (
-            <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
-              <div className="bg-white p-6 rounded-lg shadow-lg w-1/3 max-h-screen overflow-y-auto">
-                <h2 className="text-xl font-bold mb-4">Order Delivered Details</h2>
-                <p><strong>Delivery Number:</strong> {selectedDelivery.deliveryNo}</p>
-                <p><strong>Delivered to:</strong> {selectedDelivery.deliveredTo}</p>
-                <p><strong>Delivery Man:</strong> {selectedDelivery.deliveryMan}</p>
-                <p><strong>Date:</strong> {selectedDelivery.date}</p>
-
-                {/* Example content */}
-                <div className="mt-4 p-4 bg-gray-100 rounded-lg shadow-2xl">
-                  <div className="flex justify-between">
-                    <span>₱1500</span>
-                    <span>Submersible Pump</span>
-                    <span>x5</span>
-                  </div>
-                </div>
-                <div className="mt-4 p-4 bg-gray-100 rounded-lg shadow-2xl">
-                  <div className="flex justify-between">
-                    <span>₱1500</span>
-                    <span>Submersible Pump</span>
-                    <span>x5</span>
-                  </div>
-                </div>
-
-                <div className="mt-4">
-                  <h3 className="text-lg font-semibold mb-2">Proof of Delivery</h3>
-                  <img
-                    src="./src/assets/darwen.png"
-                    alt="Proof of Delivery"
-                    className="w-auto h-auto rounded-lg shadow-2xl"
-                  />
-                </div>
-
-                <div className="mt-4">
-                  <h3 className="text-lg font-semibold mb-2">Note:</h3>
-                  <p>Hello Guten Morge Por que novenas achomera micasa oi?</p>
-                </div>
-
-                <button
-                  className="mt-4 bg-blue-500 text-white ml-80 px-4 py-2 rounded-md shadow-2xl focus:outline-none"
-                  onClick={handleCloseModal}
-                >
-                  Close
-                </button>
+            {/* Example content */}
+            <div className="mt-4 p-4 bg-gray-100 rounded-lg shadow-2xl">
+              <div className="flex justify-between">
+                <span>₱1500</span>
+                <span>Submersible Pump</span>
+                <span>x5</span>
               </div>
             </div>
-          )}
+            <div className="mt-4 p-4 bg-gray-100 rounded-lg shadow-2xl">
+              <div className="flex justify-between">
+                <span>₱1500</span>
+                <span>Submersible Pump</span>
+                <span>x5</span>
+              </div>
+            </div>
 
+            <div className="mt-4">
+              <h3 className="text-lg font-semibold mb-2">Proof of Delivery</h3>
+              <img
+                src="./src/assets/darwen.png"
+                alt="Proof of Delivery"
+                className="w-auto h-auto rounded-lg shadow-2xl"
+              />
+            </div>
+
+            <div className="mt-4">
+              <h3 className="text-lg font-semibold mb-2">Note:</h3>
+              <p>Hello Guten Morge Por que novenas achomera micasa oi?</p>
+            </div>
+
+            <button
+              className="mt-4 bg-blue-500 text-white ml-80 px-4 py-2 rounded-md shadow-2xl focus:outline-none"
+              onClick={handleCloseModal}
+            >
+              Close
+            </button>
+          </div>
         </div>
-      </div>
+      )}
+      
     </div>
+  </div>
+</div>
   );
 }
 export default Delivery;
