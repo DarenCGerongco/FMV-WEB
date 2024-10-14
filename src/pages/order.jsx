@@ -3,6 +3,12 @@ import Navbar from '../components/navbar';
 import axios from 'axios';
 import { GlobalContext } from '../../GlobalContext';  // Import GlobalContext
 
+import CreateDeliveryModal from './order/createdeliverymodal';
+import ViewDeliveriesModal from './order/viewdeliveriesmodal';
+import ItemsOrderedModal from './order/itemsorderedmodal';
+
+
+
 function Order() {
   const url = import.meta.env.VITE_API_URL;
 
@@ -32,7 +38,7 @@ function Order() {
    */ 
 
   const [addModalOpen, setAddModalOpen] = useState(false);
-  const [viewModalOpen, setViewModalOpen] = useState(false);
+  
   const [orders, setOrders] = useState([]);
   const [itemsOrderedModalOpen, setItemsOrderedModalOpen] = useState(false);
   const [createDeliveryModalOpen, setCreateDeliveryModalOpen] = useState(false);
@@ -207,10 +213,7 @@ function Order() {
   // View Modal
 
 
-  const openViewModal = () => {
-  setViewModalOpen(true);
-};
-const closeViewModal = () => setViewModalOpen(false);
+  
 
 
  // START Create Items Ordered AREA
@@ -414,6 +417,7 @@ return (
               +
             </button>
           </div>
+
           <div id="order-container" className="mt-4 space-y-4">
             {orders.map((order) => (
               <div
@@ -448,69 +452,92 @@ return (
           </div>
         </div>
   
-        {/* START SHOW PURCHASE ORDERS */}
-          <div className="w-4/5 mx-auto mt-6">
-            {/* Header */}
-              <div>
-                <h3 className="text-sm px-4 text-gray-400 flex justify-between">
-                  <div className="relative left-[30px] flex-1 text-left">Customer's Name</div>
-                  <div className="relative left-[10px] flex-1 text-left">Address</div>
-                  <div className="relative left-[-10px] flex-1 text-left">Date</div>
-                </h3>
-              </div>
-            {/* Header */}
+       {/* START SHOW PURCHASE ORDERS */}
+<div className="w-4/5 mx-auto mt-6">
+  {/* White background container */}
+  <div className="bg-white p-6 rounded-lg shadow-xl">
+    {/* Header */}
+    <div>
+      <h3 className="text-sm px-4 text-gray-400 flex justify-between">
+        <div className="relative left-[30px] flex-1 text-left">Customer's Name</div>
+        <div className="relative left-[10px] flex-1 text-left">Address</div>
+        <div className="relative left-[-10px] flex-1 text-left">Date</div>
+      </h3>
+    </div>
+    {/* Header */}
 
-              {/* TITOYYYYYYYYYYYYYYYYYYYYYYYYYYY */}
+    {/* Customer's Data */}
+    {purchaseOrderData.map((customerData, index) => (
+      <div
+        key={index}
+        onClick={() => handlePurchaseOrderClick(customerData.purchase_order_id)}
+        className="bg-white p-6 m-6 rounded-lg shadow-2xl mb-1 border transition"
+      >
+        <div className="flex justify-between">
+          {/* Delivered to */}
+          <p className="flex-1 text-1xl text-left">{index + 1}. {customerData.customer_name}</p>
+          {/* Address */}
+          <p className="flex-1 text-sm text-gray-700 text-left">
+            {customerData.street}, {customerData.barangay}, {customerData.city || '""'}, {customerData.province}
+          </p>
+          {/* Date */}
+          <p className="flex-1 text-sm text-gray-700 text-left">{customerData.created_at}</p>
 
-            {/* Customer's Data */}
-            {purchaseOrderData.map((customerData, index) => (
-              <div
-                key={index}
-                onClick={() => handlePurchaseOrderClick(customerData.purchase_order_id)}
-                className="bg-white p-6 m-6 rounded-lg shadow-2xl mb-1 border transition"
-              >
-                <div className="flex justify-between">
-                  {/* Delivered to */}
-                  <p className="flex-1 text-1xl text-left">{index + 1}. {customerData.customer_name}</p>
-                  {/* Address */}
-                  <p className="flex-1 text-sm text-gray-700 text-left">{customerData.street}, {customerData.barangay},{customerData.city || ` "" `}, {customerData.province}</p>
-                  {/* Date */}
-                  <p className="flex-1 text-sm text-gray-700 text-left">{customerData.created_at}</p>
+          <div className="buttons">
+                <button 
+                  className="bg-blue-500 hover:bg-blue-600 text-white rounded-md px-4 py-2 mr-10"
+                  onClick={openCreateDeliveryModal} // Trigger modal open
+                >
+                  Create Deliveries
+                </button>
 
-                  <div className="buttons">
-                    <button 
-                      className='bg-sky-400 hover:bg-cyan-400 rounded p-1.5 shadow-lg mr-10 '
-                    >
-                      Create Deliveries
-                    </button>
-                    <button 
-                      className='bg-sky-400 hover:bg-sky-500 rounded p-1.5 shadow-lg mr-10'
-                      onClick={() => toggleDropDown(customerData.purchase_order_id)} // Pass specific purchase_order_id
-                    >
-                      View
-                    </button>
-                    
-                    
-                    {/* GREG / DARREN  */}
-                    {openDropDowns[customerData.purchase_order_id] && (
-                      <div className='absolute mt-2 w-48 bg-white border border-gray-300 rounded shadow-lg z-50'>
-                        <ul className="py-1">
-                          <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">Option 1</li>
-                          <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">Option 2</li>
-                          <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">Option 3</li>
-                        </ul>
-                      </div>
-                    )}
+            <button 
+              className="bg-blue-500 hover:bg-blue-600 text-white rounded-md px-4 py-2 mr-10"
+              onClick={() => toggleDropDown(customerData.purchase_order_id)}
+            >
+              View
+            </button>
 
 
-                  </div>
-                </div>
-              </div>
-            ))}
+          {/* DropDown*/}
+         {openDropDowns[customerData.purchase_order_id] && (
+  <div
+    className="absolute mt-2 w-48 bg-white border border-gray-300 rounded shadow-lg z-50"
+    style={{ right: '200px' }} // Adjust the value to move the dropdown right
+  >
+    <ul className="py-1">
+      <li
+        className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+        onClick={() => {
+          openItemsOrderedModal(); // Open Items Ordered Modal
+          setOpenDropDowns({ ...openDropDowns, [customerData.purchase_order_id]: false }); // Close dropdown
+        }}
+      >
+        View Items Ordered
+      </li>
+      <li
+        className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+        onClick={() => {
+          openViewDeliveriesModal(); // Open View Deliveries Modal
+          setOpenDropDowns({ ...openDropDowns, [customerData.purchase_order_id]: false }); // Close dropdown
+        }}
+      >
+        View Deliveries
+      </li>
+    </ul>
+  </div>
+)}
 
-            {/* Customer's Data */}
           </div>
-        {/* END SHOW PURCHASE ORDERS */}
+        </div>
+      </div>
+    ))}
+    {/* Customer's Data */}
+  </div>
+  
+</div>
+{/* END SHOW PURCHASE ORDERS */}
+
 
 
 
@@ -613,9 +640,9 @@ return (
               <div className="flex flex-col items-end space-y-2">
                 <button
                   className="bg-blue-500 text-white px-4 py-2 rounded-md shadow-2xl w-32"
-                  onClick={openViewModal}
+                  onClick={openCreateItemsOrderedModal}
                 >
-                  View
+                  Create
                 </button>
                 <div className="flex items-center space-x-2">
                   <button
@@ -639,58 +666,7 @@ return (
           </div>
         </div>
       )}
-
-      {/* View Modal */}
-      {viewModalOpen && (
-        <div
-          id="viewModal"
-          className="modal fixed top-0 right-10 w-1/4 h-full flex justify-start items-center"
-        >
-          <div className="bg-white p-6 rounded-lg shadow-2xl w-full">
-            <div className="bg-blue-500 text-white text-center py-2 mb-4 rounded-md">
-              <h3 className="text-lg font-bold">View Options</h3>
-            </div>
-            <ul className="list-none pl-0">
-            <li
-                className="mb-4 cursor-pointer hover:bg-blue-500 hover:text-white px-4 py-2 rounded-md text-center transition-all"
-                onClick={openCreateItemsOrderedModal} // Open create items ordered modal
-              >
-                Create items ordered
-            </li>
-            <li
-              className="mb-4 cursor-pointer hover:bg-blue-500 hover:text-white px-4 py-2 rounded-md text-center transition-all"
-              onClick={openItemsOrderedModal} // Open items ordered modal
-            >
-              View items ordered
-            </li>
-            <li className="mb-4">
-              <button
-                className="bg-blue-500 text-white w-full hover:bg-blue-700 px-4 py-2 rounded-md transition-all"
-                onClick={openCreateDeliveryModal} // Function to open create delivery modal
-              >
-                Create deliveries
-              </button>
-            </li>
-
-              <li
-          className="mb-4 cursor-pointer hover:bg-blue-500 hover:text-white px-4 py-2 rounded-md text-center transition-all"
-          onClick={openViewDeliveriesModal} // Open view deliveries modal
-        >
-          View Deliveries
-        </li>
-          
-            </ul>
-            <div className="flex justify-end p-4">
-              <button
-                className="bg-blue-500 text-white hover:bg-blue-700 px-4 py-2 rounded-md shadow-2xl w-32 transition-all"
-                onClick={closeViewModal}
-              >
-                Close
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+ 
 
       {/* Start listing of products */}
       {createItemsOrderedModalOpen && (
@@ -791,7 +767,6 @@ return (
         </div>
 
 
-
             <div className="flex justify-end mt-4">
               <button
                 className="bg-gray-500 text-white hover:bg-gray-700 px-4 py-2 rounded-md"
@@ -816,170 +791,24 @@ return (
 
 
 
+       {/*View Items ordered Modal*/}
       {itemsOrderedModalOpen && (
-        <div
-          id="itemsOrderedModal"
-          className="modal fixed top-0 left-0 w-full h-full bg-gray-800 bg-opacity-75 flex justify-center items-center"
-        >
-          <div className="bg-white p-6 rounded-lg shadow-2xl w-1/3">
-            <h3 className="text-center text-lg font-bold mb-5">Items Ordered</h3>
-            
-            {/* Static container for items */}
-            <div className="bg-gray-100 p-4 rounded-md shadow-md">
-              <div className="flex flex-col">
-                <div className="border-b border-gray-300 pb-2 mb-2 flex justify-between items-start">
-                  <div className="flex flex-col">
-                    <h4 className="font-semibold">Item 1</h4>
-                    <p className="text-gray-500">Amount: 2</p> {/* Amount below item name */}
-                  </div>
-                  <p className="ml-4">Price: $100</p> {/* Price on the right */}
-                </div>
-                <div className="border-b border-gray-300 pb-2 mb-2 flex justify-between items-start">
-                  <div className="flex flex-col">
-                    <h4 className="font-semibold">Item 2</h4>
-                    <p className="text-gray-500">Amount: 1</p> {/* Amount below item name */}
-                  </div>
-                  <p className="ml-4">Price: $200</p> {/* Price on the right */}
-                </div>
-                <div className="border-b border-gray-300 pb-2 mb-2 flex justify-between items-start">
-                  <div className="flex flex-col">
-                    <h4 className="font-semibold">Item 3</h4>
-                    <p className="text-gray-500">Amount: 5</p> {/* Amount below item name */}
-                  </div>
-                  <p className="ml-4">Price: $50</p> {/* Price on the right */}
-                </div>
-              </div>
-            </div>
+        <ItemsOrderedModal
+        itemsOrderedModalOpen={itemsOrderedModalOpen}
+        onClose={closeItemsOrderedModal}
+      />
+   
 
-            <div className="flex justify-end mt-4">
-              <button
-                className="bg-blue-600 text-white hover:bg-blue-700 px-4 py-2 rounded-md"
-                onClick={closeItemsOrderedModal}
-              >
-                Close
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+  )};
 
- {/* Create Delivery Modal */}
-{createDeliveryModalOpen && (
-  <div
-    id="createDeliveryModal"
-    className="modal fixed inset-0 flex justify-center items-center z-50"
-    style={{ backgroundColor: "rgba(0, 0, 0, 0.5)" }} // Optional: adds a semi-transparent background
-  >
-    <div className="bg-white p-6 rounded-lg shadow-2xl w-2/4"> {/* Modal width */}
-      <div className="bg-blue-600 text-white text-center py-2 mb-4 rounded-md">
-        <h3 className="text-lg font-bold">Create Delivery</h3>
-      </div>
-      <form>
-        {/* Input fields for creating a delivery */}
-        <div className="mb-4">
-          <input
-            type="text"
-            id="deliveredTo"
-            className="border border-gray-300 p-2 w-full rounded-md"
-            placeholder="Delivered to"
-          />
-        </div>
-        <div className="grid grid-cols-4 gap-2 mb-4">
-          <div>
-            <input
-              type="text"
-              className="border border-gray-300 p-2 rounded-md w-full"
-              placeholder="Str."
-            />
-          </div>
-          <div>
-            <input
-              type="text"
-              className="border border-gray-300 p-2 rounded-md w-full"
-              placeholder="City"
-            />
-          </div>
-          <div>
-            <input
-              type="text"
-              className="border border-gray-300 p-2 rounded-md w-full"
-              placeholder="Barangay"
-            />
-          </div>
-          <div>
-            <input
-              type="text"
-              className="border border-gray-300 p-2 rounded-md w-full"
-              placeholder="Zipcode"
-            />
-          </div>
-        </div>
-        {/* <div className="mb-4">
-          <label className="block text-gray-700" htmlFor="deliveryDate"></label>
-          <input
-            type="text"
-            id="deliveryDate"
-            className="border border-gray-300 p-2 w-full rounded-md"
-            placeholder="Enter delivery date"
-          />
-        </div> */}
-
-        {/* Static Delivery Man Section */}
-        <div className="mb-4">
-          <label className="block text-gray-700 font-bold" htmlFor="deliveryMan">Delivery Man:</label>
-          <div className="border border-gray-300 rounded-md p-2 max-h-32 overflow-y-auto"> {/* Fixed container */}
-            <div className="flex flex-col space-y-2">
-              <div className="p-2 rounded-md">MufFEy</div>
-              <div className="p-2 rounded-md">Wat The dOg</div>
-              <div className="p-2 rounded-md">GroGgy</div>
-            </div>
-          </div>
-        </div>
-
-        {/* Add Item Section */}
-        <div className="mb-4 flex items-center">
-          <input
-            type="text"
-            className="border border-gray-300 p-2 rounded-md w-full"
-            placeholder="Add Item"
-          />
-          <button
-            type="button"
-            className="bg-blue-600 text-white hover:bg-blue-500 px-3 py-2 rounded-md ml-2"
-            onClick={() => {}}
-          >
-            Add
-          </button>
-        </div>
-        <div className="flex mt-20 justify-end space-x-2">
-          <button
-            className="bg-gray-500 text-white hover:bg-gray-700 px-3 py-1 rounded-md shadow-2xl transition-all"
-          >
-            Save
-          </button>
-          <button
-            className="bg-gray-500 text-white hover:bg-gray-700 px-3 py-1 rounded-md shadow-2xl transition-all"
-            onClick={closeCreateDeliveryModal}
-          >
-            Close
-          </button>
-
-          <button
-            type="button"
-            className="bg-blue-600 text-white hover:bg-blue-500 px-3 py-1 rounded-md shadow-2xl transition-all"
-            onClick={() => {
-              closeCreateDeliveryModal(); // Close the current modal
-              setNewDeliveryModalOpen(true); // Open the new modal
-            }}
-          >
-            Create Delivery
-          </button>
-        </div>
-      </form>
-    </div>
-  </div>
-)}
-
+  {/* Create Delivery Modal */}
+    {createDeliveryModalOpen && (
+      <CreateDeliveryModal 
+        createDeliveryModalOpen={createDeliveryModalOpen} 
+        closeCreateDeliveryModal={closeCreateDeliveryModal} 
+        setNewDeliveryModalOpen={setNewDeliveryModalOpen}
+      />
+    )}
 
 
 {/* New Delivery Modal */ }
@@ -1040,96 +869,11 @@ return (
   </div>
 )}
 
-{/* View Deliveries Modal */}
-{viewDeliveriesModalOpen && (
-  <div
-    id="viewDeliveriesModal"
-    className="modal fixed top-0 left-0 w-full h-full flex justify-center items-center bg-black bg-opacity-50"
-  >
-    <div className="bg-white p-6 rounded-lg shadow-2xl w-3/5 max-h-[90vh] overflow-y-auto">
-      <div className="bg-blue-500 text-white text-center py-2 mb-4 rounded-md">
-        <h3 className="text-lg font-bold">View Deliveries</h3>
-      </div>
-
-      {/* Delivery 1 */}
-      <div className="mb-6">
-        <div className="flex justify-between items-center">
-          <h4 className="font-bold">Delivery 1</h4>
-         
-        </div>
-        <p className="text-gray-500">Delivered to: <span className="font-bold">Barangay Lumbia</span></p>
-        <p className="text-sm text-gray-500">Address: Masterson Ave, Lumbia, Cagayan de Oro City, 9000</p>
-        <p className="text-sm text-gray-500">Date Delivered: 06/04/2024</p>
-        <p className="text-sm text-gray-500">Delivery man: <span className="font-bold">Daren Rebote</span></p>
-        
-        {/* Separate Items for Delivery 1 */}
-        <div className="mt-4">
-          <div className="border border-gray-300 rounded-md p-4 mb-2">
-            <div className="flex justify-between">
-              <p>₱1,500</p>
-              <p>Submersible Pump</p>
-              <p>x5</p>
-            </div>
-          </div>
-          <div className="border border-gray-300 rounded-md p-4 mb-2">
-            <div className="flex justify-between">
-              <p>₱500</p>
-              <p>Submersible Motor</p>
-              <p>x1</p>
-            </div>
-          </div>
-          <div className="border border-gray-300 rounded-md p-4">
-            <div className="flex justify-between">
-              <p>₱50</p>
-              <p>1 Inch Tube 1 Meter</p>
-              <p>x25</p>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Delivery 2 */}
-      <div className="mb-6">
-        <div className="flex justify-between items-center">
-          <h4 className="font-bold">Delivery 2</h4>
-        
-        </div>
-        <p className="text-gray-500">Delivered to: <span className="font-bold">Barangay Lumbia</span></p>
-        <p className="text-sm text-gray-500">Address: Masterson Ave, Lumbia, Cagayan de Oro City, 9000</p>
-        <p className="text-sm text-gray-500">Date Delivered: 06/09/2024</p>
-        <p className="text-sm text-gray-500">Delivery man: <span className="font-bold">Owen Cabarribas</span></p>
-        
-        {/* Separate Items for Delivery 2 */}
-        <div className="mt-4">
-          <div className="border border-gray-300 rounded-md p-4 mb-2">
-            <div className="flex justify-between">
-              <p>₱1,500</p>
-              <p>Submersible Pump</p>
-              <p>x5</p>
-            </div>
-          </div>
-          <div className="border border-gray-300 rounded-md p-4">
-            <div className="flex justify-between">
-              <p>₱50</p>
-              <p>1 Inch Tube 1 Meter</p>
-              <p>x15</p>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Close button */}
-      <div className="flex justify-end mt-4">
-        <button
-          className="bg-blue-500 text-white hover:bg-blue-700 px-4 py-2 rounded-md transition-all"
-          onClick={closeViewDeliveriesModal}
-        >
-          Close
-        </button>
-      </div>
-    </div>
-  </div>
-)}
+  {/* View Deliveries Modal */}
+  <ViewDeliveriesModal
+          viewDeliveriesModalOpen={viewDeliveriesModalOpen}
+          onClose={closeViewDeliveriesModal}
+        />   
       </div>
     </div>
   );
