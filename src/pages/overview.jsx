@@ -157,9 +157,9 @@ function Overview() {
                 <div key={index} className="bg-gray-200 p-4 rounded-lg shadow-sm mt-4 flex justify-between items-start">
                   <div className="text-gray-700 text-sm">
                     {/* Render each part of the address on a new line */}
-                    {customerData.address.street && <div>{customerData.address.street},</div>}
-                    {customerData.address.barangay && <div>{customerData.address.barangay},</div>}
-                    {customerData.address.province && <div>{customerData.address.province}</div>}
+                    <div>{customerData.address.street}, {customerData.address.barangay}</div>
+                    <div>{customerData.address.province}</div>
+                    <div>{customerData.address.city}</div>
                   </div>
                   <span className="text-gray-700 text-sm">{customerData.created_at}</span>
                 </div>

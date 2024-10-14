@@ -159,7 +159,7 @@ function Delivery() {
                 onClick={() => handleOpenConfirmationModal({ deliveryNo: 2, deliveredTo: 'Barangay Lumbia', deliveryMan: 'Arlene Abad', date: '06/04/2024' })}
               />
             </div>    
-            <div className="mt-3 p-4 rounded-lg shadow-2xl flex justify-between items-center bg-[#8EF7A8]">
+            {/* <div className="mt-3 p-4 rounded-lg shadow-2xl flex justify-between items-center bg-[#8EF7A8]">
               <span className="w-1/6">3</span>
               <span className="w-1/3">Barangay Iponan</span>
               <span className="w-1/3">John Smith</span>
@@ -170,7 +170,7 @@ function Delivery() {
                 className="w-7 h-7 rounded-full cursor-pointer"
                 onClick={() => handleOpenConfirmationModal({ deliveryNo: 3, deliveredTo: 'Barangay Iponan', deliveryMan: 'John Smith', date: '06/05/2024' })}
               />
-            </div>        
+            </div>         */}
           </div>
 
           {/* 2nd Container - Ongoing Delivery */}
@@ -178,28 +178,31 @@ function Delivery() {
           <div className="mt-2 bg-gray-100 p-4 rounded-lg shadow-2xl">
             <h3 className="text-sm text-gray-400 flex justify-between items-center">
               <span className="w-1/6 text-left">Delivery Number.</span>
-              <span className="w-1/3 text-left">Delivered to</span>
-              <span className="w-1/3 text-left">Delivery Man</span>
-              <span className="w-1/6 text-left">Date</span>
+              <span className="relative left-[12px] w-1/3 text-left">Delivered to</span>
+              <span className="relative left-[-10px] w-1/3 text-left">Delivery Man</span>
+              <span className="relative left-[-40px] w-1/6 text-left">Date</span>
             </h3>
             {onDelivery && Object.values(onDelivery).length > 0 ? (
-              Object.values(onDelivery).map((onDeliveryData, index)=> (
-                <div key={index} className='m-3 p-4 rounded-lg shadow-2xl flex justify-between items-center bg-[#E6FCE6] '>
-                  <span>
-                    Purchase order ID: {onDeliveryData.purchase_order_id} | customer name: {onDeliveryData.customer_name}
-                  </span>
+              Object.values(onDelivery).map((onDeliveryData, index) => (
+                <div
+                  key={index}
+                  className="m-3 p-4 rounded-lg shadow-2xl flex justify-between items-center bg-[#E6FCE6]"
+                >
+                  <span className="w-1/6 text-left">{onDeliveryData.purchase_order_id}</span>
+                  <span className="w-1/3 text-left">{onDeliveryData.customer_name}</span>
+                  <span className="w-1/3 text-left">{onDeliveryData.deliveryman_name}</span>
+                  <span className="w-1/6 text-left">{onDeliveryData.date}</span>
+
                   <img
                     src="./src/assets/info.png"
                     alt="Delivery Image"
                     className="w-7 h-7 rounded-full cursor-pointer"
-                    onClick={() => handleOpenOngoingDeliveryModal(onDeliveryData)}  // Pass specific delivery
+                    onClick={() => handleOpenOngoingDeliveryModal(onDeliveryData)} // Pass specific delivery
                   />
                 </div>
               ))
-            ): (
-              <span>
-                No On-delivery.
-              </span>
+            ) : (
+              <span>No On-delivery.</span>
             )}
               {/* <span className="w-1/6">4</span>
               <span className="w-1/3">Iponan</span>

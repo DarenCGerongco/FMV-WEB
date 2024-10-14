@@ -460,43 +460,53 @@ return (
     <div>
       <h3 className="text-sm px-4 text-gray-400 flex justify-between">
         <div className="relative left-[30px] flex-1 text-left">Customer's Name</div>
-        <div className="relative left-[10px] flex-1 text-left">Address</div>
-        <div className="relative left-[-10px] flex-1 text-left">Date</div>
+        <div className="relative left-[-89px] flex-1 text-left">Address</div>
+        <div className="relative left-[-240px] flex-1 text-left">Date</div>
       </h3>
     </div>
     {/* Header */}
 
     {/* Customer's Data */}
     {purchaseOrderData.map((customerData, index) => (
-      <div
-        key={index}
-        onClick={() => handlePurchaseOrderClick(customerData.purchase_order_id)}
-        className="bg-white p-6 m-6 rounded-lg shadow-2xl mb-1 border transition"
+  <div
+    key={index}
+    onClick={() => handlePurchaseOrderClick(customerData.purchase_order_id)}
+    className="bg-white p-6 m-6 rounded-lg shadow-2xl mb-1 border transition"
+  >
+    <div className="flex justify-between">
+      {/* Customer's Name */}
+      <p className="relative left-[30px] flex-1 text-1xl text-left">
+        {index + 1}. {customerData.customer_name}
+      </p>
+
+      {/* Address */}
+      <p className="relative left-[10px] flex-1 text-sm text-gray-700 text-left">
+        <div>{customerData.street} {customerData.barangay},</div>
+        <div>{customerData.province}</div>
+        <div>{customerData.city}</div>
+      </p>
+
+      {/* Date */}
+      <p className="relative left-[-10px] flex-1 text-sm text-gray-700 text-left">
+        {customerData.created_at}
+      </p>
+
+      {/* Buttons */}
+      <div className="buttons flex">
+        <button 
+        className="bg-blue-500 hover:bg-blue-600 text-white rounded-md w-40 h-12 mr-10"
+        onClick={openCreateDeliveryModal} // Trigger modal open
       >
-        <div className="flex justify-between">
-          {/* Delivered to */}
-          <p className="flex-1 text-1xl text-left">{index + 1}. {customerData.customer_name}</p>
-          {/* Address */}
-          <p className="flex-1 text-sm text-gray-700 text-left">
-            {customerData.street}, {customerData.barangay}, {customerData.city || '""'}, {customerData.province}
-          </p>
-          {/* Date */}
-          <p className="flex-1 text-sm text-gray-700 text-left">{customerData.created_at}</p>
+        Create Deliveries
+      </button>
 
-          <div className="buttons">
-                <button 
-                  className="bg-blue-500 hover:bg-blue-600 text-white rounded-md px-4 py-2 mr-10"
-                  onClick={openCreateDeliveryModal} // Trigger modal open
-                >
-                  Create Deliveries
-                </button>
+      <button 
+        className="bg-blue-500 hover:bg-blue-600 text-white rounded-md w-32 h-12"
+        onClick={() => toggleDropDown(customerData.purchase_order_id)}
+      >
+        View
+      </button>
 
-            <button 
-              className="bg-blue-500 hover:bg-blue-600 text-white rounded-md px-4 py-2 mr-10"
-              onClick={() => toggleDropDown(customerData.purchase_order_id)}
-            >
-              View
-            </button>
 
 
           {/* DropDown*/}
@@ -670,123 +680,120 @@ return (
 
       {/* Start listing of products */}
       {createItemsOrderedModalOpen && (
-        <div className="modal fixed inset-0 flex justify-center items-center z-50">
-          <div className="bg-white p-6 rounded-lg shadow-2xl w-1/2">
-            <h3 className="text-lg font-bold text-center mb-4">Create Items Ordered</h3>
+  <div className="modal fixed inset-0 flex justify-center items-center z-50">
+    <div className="bg-white p-6 rounded-lg shadow-2xl w-1/2">
+      <h3 className="text-lg font-bold text-center mb-4">Create Items Ordered</h3>
 
-            <div className="flex p-4 items-center space-between">
-              <div className="relative w-100 flex">
-                <input
-                  type="number"
-                  placeholder="Price"
-                  className="m-1 border border-gray-300 p-2 rounded-md w-full mb-2"
-                  value={price}
-                  onChange={(e) => setPrice(e.target.value)}
-                  min="0"
-                />
-                <input
-                  type="text"
-                  placeholder="Search for a product"
-                  className="m-1 border border-gray-300 p-2 rounded-md w-full mb-2"
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  onFocus={() => setShowDropdown(true)}
-                  onBlur={() => setShowDropdown(false)}
-                />
+      <div className="flex p-4 items-center space-between">
+        <div className="relative w-100 flex">
+          <input
+            type="number"
+            placeholder="Price"
+            className="m-1 border border-gray-300 p-2 rounded-md w-full mb-2"
+            value={price}
+            onChange={(e) => setPrice(e.target.value)}
+            min="0"
+          />
+          <input
+            type="text"
+            placeholder="Search for a product"
+            className="m-1 border border-gray-300 p-2 rounded-md w-full mb-2"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            onFocus={() => setShowDropdown(true)}
+            onBlur={() => setShowDropdown(false)}
+          />
 
-                <input
-                  type="number"
-                  placeholder="Quantity"
-                  className="m-1 border border-gray-300 p-2 rounded-md w-full mb-2"
-                  value={quantity}
-                  onChange={(e) => setQuantity(e.target.value)}
-                  min="1"
-                />
+          <input
+            type="number"
+            placeholder="Quantity"
+            className="m-1 border border-gray-300 p-2 rounded-md w-full mb-2"
+            value={quantity}
+            onChange={(e) => setQuantity(e.target.value)}
+            min="1"
+          />
 
-                {showDropdown && (
-                  <div className="absolute left-0 right-0 mt-11 border border-gray-300 rounded-md bg-white z-10 max-h-48 overflow-y-auto shadow-lg">
-                    {products
-                      .filter(product =>
-                        product.product_name.toLowerCase().includes(searchTerm.toLowerCase()) &&
-                        !productsListed.some(item => item.product_id === product.product_id) // Filtering out already listed products
-                      )
-                      .map(product => (
-                        <div
-                          key={product.product_id}
-                          className="flex p-3 justify-between border-b border-gray-300 py-2 cursor-pointer hover:bg-gray-100"
-                          onMouseDown={() => handleProductSelect(product)}
-                        >
-                          <span>{product.product_id}. {product.product_name}</span>
-                          <span>Available: {product.quantity}</span>
-                        </div>
-                      ))}
+          {showDropdown && (
+            <div className="absolute left-0 right-0 mt-11 border border-gray-300 rounded-md bg-white z-10 max-h-48 overflow-y-auto shadow-lg">
+              {products
+                .filter(product =>
+                  product.product_name.toLowerCase().includes(searchTerm.toLowerCase()) &&
+                  !productsListed.some(item => item.product_id === product.product_id) // Filtering out already listed products
+                )
+                .map(product => (
+                  <div
+                    key={product.product_id}
+                    className="flex p-3 justify-between border-b border-gray-300 py-2 cursor-pointer hover:bg-gray-100"
+                    onMouseDown={() => handleProductSelect(product)}
+                  >
+                    <span>{product.product_id}. {product.product_name}</span>
+                    <span>Available: {product.quantity}</span>
                   </div>
-                )}
-              </div>
+                ))}
+            </div>
+          )}
+        </div>
 
-              <div className='flex items-center bg-custom-blue rounded-md p-2 ml-1'>
-                <button className='md:text-white' onClick={handleAddProduct}>
-                  Add
+        <div className='flex items-center bg-custom-blue rounded-md p-2 ml-1'>
+          <button className='md:text-white' onClick={handleAddProduct}>
+            Add
+          </button>
+        </div>
+      </div>
+
+      <div className="mt-6">
+        <h3>Products Listed:</h3>
+        <div>
+          <h3 className="grid grid-cols-5 text-sm px-4 text-gray-400">
+            <span className="relative left-[1px] col-span-1">Price</span>
+            <span className="relative left-[-10px] col-span-2">Product Name</span>
+            <span className="col-span-1">Quantity</span>
+          </h3>
+        </div>
+        <div className="border-t border-gray-300">
+          {productsListed.map((item, index) => (
+            <div key={index} className="grid grid-cols-5 border-b border-gray-300 py-2 items-center">
+              <span className="col-span-1">₱ {item.price.toFixed(2)}</span>
+              <span className="col-span-2">{item.product_name}</span>
+              <span className="col-span-1">x{item.quantity}</span>
+              {/* Actions: Edit and Delete Buttons */}
+              <div className="col-span-1.5 justify-end flex space-x-3">
+                <button
+                  className="text-blue-500 hover:underline"
+                  onClick={() => handleEditProduct(item)}
+                >
+                  Edit
+                </button>
+                <button
+                  className="text-red-500 hover:underline"
+                  onClick={() => handleDeleteProduct(item.product_id)}
+                >
+                  Delete
                 </button>
               </div>
             </div>
-
-            <div className="mt-6">
-          <h3>Products Listed:</h3>
-          <div>
-            <h3 className="grid grid-cols-5 text-sm px-4 text-gray-400">
-              <span className="relative left-[1px] col-span-1">Price</span>
-              <span className="relative left-[-10px] col-span-2">Product Name</span>
-              <span className="col-span-1">Quantity</span>
-            </h3>
-          </div>
-          <div className="border-t border-gray-300">
-            {productsListed.map((item, index) => (
-              <div key={index} className="grid grid-cols-5 border-b border-gray-300 py-2 items-center">
-                <span className="col-span-1">₱ {item.price.toFixed(2)}</span>
-                <span className="col-span-2">{item.product_name}</span>
-                <span className="col-span-1">x{item.quantity}</span>
-                {/* Actions: Edit and Delete Buttons */}
-                <div className="col-span-1.5 justify-end flex space-x-3">
-                  <button
-                    className="text-blue-500 hover:underline"
-                    onClick={() => handleEditProduct(item)}
-                  >
-                    Edit
-                  </button>
-                  <button
-                    className="text-red-500 hover:underline"
-                    onClick={() => handleDeleteProduct(item.product_id)}
-                  >
-                    Delete
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
+          ))}
         </div>
+      </div>
 
+      <div className="flex justify-end mt-4 space-x-2">
+        <button
+          className="bg-gray-500 text-white hover:bg-gray-700 px-4 py-2 rounded-md"
+          onClick={handleSave} // Call handleSave on click
+        >
+          Save
+        </button>
+        <button
+          className="bg-red-500 text-white hover:bg-red-700 px-4 py-2 rounded-md"
+          onClick={closeCreateItemsOrderedModal} // Call to close the modal
+        >
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
+)}
 
-            <div className="flex justify-end mt-4">
-              <button
-                className="bg-gray-500 text-white hover:bg-gray-700 px-4 py-2 rounded-md"
-                onClick={handleSave} // Call handleSave on click
-              >
-                Save
-              </button>
-            </div>
-
-            {/* <div className="flex justify-end mt-4">
-              <button
-                className="bg-gray-500 text-white hover:bg-gray-700 px-4 py-2 rounded-md"
-                onClick={closeCreateItemsOrderedModal} // Closing the modal
-              >
-                Close
-              </button>
-            </div> */}
-          </div>
-        </div>
-      )}
       {/* End listing of products */}
 
 

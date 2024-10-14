@@ -26,12 +26,11 @@ export const GlobalProvider = ({ children }) => {
         try {
           console.log(`Fetching user name for ID: ${id}`); // Debugging
           const response = await axios.get(`${url}/api/users/${id}`);
-          console.log('API Response from GlobalContext.jsx:', response.data);  // Log the response
-          console.log('Welcome,', response.data.data.name)
-          const { name } = response.data.data;  // Access the 'name' from response.data.data
-          setUserName(name);
+          console.log('API Response from GlobalContext.jsx:', response.data.name);  // Log the response
+          console.log('Welcome,', response.data.name)
+          setUserName(response.data.name);
         } catch (error) {
-          console.error('Error fetching user name:', error);
+          console.error('This is from Global JSCN: Error fetching user name:', error);
         }
       };
 
