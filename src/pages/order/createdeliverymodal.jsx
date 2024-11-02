@@ -1,7 +1,62 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 
-const CreateDeliveryModal = ({ createDeliveryModalOpen, closeCreateDeliveryModal, setNewDeliveryModalOpen }) => {
+const CreateDeliveryModal = ({ createDeliveryModalOpen, closeCreateDeliveryModal, setNewDeliveryModalOpen, purchaseOrderId }) => {
   if (!createDeliveryModalOpen) return null;
+
+  const [deliverymanRecord, setDeliverymanRecord] = useState([]);
+  const [selectedUser, setSelectedUser] = useState(null);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const url = import.meta.env.VITE_API_URL;
+  const [userData, setUserData] = useState([]);
+  const [productDetails, setProductDetails] = useState([])
+
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const response = await axios.get(`${url}/api/users`);
+        setDeliverymanRecord(response.data.data);
+      } catch (e) {
+        console.error('Error fetching users:', e);
+      }
+    };
+    fetchUsers();
+
+    // Log the purchaseOrderId to verify that it's passed correctly
+    console.log('Selected Purchase Order ID:', purchaseOrderId);
+
+    const fetchPurchaseOrderByID = async () => {
+      try{
+        const response = await axios.get(`${url}/api/purchase-orders-delivery/${purchaseOrderId}`)
+
+        // console.log('This is from response.data', response.data.product_details);
+        setProductDetails(response.data.product_details);
+        // productDetails.forEach((product) => {
+        //   console.log(product);
+        // })
+        setUserData(response.data);
+      } catch (error){
+        console.error('Could not fetch Purchase Order by ID:', error);
+      }
+    }
+    fetchPurchaseOrderByID();
+
+    const fetchPurchaseOrderByID_WithRemainingBalance = async () => {
+      try{
+        const response = await axios.get(`${url}/api/purchase-orders-get-remaining-balance/${purchaseOrderId}`)
+
+        console.log("This is from Amang",response);
+      }catch (e){
+        console.error(e);
+      }
+    }
+    fetchPurchaseOrderByID_WithRemainingBalance();
+  }, [url, purchaseOrderId]);
+
+  const handleSelectUser = (userName) => {
+    setSelectedUser(userName);
+    setIsDropdownOpen(false);
+  };
 
   return (
     <div
@@ -13,49 +68,57 @@ const CreateDeliveryModal = ({ createDeliveryModalOpen, closeCreateDeliveryModal
         <div className="bg-blue-600 text-white text-center py-2 mb-4 rounded-md">
           <h3 className="text-lg font-bold">Create Delivery</h3>
         </div>
-        <form>
-          <div className="mb-4">
-            <input
-              type="text"
-              id="deliveredTo"
-              className="border border-gray-300 p-2 w-full rounded-md"
-              placeholder="Delivered to"
-            />
-          </div>
-          <div className="grid grid-cols-4 gap-2 mb-4">
-            {/* Other input fields */}
-            <div><input type="text" className="border border-gray-300 p-2 rounded-md w-full" placeholder="Str." /></div>
-            <div><input type="text" className="border border-gray-300 p-2 rounded-md w-full" placeholder="City" /></div>
-            <div><input type="text" className="border border-gray-300 p-2 rounded-md w-full" placeholder="Barangay" /></div>
-            <div><input type="text" className="border border-gray-300 p-2 rounded-md w-full" placeholder="Zipcode" /></div>
-          </div>
 
-          {/* Delivery Man Section */}
+        <form>
+          {/* Display Purchase Order ID */}
+          <p>
+            <strong>Purchase Order ID:</strong> {String(purchaseOrderId || 'N/A')}
+          </p>
+
+          {/* Delivery Man Selection */}
           <div className="mb-4">
-            <label className="block text-gray-700 font-bold" htmlFor="deliveryMan">Delivery Man:</label>
-            <div className="border border-gray-300 rounded-md p-2 max-h-32 overflow-y-auto">
-              <div className="flex flex-col space-y-2">
-                <div className="p-2 rounded-md">MufFEy</div>
-                <div className="p-2 rounded-md">Wat The dOg</div>
-                <div className="p-2 rounded-md">GroGgy</div>
+            <label className="block text-gray-700 font-bold">Delivery Man:</label>
+            <div 
+              className="border border-gray-300 rounded-md p-2 cursor-pointer" 
+              onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+            >
+              {selectedUser || 'Select a Delivery Man'}
+            </div>
+
+            {isDropdownOpen && (
+              <div className="border border-gray-300 rounded-md mt-2 max-h-32 overflow-y-auto bg-white shadow-lg">
+                <ul>
+                  {deliverymanRecord.map((user, index) => (
+                    <li
+                      key={index}
+                      className="p-2 hover:bg-blue-100 cursor-pointer"
+                      onClick={() => handleSelectUser(user.name)}
+                    >
+                      {user.name}
+                    </li>
+                  ))}
+                </ul>
               </div>
+            )}
+            <ul>
+              {productDetails.map((product, index) => (
+                <li 
+                  key={index}
+                  className='p-2'
+                >
+                  {/* Display the product details in a readable format */}
+                  {`Product ID: ${product.product_id}, Price: ${product.price}, Quantity: ${product.quantity}`}
+                </li>
+              ))}
+            </ul>
+            <div>
+              <h2>
+                Create delivery
+              </h2>
             </div>
           </div>
-
-          {/* Add Item Section */}
-          <div className="mb-4 flex items-center">
-            <input type="text" className="border border-gray-300 p-2 rounded-md w-full" placeholder="Add Item" />
-            <button type="button" className="bg-blue-600 text-white hover:bg-blue-500 px-3 py-2 rounded-md ml-2">
-              Add
-            </button>
-          </div>
-          
-          {/* Action buttons */}
-          <div className="flex mt-20 justify-end space-x-2">
-            <button className="bg-gray-500 text-white hover:bg-gray-700 px-3 py-1 rounded-md" onClick={closeCreateDeliveryModal}>Close</button>
-            <button className="bg-blue-600 text-white hover:bg-blue-500 px-3 py-1 rounded-md" onClick={() => { closeCreateDeliveryModal(); setNewDeliveryModalOpen(true); }}>Create Delivery</button>
-          </div>
         </form>
+
       </div>
     </div>
   );

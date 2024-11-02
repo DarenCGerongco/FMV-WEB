@@ -53,6 +53,7 @@ function Order() {
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [showDropdown, setShowDropdown] = useState(false);
   const [products, setProducts] = useState([]); // Available products
+  const [selectedPurchaseOrderId, setSelectedPurchaseOrderId] = useState(null);
 
   // START CUSTOMER ORDER'S INFORMATION
   const [purchaseOrderDetails, setPurchaseOrderDetails] = useState({
@@ -222,6 +223,7 @@ function Order() {
       const openCreateItemsOrderedModal = () => {
         setCreateItemsOrderedModalOpen(true);
       };
+      
       const closeCreateItemsOrderedModal = () => {
         setCreateItemsOrderedModalOpen(false);
       };
@@ -346,7 +348,8 @@ const closeItemsOrderedModal = () => {
 };
 
 // Create Delivery Modal
-const openCreateDeliveryModal = () => {
+const openCreateDeliveryModal = (purchaseOrderId) => {
+  setSelectedPurchaseOrderId(purchaseOrderId); // Set the selected ID
   setCreateDeliveryModalOpen(true);
 };
 
@@ -453,100 +456,95 @@ return (
         </div>
   
        {/* START SHOW PURCHASE ORDERS */}
-<div className="w-4/5 mx-auto mt-6">
-  {/* White background container */}
-  <div className="bg-white p-6 rounded-lg shadow-xl">
-    {/* Header */}
-    <div>
-      <h3 className="text-sm px-4 text-gray-400 flex justify-between">
-        <div className="relative left-[30px] flex-1 text-left">Customer's Name</div>
-        <div className="relative left-[-89px] flex-1 text-left">Address</div>
-        <div className="relative left-[-240px] flex-1 text-left">Date</div>
-      </h3>
-    </div>
-    {/* Header */}
+        <div className="w-4/5 mx-auto mt-6">
+          {/* White background container */}
+          <div className="bg-white p-6 rounded-lg shadow-xl">
+            {/* Header */}
+            <div>
+              <h3 className="text-sm px-4 text-gray-400 flex justify-between">
+                <div className="relative left-[30px] flex-1 text-left">Customer's Name</div>
+                <div className="relative left-[-89px] flex-1 text-left">Address</div>
+                <div className="relative left-[-240px] flex-1 text-left">Date</div>
+              </h3>
+            </div>
+            {/* Header */}
 
-    {/* Customer's Data */}
-    {purchaseOrderData.map((customerData, index) => (
-  <div
-    key={index}
-    onClick={() => handlePurchaseOrderClick(customerData.purchase_order_id)}
-    className="bg-white p-6 m-6 rounded-lg shadow-2xl mb-1 border transition"
-  >
-    <div className="flex justify-between">
-      {/* Customer's Name */}
-      <p className="relative left-[30px] flex-1 text-1xl text-left">
-        {index + 1}. {customerData.customer_name}
-      </p>
+            {/* Customer's Data */}
+            {purchaseOrderData.map((customerData, index) => (
+              <div
+                key={index}
+                onClick={() => openCreateDeliveryModal(customerData.purchase_order_id)} // Wrap in an arrow function
+                className="bg-white p-6 m-6 rounded-lg shadow-2xl mb-1 border transition"
+              >
+                <div className="flex justify-between">
+                  {/* Customer's Name */}
+                  <p className="relative left-[30px] flex-1 text-1xl text-left">
+                    {index + 1}. {customerData.customer_name}
+                  </p>
 
-      {/* Address */}
-      <p className="relative left-[10px] flex-1 text-sm text-gray-700 text-left">
-        <div>{customerData.street} {customerData.barangay},</div>
-        <div>{customerData.province}</div>
-        <div>{customerData.city}</div>
-      </p>
+                  {/* Address */}
+                  <div className="relative left-[10px] flex-1 text-sm text-gray-700 text-left">
+                    <div>{customerData.street} {customerData.barangay},</div>
+                    <div>{customerData.province}</div>
+                    <div>{customerData.city}</div>
+                  </div>
 
-      {/* Date */}
-      <p className="relative left-[-10px] flex-1 text-sm text-gray-700 text-left">
-        {customerData.created_at}
-      </p>
+                  {/* Date */}
+                  <p className="relative left-[-10px] flex-1 text-sm text-gray-700 text-left">
+                    {customerData.created_at}
+                  </p>
 
-      {/* Buttons */}
-      <div className="buttons flex">
-        <button 
-        className="bg-blue-500 hover:bg-blue-600 text-white rounded-md w-40 h-12 mr-10"
-        onClick={openCreateDeliveryModal} // Trigger modal open
-      >
-        Create Deliveries
-      </button>
+                  {/* Buttons */}
+                  <div className="buttons flex">
+                    <button 
+                      className="bg-blue-500 hover:bg-blue-600 text-white rounded-md w-40 h-12 mr-10"
+                      onClick={openCreateDeliveryModal} // Trigger modal open
+                    >
+                      Create Deliveries
+                    </button>
 
-      <button 
-        className="bg-blue-500 hover:bg-blue-600 text-white rounded-md w-32 h-12"
-        onClick={() => toggleDropDown(customerData.purchase_order_id)}
-      >
-        View
-      </button>
-
-
-
-          {/* DropDown*/}
-         {openDropDowns[customerData.purchase_order_id] && (
-  <div
-    className="absolute mt-2 w-48 bg-white border border-gray-300 rounded shadow-lg z-50"
-    style={{ right: '200px' }} // Adjust the value to move the dropdown right
-  >
-    <ul className="py-1">
-      <li
-        className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
-        onClick={() => {
-          openItemsOrderedModal(); // Open Items Ordered Modal
-          setOpenDropDowns({ ...openDropDowns, [customerData.purchase_order_id]: false }); // Close dropdown
-        }}
-      >
-        View Items Ordered
-      </li>
-      <li
-        className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
-        onClick={() => {
-          openViewDeliveriesModal(); // Open View Deliveries Modal
-          setOpenDropDowns({ ...openDropDowns, [customerData.purchase_order_id]: false }); // Close dropdown
-        }}
-      >
-        View Deliveries
-      </li>
-    </ul>
-  </div>
-)}
-
+                    <button 
+                      className="bg-blue-500 hover:bg-blue-600 text-white rounded-md w-32 h-12"
+                      onClick={() => toggleDropDown(customerData.purchase_order_id)}
+                    >
+                      View
+                    </button>
+                      {/* DropDown*/}
+                      {openDropDowns[customerData.purchase_order_id] && (
+                        <div
+                          className="absolute mt-2 w-48 bg-white border border-gray-300 rounded shadow-lg z-50"
+                          style={{ right: '200px' }} // Adjust the value to move the dropdown right
+                        >
+                          <ul className="py-1">
+                            <li
+                              className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                              onClick={() => {
+                                openItemsOrderedModal(); // Open Items Ordered Modal
+                                setOpenDropDowns({ ...openDropDowns, [customerData.purchase_order_id]: false }); // Close dropdown
+                              }}
+                            >
+                              View Items Ordered
+                            </li>
+                            <li
+                              className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                              onClick={() => {
+                                openViewDeliveriesModal(); // Open View Deliveries Modal
+                                setOpenDropDowns({ ...openDropDowns, [customerData.purchase_order_id]: false }); // Close dropdown
+                              }}
+                            >
+                              View Deliveries
+                            </li>
+                          </ul>
+                        </div>
+                      )}
+                  </div>
+                </div>
+              </div>
+            ))}
+            {/* Customer's Data */}
           </div>
         </div>
-      </div>
-    ))}
-    {/* Customer's Data */}
-  </div>
-  
-</div>
-{/* END SHOW PURCHASE ORDERS */}
+      {/* END SHOW PURCHASE ORDERS */}
 
 
 
@@ -814,6 +812,7 @@ return (
         createDeliveryModalOpen={createDeliveryModalOpen} 
         closeCreateDeliveryModal={closeCreateDeliveryModal} 
         setNewDeliveryModalOpen={setNewDeliveryModalOpen}
+        purchaseOrderId={selectedPurchaseOrderId}
       />
     )}
 
