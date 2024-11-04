@@ -128,7 +128,7 @@ function Order() {
 
                 setPurchaseOrderData(combinedData);
 
-                console.log(combinedData);
+                // console.log(combinedData);
                 // const names = data.map(name => name.customer_name);
                 // console.log(data);
                 // const addresses = data.map(byAddress => byAddress.address)
@@ -328,8 +328,8 @@ function Order() {
         products: productsListed, // Add the products listed into purchase order details
       }));
     
-      console.log('Products Listed:', productsListed);
-      console.log('Purchase Order Details:', purchaseOrderDetails);
+      // console.log('Products Listed:', productsListed);
+      // console.log('Purchase Order Details:', purchaseOrderDetails);
     
       // Here you can add functionality to send purchaseOrderDetails to your API
     };
@@ -473,7 +473,6 @@ return (
             {purchaseOrderData.map((customerData, index) => (
               <div
                 key={index}
-                onClick={() => openCreateDeliveryModal(customerData.purchase_order_id)} // Wrap in an arrow function
                 className="bg-white p-6 m-6 rounded-lg shadow-2xl mb-1 border transition"
               >
                 <div className="flex justify-between">
@@ -498,8 +497,7 @@ return (
                   <div className="buttons flex">
                     <button 
                       className="bg-blue-500 hover:bg-blue-600 text-white rounded-md w-40 h-12 mr-10"
-                      onClick={openCreateDeliveryModal} // Trigger modal open
-                    >
+                      onClick={() => openCreateDeliveryModal(customerData.purchase_order_id)}                    >
                       Create Deliveries
                     </button>
 
