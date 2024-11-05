@@ -191,7 +191,7 @@ function DeliveryMan() {
         </div>
         <div className="w-4/5 mx-auto bg-white p-5 m-3 rounded-lg shadow-2xl">
           <div className="relative mt-4 flex items-center space-x-4">
-            <div className="flex items-center w-full px-4 py-3 border border-gray-300 rounded-md shadow-2xl focus-within:border-blue-500 relative h-12">
+            <div className="flex items-center w-full px-4 py-3 border border-gray-300 rounded-md focus-within:border-blue-500 relative h-12">
               <span className="text-black-500 whitespace-nowrap">DELIVERY MAN</span>
               <div className="border-l border-gray-300 h-10 mx-2"></div>
               <input
@@ -210,41 +210,37 @@ function DeliveryMan() {
               +
             </button>
           </div>
-          <div id="delivery-man-container" className="mt-4 space-y-4">
-          {deliveryMen.map((deliveryMan, index) => (
-            <div
-              key={index}
-              className="flex items-center justify-between bg-white-200 p-4 rounded-lg shadow-2xl relative"
-            >
-            <div className="information flex">
-              <div className='font-bold'>
-                {deliveryMan.name}
-              </div>
-              <div className="font-bold ml-5">
-               |
-              </div>
-              <div className='font-bold ml-5'>
-                {deliveryMan.number}
-              </div>
+
+          <div id="delivery-man-container" className="mt-4 space-y-1">
+            <div className="grid grid-cols-6 gap-1 font-bold border-b-2 border-gray-300 p-1">
+              <div className="col-span-2">Name</div>
+              <div className="col-span-2">Number</div>
+              <div className="col-span-1">Edit</div>
+              <div className="col-span-1">Delete</div>
             </div>
-            <div className="settings">
-              <div className="flex space-x-2">
-                <img
-                  src="./src/assets/edit.png"
-                  alt="Edit"
-                  className="w-6 h-6 cursor-pointer"
-                  onClick={() => openEditModal(deliveryMan.name)}
-                />
-                <img
-                  src="./src/assets/delete.png" //! TODO: Add a delete icon here
-                  alt="Delete"
-                  className="w-6 h-6 cursor-pointer"
-                  onClick={() => handleDelete(deliveryMan.id)}
-                />
+
+            {deliveryMen.map((deliveryMan, index) => (
+              <div key={index} className="grid grid-cols-6 gap-1 text-left border-b border-gray-300 p-1">
+                <div className="col-span-2">{deliveryMan.name}</div>
+                <div className="col-span-2">{deliveryMan.number}</div>
+                <div className="col-span-1">
+                  <img
+                    src="./src/assets/edit.png"
+                    alt="Edit"
+                    className="w-5 h-5 cursor-pointer"
+                    onClick={() => openEditModal(deliveryMan.name)}
+                  />
+                </div>
+                <div className="col-span-1">
+                  <img
+                    src="./src/assets/delete.png"
+                    alt="Delete"
+                    className="w-5 h-5 cursor-pointer"
+                    onClick={() => handleDelete(deliveryMan.id)}
+                  />
+                </div>
               </div>
-            </div>
-            </div>
-          ))}
+            ))}
         </div>
       </div>
         {/* Add Modal */}

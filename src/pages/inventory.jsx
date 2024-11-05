@@ -216,29 +216,29 @@ const fetchProducts = async () => {
           </div>
 
           {/* Labels */}
-          <div className="mt-4 mb-10 px-4">
-            <div className="grid grid-cols-6 font-semibold">
-              <div className=" col-span-2 p-1">Product Name</div>
-              <div className=" p-2">Product Category</div>
-              <div className=" p-2">Product Price</div>
-              <div className=" p-2">Product Amount</div>
-              <div className=" p-2">Edit</div>
+          <div className="mt-4 space-y-1">
+            <div className="grid grid-cols-7 font-semibold">
+              <div className="col-span-2">Product Name</div>
+              <div className="col-span-2">Product Category</div>
+              <div className="col-span-1">Product Price (PHP)</div>
+              <div className="col-span-1">Product Amount (PCS)</div>
+              <div className="col-span-1">Edit</div>
             </div>
 
             {(searchResults.length > 0 ? searchResults : items).map((item, index) => (
               <div
                 key={index}
-                className="grid grid-cols-6 hover:black"
+                className="grid grid-cols-7 text-left border-b border-gray-300"
               >
-                <div className="border border-black col-span-2 p-1">{highlightText(item.product_name, searchInput)}</div>
-                <div className="border border-black p-1">{item.category_name}</div>
-                <div className="border border-black p-1">P {item.original_price ? item.original_price : 'N/A'}</div>
-                <div className="border border-black p-1">{item.quantity}</div>
-                <div className='ml-[10px] p-1'>
+                <div className="col-span-2">{highlightText(item.product_name, searchInput)}</div>
+                <div className="col-span-2">{item.category_name}</div>
+                <div className="col-span-1">P {item.original_price ? item.original_price : 'N/A'}</div>
+                <div className="col-span-1">{item.quantity}</div>
+                <div className="col-span-1">
                   <img
                     src="./src/assets/edit.png"
                     alt="Edit"
-                    className="w-6 h-6 cursor-pointer"
+                    className="w-5 h-5 cursor-pointer"
                     onClick={() => openEditModal(item.product_name)}
                   />
                 </div>
