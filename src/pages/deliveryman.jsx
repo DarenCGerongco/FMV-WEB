@@ -212,7 +212,7 @@ function DeliveryMan() {
           </div>
 
           <div id="delivery-man-container" className="mt-4 space-y-1">
-            <div className="grid grid-cols-6 gap-1 font-bold border-b-2 border-gray-300 p-1">
+            <div className="grid grid-cols-6 gap-1 font-bold p-1">
               <div className="col-span-2">Name</div>
               <div className="col-span-2">Number</div>
               <div className="col-span-1">Edit</div>

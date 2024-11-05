@@ -228,7 +228,7 @@ const fetchProducts = async () => {
             {(searchResults.length > 0 ? searchResults : items).map((item, index) => (
               <div
                 key={index}
-                className="grid grid-cols-7 text-left border-b border-gray-300"
+                className="grid grid-cols-7 text-left border-b border-gray-300 p-1"
               >
                 <div className="col-span-2">{highlightText(item.product_name, searchInput)}</div>
                 <div className="col-span-2">{item.category_name}</div>
@@ -238,7 +238,7 @@ const fetchProducts = async () => {
                   <img
                     src="./src/assets/edit.png"
                     alt="Edit"
-                    className="w-5 h-5 cursor-pointer"
+                    className="w-5 h-5 cursor-pointer align-items-center"
                     onClick={() => openEditModal(item.product_name)}
                   />
                 </div>
