@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext, useRef } from 'react';  // Add useContext to the import
+import React, { useState, useEffect, useRef, useContext } from 'react'; // Add useContext here
 import Navbar from '../components/navbar';
 import axios from 'axios';
 import { GlobalContext } from '../../GlobalContext';  // Import GlobalContext
@@ -54,6 +54,9 @@ function Order() {
   const [showDropdown, setShowDropdown] = useState(false);
   const [products, setProducts] = useState([]); // Available products
   const [selectedPurchaseOrderId, setSelectedPurchaseOrderId] = useState(null);
+  const [openDropDowns, setOpenDropDowns] = useState({}); // Declare only once
+  const dropdownRef = useRef(null); // Reference for the dropdown container
+
 
   // START CUSTOMER ORDER'S INFORMATION
   const [purchaseOrderDetails, setPurchaseOrderDetails] = useState({
@@ -92,7 +95,7 @@ function Order() {
   //START -  THIS WILL CLOSE BOTH THE VIEW AREA AND THE CREATE PO 
     const closeAddModal = () => {
       setAddModalOpen(false);
-      closeViewModal();
+      // closeViewModal();
       closeCreateItemsOrderedModal();
     }
   //END -  THIS WILL CLOSE BOTH THE VIEW AREA AND THE CREATE PO 
@@ -204,9 +207,10 @@ function Order() {
       closeAddModal();
     } catch (error) {
       if (error.response) {
-        console.error('Error creating order:', error.response.data);
+        alert('Error creating order: Text Inputs needed to be filled!');
+        console.log('Error creating order:', error.response.data);
       } else {
-        console.error('Error creating order:', error.message);
+        alert("An error occurred: " + error.message);
       }
     }
   };
@@ -327,11 +331,7 @@ function Order() {
         ...prevDetails,
         products: productsListed, // Add the products listed into purchase order details
       }));
-    
-      // console.log('Products Listed:', productsListed);
-      // console.log('Purchase Order Details:', purchaseOrderDetails);
-    
-      // Here you can add functionality to send purchaseOrderDetails to your API
+      setCreateItemsOrderedModalOpen(false);   
     };
     
 
@@ -362,33 +362,33 @@ const openViewDeliveriesModal = () => setViewDeliveriesModalOpen(true);
 const closeViewDeliveriesModal = () => setViewDeliveriesModalOpen(false);
 
 // VIEW - 
-  const [openDropDowns, setOpenDropDowns] = useState({});
   const [viewDropDown, setViewDropDown] = useState(false);
   const dropDownRef = useRef(null);
 
   const toggleDropDown = (id) => {
-    setOpenDropDowns((prevState)=> ({
+    setOpenDropDowns((prevState) => ({
       ...prevState,
       [id]: !prevState[id],
     }));
-  }
+  };
 
   // const toggleDropDown = () => {
   //   setViewDropDown(!viewDropDown);
   // };
 
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (dropDownRef.current && !dropDownRef.current.contains(even.target)) {
-        setViewDropDown(false);
-      }
-    };
-    document.addEventListener('mousedown', handleClickOutside);
+      // Close dropdown when clicking outside
+        useEffect(() => {
+          const handleClickOutside = (event) => {
+            if (dropDownRef.current && !dropDownRef.current.contains(event.target)) {
+              setOpenDropDowns({}); // Close all dropdowns when clicked outside
+            }
+          };
+          document.addEventListener('mousedown', handleClickOutside);
 
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside)
-    };
-  }, []);
+          return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+          };
+        }, []);
 // VIEW
 
 
@@ -401,12 +401,12 @@ return (
         </div>
         <div className="w-4/5 mx-auto bg-white p-5 m-3 rounded-lg shadow-2xl">
           <div className="relative mt-4 flex items-center space-x-4">
-            <div className="flex items-center w-full px-4 py-3 border border-gray-300 rounded-md shadow-2xl focus-within:border-blue-500 relative h-12">
+            <div className="flex items-center w-full px-4 py-3 border border-gray-300 rounded-md focus-within:border-blue-500 relative h-12">
               <span className="text-black-500 whitespace-nowrap">ORDER</span>
               <div className="border-l border-gray-300 h-10 mx-2"></div>
               <input
                 type="text"
-                className="flex-grow focus:outline-none px-4 py-2 rounded-md shadow-2xl sm:text-sm border-gray-300 focus:ring-blue-500 focus:border-blue-500 block w-full"
+                className="flex-grow focus:outline-none px-4 py-2 rounded-md sm:text-sm border-gray-300 focus:ring-blue-500 focus:border-blue-500 block w-full"
                 placeholder="Search for Ongoing Order"
               />
               <button className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-blue-500 text-white px-4 py-2 rounded-md shadow-2xl focus:outline-none">
@@ -456,7 +456,7 @@ return (
         </div>
   
        {/* START SHOW PURCHASE ORDERS */}
-        <div className="w-4/5 mx-auto mt-6">
+       <div className="w-4/5 mx-auto mt-6">
           {/* White background container */}
           <div className="bg-white p-6 rounded-lg shadow-xl">
             {/* Header */}
@@ -475,9 +475,9 @@ return (
                 key={index}
                 className="bg-white p-6 m-6 rounded-lg shadow-2xl mb-1 border transition"
               >
-                <div className="flex justify-between">
+                <div className="flex items-center">
                   {/* Customer's Name */}
-                  <p className="relative left-[30px] flex-1 text-1xl text-left">
+                  <p className="relative justify-between items-center flex-1 text-1xl text-left">
                     {index + 1}. {customerData.customer_name}
                   </p>
 
@@ -507,18 +507,19 @@ return (
                     >
                       View
                     </button>
-                      {/* DropDown*/}
-                      {openDropDowns[customerData.purchase_order_id] && (
+                    {/* DropDown*/}
+                    {openDropDowns[customerData.purchase_order_id] && (
                         <div
+                          ref={dropDownRef} // Attach ref here to detect outside clicks
                           className="absolute mt-2 w-48 bg-white border border-gray-300 rounded shadow-lg z-50"
-                          style={{ right: '200px' }} // Adjust the value to move the dropdown right
+                          style={{ right: '200px' }}
                         >
                           <ul className="py-1">
                             <li
                               className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
                               onClick={() => {
-                                openItemsOrderedModal(); // Open Items Ordered Modal
-                                setOpenDropDowns({ ...openDropDowns, [customerData.purchase_order_id]: false }); // Close dropdown
+                                openItemsOrderedModal();
+                                setOpenDropDowns({ ...openDropDowns, [customerData.purchase_order_id]: false });
                               }}
                             >
                               View Items Ordered
@@ -526,8 +527,8 @@ return (
                             <li
                               className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
                               onClick={() => {
-                                openViewDeliveriesModal(); // Open View Deliveries Modal
-                                setOpenDropDowns({ ...openDropDowns, [customerData.purchase_order_id]: false }); // Close dropdown
+                                openViewDeliveriesModal();
+                                setOpenDropDowns({ ...openDropDowns, [customerData.purchase_order_id]: false });
                               }}
                             >
                               View Deliveries
@@ -551,33 +552,33 @@ return (
       {addModalOpen && (
         <div
           id="addModal"
-          className="modal fixed top-0 left-0 w-full h-full bg-gray-800 bg-opacity-75 flex justify-center items-center"
+          className="modal fixed top-0 left-0 w-full h-full bg-gray-500 bg-opacity-60 flex justify-center items-center"
         >
-          <div className="bg-white p-6 rounded-lg shadow-2xl w-1/3">
+          <div className="bg-white p-6 rounded-lg w-1/3">
             <h3 className="text-center text-lg font-bold mb-4">Create Purchase Order</h3>
             
             {/* Delivered To Field */}
-            <div className="mb-4 relative">
+            <div className="relative">
               <input
                 type="text"
                 id="customer_name"
                 name="customer_name"
                 placeholder="Customer's Name"
-                className="w-full p-4 rounded-lg shadow-2xl mt-4 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full p-4 rounded-lg mt-4 border-black border-[1px] "
                 value={purchaseOrderDetails.customer_name}
                 onChange={handleChange}
               />
             </div>
             
             {/* Address Fields */}
-            <div className="grid grid-cols-4 gap-4 mb-4">
+            <div className="flex flex-col  gap-4 mb-4">
               <div>
                 <input
                   type="text"
                   id="street"
                   name="street"
                   placeholder="Street"
-                  className="w-full p-4 rounded-lg shadow-2xl mt-4 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full p-4 rounded-lg mt-4 rounded-md  rounded-lg border-black border-[1px]"
                   value={purchaseOrderDetails.street}
                   onChange={handleChange}
                 />
@@ -588,7 +589,7 @@ return (
                   id="barangay"
                   name="barangay"
                   placeholder="Barangay"
-                  className="w-full p-4 rounded-lg shadow-2xl mt-4 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full p-4 rounded-lg mt-4 rounded-md rounded-lg border-black border-[1px]"
                   value={purchaseOrderDetails.barangay}
                   onChange={handleChange}
                 />
@@ -599,7 +600,7 @@ return (
                   id="city"
                   name="city"
                   placeholder="City"
-                  className="w-full p-4 rounded-lg shadow-2xl mt-4 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full p-4 rounded-lg mt-4 rounded-md rounded-lg border-black border-[1px]"
                   value={purchaseOrderDetails.city}
                   onChange={handleChange}
                 />
@@ -609,8 +610,8 @@ return (
                   type="text"
                   id="province"
                   name="province"
-                  placeholder="province"
-                  className="w-full p-4 rounded-lg shadow-2xl mt-4 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder="Province"
+                  className="w-full p-4 rounded-lg mt-4 rounded-md rounded-lg border-black border-[1px]"
                   value={purchaseOrderDetails.province}
                   onChange={handleChange}
                 />
@@ -621,7 +622,7 @@ return (
                   id="zipcode"
                   name="zipcode"
                   placeholder="Zipcode"
-                  className="w-full p-4 rounded-lg shadow-2xl mt-4 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full p-4 rounded-lg mt-4 rounded-md rounded-lg border-black border-[1px]"
                   value={purchaseOrderDetails.zipcode}
                   onChange={handleChange}
                 />
@@ -645,10 +646,10 @@ return (
             <div className="flex justify-end p-4">
               <div className="flex flex-col items-end space-y-2">
                 <button
-                  className="bg-blue-500 text-white px-4 py-2 rounded-md shadow-2xl w-32"
+                  className="bg-blue-500 text-white py-2 rounded-md shadow-2xl w-[100%]"
                   onClick={openCreateItemsOrderedModal}
                 >
-                  Create
+                  Register Product
                 </button>
                 <div className="flex items-center space-x-2">
                   <button
@@ -676,119 +677,119 @@ return (
 
       {/* Start listing of products */}
       {createItemsOrderedModalOpen && (
-  <div className="modal fixed inset-0 flex justify-center items-center z-50">
-    <div className="bg-white p-6 rounded-lg shadow-2xl w-1/2">
-      <h3 className="text-lg font-bold text-center mb-4">Create Items Ordered</h3>
+        <div className="modal fixed inset-0 flex justify-center items-center z-50">
+          <div className="bg-white p-6 rounded-lg shadow-2xl w-1/2">
+            <h3 className="text-lg font-bold text-center mb-4">Create Items Ordered</h3>
 
-      <div className="flex p-4 items-center space-between">
-        <div className="relative w-100 flex">
-          <input
-            type="number"
-            placeholder="Price"
-            className="m-1 border border-gray-300 p-2 rounded-md w-full mb-2"
-            value={price}
-            onChange={(e) => setPrice(e.target.value)}
-            min="0"
-          />
-          <input
-            type="text"
-            placeholder="Search for a product"
-            className="m-1 border border-gray-300 p-2 rounded-md w-full mb-2"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            onFocus={() => setShowDropdown(true)}
-            onBlur={() => setShowDropdown(false)}
-          />
+            <div className="flex p-4 items-center space-between">
+              <div className="relative w-[90%] flex">
+                <input
+                  type="number"
+                  placeholder="Bid Price (PHP)"
+                  className="m-1 border border-gray-300 p-2 rounded-md w-[50%]"
+                  value={price}
+                  onChange={(e) => setPrice(e.target.value)}
+                  min="0"
+                />
+                <input
+                  type="text"
+                  placeholder="Search for a product"
+                  className="m-1 border border-gray-300 p-2 rounded-md w-[50%]"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  onFocus={() => setShowDropdown(true)}
+                  onBlur={() => setShowDropdown(false)}
+                />
 
-          <input
-            type="number"
-            placeholder="Quantity"
-            className="m-1 border border-gray-300 p-2 rounded-md w-full mb-2"
-            value={quantity}
-            onChange={(e) => setQuantity(e.target.value)}
-            min="1"
-          />
+                <input
+                  type="number"
+                  placeholder="Quantity (PCS)"
+                  className="m-1 border border-gray-300 p-2 rounded-md w-[50%]"
+                  value={quantity}
+                  onChange={(e) => setQuantity(e.target.value)}
+                  // min="1"
+                />
 
-          {showDropdown && (
-            <div className="absolute left-0 right-0 mt-11 border border-gray-300 rounded-md bg-white z-10 max-h-48 overflow-y-auto shadow-lg">
-              {products
-                .filter(product =>
-                  product.product_name.toLowerCase().includes(searchTerm.toLowerCase()) &&
-                  !productsListed.some(item => item.product_id === product.product_id) // Filtering out already listed products
-                )
-                .map(product => (
-                  <div
-                    key={product.product_id}
-                    className="flex p-3 justify-between border-b border-gray-300 py-2 cursor-pointer hover:bg-gray-100"
-                    onMouseDown={() => handleProductSelect(product)}
-                  >
-                    <span>{product.product_id}. {product.product_name}</span>
-                    <span>Available: {product.quantity}</span>
+                {showDropdown && (
+                  <div className="absolute left-0 right-0 mt-11 border border-gray-300 rounded-md bg-white z-10 max-h-48 overflow-y-auto shadow-lg">
+                    {products
+                      .filter(product =>
+                        product.product_name.toLowerCase().includes(searchTerm.toLowerCase()) &&
+                        !productsListed.some(item => item.product_id === product.product_id) // Filtering out already listed products
+                      )
+                      .map(product => (
+                        <div
+                          key={product.product_id}
+                          className="flex p-3 justify-between border-b border-gray-300 py-2 cursor-pointer hover:bg-gray-100"
+                          onMouseDown={() => handleProductSelect(product)}
+                        >
+                          <span>{product.product_id}. {product.product_name}</span>
+                          <span>Available: {product.quantity}</span>
+                        </div>
+                      ))}
                   </div>
-                ))}
-            </div>
-          )}
-        </div>
+                )}
+              </div>
 
-        <div className='flex items-center bg-custom-blue rounded-md p-2 ml-1'>
-          <button className='md:text-white' onClick={handleAddProduct}>
-            Add
-          </button>
-        </div>
-      </div>
-
-      <div className="mt-6">
-        <h3>Products Listed:</h3>
-        <div>
-          <h3 className="grid grid-cols-5 text-sm px-4 text-gray-400">
-            <span className="relative left-[1px] col-span-1">Price</span>
-            <span className="relative left-[-10px] col-span-2">Product Name</span>
-            <span className="col-span-1">Quantity</span>
-          </h3>
-        </div>
-        <div className="border-t border-gray-300">
-          {productsListed.map((item, index) => (
-            <div key={index} className="grid grid-cols-5 border-b border-gray-300 py-2 items-center">
-              <span className="col-span-1">₱ {item.price.toFixed(2)}</span>
-              <span className="col-span-2">{item.product_name}</span>
-              <span className="col-span-1">x{item.quantity}</span>
-              {/* Actions: Edit and Delete Buttons */}
-              <div className="col-span-1.5 justify-end flex space-x-3">
-                <button
-                  className="text-blue-500 hover:underline"
-                  onClick={() => handleEditProduct(item)}
-                >
-                  Edit
-                </button>
-                <button
-                  className="text-red-500 hover:underline"
-                  onClick={() => handleDeleteProduct(item.product_id)}
-                >
-                  Delete
+              <div className='flex justify-center w-[10%] bg-custom-blue rounded-md p-2 '>
+                <button className='md:text-white ' onClick={handleAddProduct}>
+                  Add
                 </button>
               </div>
             </div>
-          ))}
-        </div>
-      </div>
 
-      <div className="flex justify-end mt-4 space-x-2">
-        <button
-          className="bg-gray-500 text-white hover:bg-gray-700 px-4 py-2 rounded-md"
-          onClick={handleSave} // Call handleSave on click
-        >
-          Save
-        </button>
-        <button
-          className="bg-red-500 text-white hover:bg-red-700 px-4 py-2 rounded-md"
-          onClick={closeCreateItemsOrderedModal} // Call to close the modal
-        >
-          Close
-        </button>
-      </div>
-    </div>
-  </div>
-)}
+            <div className="mt-6">
+              <h3>Products Listed:</h3>
+              <div>
+                <h3 className="grid grid-cols-5 text-sm px-4 text-gray-400">
+                  <span className="relative left-[1px] col-span-1">Price</span>
+                  <span className="relative left-[-10px] col-span-2">Product Name</span>
+                  <span className="col-span-1">Quantity</span>
+                </h3>
+              </div>
+              <div className="border-t border-gray-300">
+                {productsListed.map((item, index) => (
+                  <div key={index} className="grid grid-cols-5 border-b border-gray-300 py-2 items-center">
+                    <span className="col-span-1">₱ {item.price.toFixed(2)}</span>
+                    <span className="col-span-2">{item.product_name}</span>
+                    <span className="col-span-1">x{item.quantity}</span>
+                    {/* Actions: Edit and Delete Buttons */}
+                    <div className="col-span-1.5 justify-end flex space-x-3">
+                      <button
+                        className="text-blue-500 hover:underline"
+                        onClick={() => handleEditProduct(item)}
+                      >
+                        Edit
+                      </button>
+                      <button
+                        className="text-red-500 hover:underline"
+                        onClick={() => handleDeleteProduct(item.product_id)}
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="flex justify-end mt-4 space-x-2">
+              <button
+                className="bg-red-500 text-white hover:bg-red-700 px-4 py-2 rounded-md"
+                onClick={closeCreateItemsOrderedModal} // Call to close the modal
+              >
+                Close
+              </button>
+              <button
+                className="bg-gray-500 text-white hover:bg-gray-700 px-4 py-2 rounded-md"
+                onClick={handleSave} // Call handleSave on click
+              >
+                Save
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* End listing of products */}
 
@@ -815,66 +816,66 @@ return (
     )}
 
 
-{/* New Delivery Modal */ }
-{newDeliveryModalOpen && (
-  <div
-    id="newDeliveryModal"
-    className="modal fixed inset-0 flex justify-center items-center z-50"
-    style={{ backgroundColor: "rgba(0, 0, 0, 0.5)" }}
-  >
-    <div className="bg-white p-6 rounded-lg shadow-2xl w-2/4">
-      <div className="bg-blue-600 text-white text-center py-2 mb-4 rounded-md">
-        <h3 className="text-lg font-bold">New Delivery Created</h3>
-      </div>
+    {/* New Delivery Modal */ }
+    {newDeliveryModalOpen && (
+      <div
+        id="newDeliveryModal"
+        className="modal fixed inset-0 flex justify-center items-center z-50"
+        style={{ backgroundColor: "rgba(0, 0, 0, 0.5)" }}
+      >
+        <div className="bg-white p-6 rounded-lg shadow-2xl w-2/4">
+          <div className="bg-blue-600 text-white text-center py-2 mb-4 rounded-md">
+            <h3 className="text-lg font-bold">New Delivery Created</h3>
+          </div>
 
-      {/* Delivery Details */}
-      <div className="mb-4">
-        <p><strong>Delivered to:</strong> Barangay Lumbia</p>
-      </div>
-      <div className="mb-4">
-        <p><strong>Address:</strong> Materson ave, Lumbia, Cagayan de Oro City, 9000</p>
-      </div>
-      <div className="mb-4">
-        <p><strong>Date Delivered:</strong> 06/04/24</p>
-      </div>
-      <div className="mb-4">
-        <p><strong>Delivery Man:</strong> Daren Rebote</p>
-      </div>
+          {/* Delivery Details */}
+          <div className="mb-4">
+            <p><strong>Delivered to:</strong> Barangay Lumbia</p>
+          </div>
+          <div className="mb-4">
+            <p><strong>Address:</strong> Materson ave, Lumbia, Cagayan de Oro City, 9000</p>
+          </div>
+          <div className="mb-4">
+            <p><strong>Date Delivered:</strong> 06/04/24</p>
+          </div>
+          <div className="mb-4">
+            <p><strong>Delivery Man:</strong> Daren Rebote</p>
+          </div>
 
-      {/* Items Ordered Container */}
-      <div className="mb-6 p-4 bg-gray-100 rounded-md shadow-md">
-        <div className="flex justify-between">
-          <span className="font-bold">₱ 1500</span>
-          <span className="font-bold">Submersible Pump</span>
-          <span className="font-bold">x5</span>
+          {/* Items Ordered Container */}
+          <div className="mb-6 p-4 bg-gray-100 rounded-md shadow-md">
+            <div className="flex justify-between">
+              <span className="font-bold">₱ 1500</span>
+              <span className="font-bold">Submersible Pump</span>
+              <span className="font-bold">x5</span>
+            </div>
+          </div>
+
+          {/* Cancel and Save Buttons */}
+          <div className="flex justify-center space-x-4">
+            <button
+              className="bg-gray-500 text-white hover:bg-gray-700 px-4 py-2 rounded-md shadow-2xl transition-all"
+              onClick={() => setNewDeliveryModalOpen(false)} // Cancel button to close the modal
+            >
+              Cancel
+            </button>
+
+            <button
+              className="bg-blue-600 text-white hover:bg-blue-500 px-4 py-2 rounded-md shadow-2xl transition-all"
+              onClick={() => {
+                // Save logic here
+                setNewDeliveryModalOpen(false); // You can also close the modal after saving if needed
+              }}
+            >
+              Save
+            </button>
+          </div>
         </div>
       </div>
+    )}
 
-      {/* Cancel and Save Buttons */}
-      <div className="flex justify-center space-x-4">
-        <button
-          className="bg-gray-500 text-white hover:bg-gray-700 px-4 py-2 rounded-md shadow-2xl transition-all"
-          onClick={() => setNewDeliveryModalOpen(false)} // Cancel button to close the modal
-        >
-          Cancel
-        </button>
-
-        <button
-          className="bg-blue-600 text-white hover:bg-blue-500 px-4 py-2 rounded-md shadow-2xl transition-all"
-          onClick={() => {
-            // Save logic here
-            setNewDeliveryModalOpen(false); // You can also close the modal after saving if needed
-          }}
-        >
-          Save
-        </button>
-      </div>
-    </div>
-  </div>
-)}
-
-  {/* View Deliveries Modal */}
-  <ViewDeliveriesModal
+        {/* View Deliveries Modal */}
+        <ViewDeliveriesModal
           viewDeliveriesModalOpen={viewDeliveriesModalOpen}
           onClose={closeViewDeliveriesModal}
         />   

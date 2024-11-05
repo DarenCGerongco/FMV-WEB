@@ -175,7 +175,7 @@ const fetchProducts = async () => {
         {/* Searchbar and Restock Button */}
         <div className="w-4/5 mx-auto bg-white p-5 m-3 rounded-lg shadow-2xl">
           <div className="relative mt-4 flex items-center space-x-4">
-            <div className="flex items-center w-full px-4 py-3 border border-gray-300 rounded-md shadow-2xl focus-within:border-blue-500 relative h-12">
+            <div className="flex items-center w-full px-4 py-3 border border-gray-300 rounded-md focus-within:border-blue-500 relative h-12">
               <span className="text-black-500 whitespace-nowrap">INVENTORY</span>
               <div className="border-l border-gray-300 h-10 mx-2"></div>
               <input
@@ -216,24 +216,25 @@ const fetchProducts = async () => {
           </div>
 
           {/* Labels */}
-          <div>
-            <h3 className="text-sm mt-6 px-4 text-gray-400 flex justify-between"> 
-              <div className="w-1/5">Item Name</div>
-              <div className="relative left-[10px] w-1/5">Item Category</div>
-              <div className="w-1/5">Item Price</div>
-              <div className="relative left-[-10px] w-1/5">Item Amount</div>
-              <div className="relative left-[-15px] w-1/13">Edit</div>
-            </h3>
-          </div>
+          <div className="mt-4 mb-10 px-4">
+            <div className="grid grid-cols-6 font-semibold">
+              <div className=" col-span-2 p-1">Product Name</div>
+              <div className=" p-2">Product Category</div>
+              <div className=" p-2">Product Price</div>
+              <div className=" p-2">Product Amount</div>
+              <div className=" p-2">Edit</div>
+            </div>
 
-          <div className="mt-4 space-y-4 mb-10 px-4">
             {(searchResults.length > 0 ? searchResults : items).map((item, index) => (
-              <div key={index} className="flex items-center justify-between bg-white p-4 rounded-lg shadow-2xl">
-                <div className="w-1/5">{highlightText(item.product_name, searchInput)}</div>
-                <div className="w-1/5">{item.category_name}</div>
-                <div className="w-1/5">{item.original_price ? item.original_price : 'N/A'}</div>
-                <div className="w-1/5">{item.quantity}</div>
-                <div className="w-1/13">
+              <div
+                key={index}
+                className="grid grid-cols-6 hover:black"
+              >
+                <div className="border border-black col-span-2 p-1">{highlightText(item.product_name, searchInput)}</div>
+                <div className="border border-black p-1">{item.category_name}</div>
+                <div className="border border-black p-1">P {item.original_price ? item.original_price : 'N/A'}</div>
+                <div className="border border-black p-1">{item.quantity}</div>
+                <div className='ml-[10px] p-1'>
                   <img
                     src="./src/assets/edit.png"
                     alt="Edit"
@@ -244,6 +245,7 @@ const fetchProducts = async () => {
               </div>
             ))}
           </div>
+
         </div>
 
         {/* Add Item Modal */}
