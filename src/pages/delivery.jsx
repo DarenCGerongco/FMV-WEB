@@ -104,7 +104,6 @@ function Delivery() {
         <div className="w-4/5 mx-auto bg-white p-6 m-3 rounded-lg shadow-2xl mb-6 border">
           <h2 className="text-1xl font-bold">Management System Delivery</h2>
         </div>
-        <div className="w-4/5 mx-auto bg-white p-5 m-3 rounded-lg shadow-xl">
           <div className="relative mt-4 flex items-center space-x-4">
             <div className="flex items-center w-full px-4 py-3 border border-gray-300 rounded-md shadow-xl focus-within:border-blue-500 relative h-12">
               <span className="text-black-500 whitespace-nowrap">DELIVERY</span>
@@ -119,6 +118,7 @@ function Delivery() {
               </button>
             </div>
           </div>
+        <div className="w-4/5 mx-auto bg-white p-5 m-3 rounded-lg shadow-xl">
 
           {/* 1st Container - Confirmation */}
           <h2 className="text-xs mt-10 text-green-600 font-bold ">Confirmation</h2>
