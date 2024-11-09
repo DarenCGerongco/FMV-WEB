@@ -154,7 +154,7 @@ function Overview() {
             <div className="bg-white p-6 rounded-lg shadow-md">
               <h3 className="text-lg font-bold mb-4">ORDER</h3>
               {orders.map((customerData, index) => (
-                <div key={index} className="bg-gray-200 p-4 rounded-lg shadow-sm mt-4 flex justify-between items-start">
+                <div key={index} className="bg-gray-200 p-4 rounded-lg shadow-md mt-4 flex justify-between items-start">
                   <div className="text-gray-700 text-sm">
                     {/* Render each part of the address on a new line */}
                     <div>{customerData.address.street}, {customerData.address.barangay}</div>
@@ -170,15 +170,15 @@ function Overview() {
             {/* Delivery Container */}
             <div className="bg-white p-6 rounded-lg shadow-md">
               <h3 className="text-lg font-bold mb-4">DELIVERY</h3>
-              <div className="p-4 rounded-lg shadow-sm mt-4 flex justify-between items-center bg-[#8EF7A8]">
+              <div className="p-4 rounded-lg shadow-md mt-4 flex justify-between items-center bg-[#8EF7A8]">
                 <span className="text-gray-700 text-sm">Confirm Delivery:</span>
                 <span className="text-gray-700 text-sm">2</span>
               </div>
-              <div className="p-4 rounded-lg shadow-sm mt-4 flex justify-between items-center bg-[#E6FCE6]">
+              <div className="p-4 rounded-lg shadow-md mt-4 flex justify-between items-center bg-[#E6FCE6]">
                 <span className="text-gray-700 text-sm">On Delivery:</span>
                 <span className="text-gray-700 text-sm">2</span>
               </div>
-              <div className="bg-gray-200 p-4 rounded-lg shadow-sm mt-4 flex justify-between items-center">
+              <div className="bg-gray-200 p-4 rounded-lg shadow-md mt-4 flex justify-between items-center">
                 <span className="text-gray-700 text-sm">Delivered:</span>
                 <span className="text-gray-700 text-sm">2</span>
               </div>
@@ -191,7 +191,7 @@ function Overview() {
             >
               <h3 className="text-lg font-bold mb-4">DELIVERY MAN ACCOUNT</h3>
               {userNames.map((name, index) => (
-                <div key={index} className="bg-gray-200 p-4 rounded-lg shadow-sm mt-4">
+                <div key={index} className="bg-gray-200 p-4 rounded-lg shadow-md mt-4">
                   <p className="text-gray-700 text-sm whitespace-nowrap">{name}</p>
                 </div>
               ))}
@@ -230,7 +230,7 @@ function Overview() {
               <div className="bg-white text-sm mt-10 flex border-b">
               </div>
               {inventoryItems.map((item, index) => (
-                <div key={index} className="bg-gray-200 p-4 rounded-lg shadow-sm mt-4 flex justify-between items-center border-b">
+                <div key={index} className="bg-gray-200 p-4 rounded-lg shadow-md mt-4 flex justify-between items-center border-b">
                   <div className="flex-1">{item.product_name}</div>
                   <div className="flex-1 text-center">{item.category_name}</div>
                   <div className="flex-1 text-right">{item.quantity}</div>
