@@ -138,7 +138,7 @@ function Overview() {
     <div className="flex w-full bg-white">
       <Navbar />
       <div className="flex flex-col xl:w-4/5 ml-80 bg-white">
-        <div className="w-11/12 mx-auto bg-white p-6 m-3 rounded-lg shadow-2xl mb-6 border">
+        <div className="w-11/12 mx-auto bg-white p-6 m-3 rounded-lg shadow-md mb-6 border">
           <h2 className="text-1xl font-bold">
             Management System Overviews   {/* Handle empty userName case */}
           </h2>
@@ -151,7 +151,7 @@ function Overview() {
         <div className="w-11/12 mx-auto flex space-x-4">
           <div className="flex flex-col space-y-4 w-1/3">
             {/* Order Container */}
-            <div className="bg-white p-6 rounded-lg shadow-2xl">
+            <div className="bg-white p-6 rounded-lg shadow-md">
               <h3 className="text-lg font-bold mb-4">ORDER</h3>
               {orders.map((customerData, index) => (
                 <div key={index} className="bg-gray-200 p-4 rounded-lg shadow-sm mt-4 flex justify-between items-start">
@@ -168,7 +168,7 @@ function Overview() {
 
 
             {/* Delivery Container */}
-            <div className="bg-white p-6 rounded-lg shadow-2xl">
+            <div className="bg-white p-6 rounded-lg shadow-md">
               <h3 className="text-lg font-bold mb-4">DELIVERY</h3>
               <div className="p-4 rounded-lg shadow-sm mt-4 flex justify-between items-center bg-[#8EF7A8]">
                 <span className="text-gray-700 text-sm">Confirm Delivery:</span>
@@ -185,7 +185,7 @@ function Overview() {
             </div>
 
             {/* Delivery Man Container */}
-            <div className="bg-white p-6 rounded-lg shadow-2xl cursor-pointer"
+            <div className="bg-white p-6 rounded-lg shadow-md cursor-pointer"
               onClick={handleDeliveryManClick}
               // style={{ maxHeight: '400px', overflowY: 'auto' }}
             >
@@ -201,7 +201,7 @@ function Overview() {
           {/* Right Column for Larger Containers */}
           <div className="flex flex-col space-y-4 w-2/3">
             {/* Sales Container */}
-            <div className="bg-white p-6 rounded-lg shadow-2xl">
+            <div className="bg-white p-6 rounded-lg shadow-md">
               <h3 className="text-lg font-bold mb-4">SALES</h3>
               <div className="flex justify-center items-center h-80">
                 <div className="w-full h-full max-w-xs">
@@ -214,7 +214,7 @@ function Overview() {
                 <p className="text-gray-500 w-1/3 font-bold text-center">Item Remaining</p>
               </div>
               {salesData.map((item, index) => (
-                <div key={index} className="flex justify-between items-center p-4 rounded-lg shadow-2xl mt-4 border-b">
+                <div key={index} className="flex justify-between items-center p-4 rounded-lg shadow-md mt-4 border-b">
                   <p className="text-gray-700 w-1/3">{item.itemName}</p>
                   <p className="text-gray-700 w-1/3 text-center">{item.itemSold}</p>
                   <p className="text-gray-700 w-1/3 text-center">{item.itemRemaining}</p>
@@ -223,7 +223,7 @@ function Overview() {
             </div>
 
             {/* Inventory Container */}   
-            <div className="bg-white p-6 rounded-lg shadow-2xl cursor-pointer"
+            <div className="bg-white p-6 rounded-lg shadow-md cursor-pointer"
                 onClick={handleInventoryClick}
             > 
               <h3 className="text-lg font-bold mb-4">INVENTORY</h3>
