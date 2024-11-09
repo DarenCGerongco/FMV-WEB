@@ -103,7 +103,6 @@ const Navbar = () => {
       </div>
       <div className="w-full">
         <li className="mb-4 flex items-center transition duration-300 group hover:bg-white hover:text-black rounded pl-2 md:pl-5">
-          <div className="border border-white rounded w-4 h-4 md:w-5 md:h-5 mr-2 group-hover:border-black"></div>
           <button onClick={openModal} className="text-base md:text-xl text-white group-hover:text-black">LOGOUT</button>
         </li>
       </div>
