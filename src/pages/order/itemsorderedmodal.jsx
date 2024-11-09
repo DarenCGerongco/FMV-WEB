@@ -1,41 +1,82 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
 
-const ItemsOrderedModal = ({ itemsOrderedModalOpen, onClose }) => {
+const ItemsOrderedModal = ({ itemsOrderedModalOpen, onClose, purchaseOrderID }) => {
   if (!itemsOrderedModalOpen) return null;
+
+  const url = import.meta.env.VITE_API_URL;
+  const [orderedData, setOrderedData] = useState([]);
+  const [remainingData, setRemainingData] = useState([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        // Fetch ordered data
+        const orderedResponse = await axios.get(`${url}/api/purchase-orders-delivery/${purchaseOrderID}`);
+        setOrderedData(orderedResponse.data.product_details);
+
+        // Fetch remaining balance data
+        const remainingResponse = await axios.get(`${url}/api/purchase-orders-get-remaining-balance/${purchaseOrderID}`);
+        setRemainingData(remainingResponse.data.Remaining.products);
+
+        console.log('Ordered Data:', orderedResponse.data.product_details);
+        console.log('Remaining Data:', remainingResponse.data.Remaining.products);
+      } catch (e) {
+        console.error(e);
+      }
+    };
+
+    if (purchaseOrderID) {
+      fetchData();
+    }
+  }, [purchaseOrderID, url]); // Dependency array with purchaseOrderID and url
+
+  // Merge orderedData with remainingData by product_id
+  const mergedData = orderedData.map((item) => {
+    const remainingItem = remainingData.find((r) => r.product_id === item.product_id);
+    return {
+      ...item,
+      remaining_quantity: remainingItem ? remainingItem.remaining_quantity : 0,
+    };
+  });
 
   return (
     <div
       id="itemsOrderedModal"
       className="modal fixed top-0 left-0 w-full h-full bg-gray-800 bg-opacity-75 flex justify-center items-center"
     >
-      <div className="bg-white p-6 rounded-lg shadow-2xl w-1/3">
+      <div className="bg-white p-5 rounded-lg drop-shadow-md w-1/2">
         <h3 className="text-center text-lg font-bold mb-5">Items Ordered</h3>
-        
-        {/* Static container for items */}
-        <div className="bg-gray-100 p-4 rounded-md shadow-md">
-          <div className="flex flex-col">
-            <div className="border-b border-gray-300 pb-2 mb-2 flex justify-between items-start">
-              <div className="flex flex-col">
-                <h4 className="font-semibold">Item 1</h4>
-                <p className="text-gray-500">Amount: 2</p> {/* Amount below item name */}
-              </div>
-              <p className="ml-4">Price: $100</p> {/* Price on the right */}
-            </div>
-            <div className="border-b border-gray-300 pb-2 mb-2 flex justify-between items-start">
-              <div className="flex flex-col">
-                <h4 className="font-semibold">Item 2</h4>
-                <p className="text-gray-500">Amount: 1</p> {/* Amount below item name */}
-              </div>
-              <p className="ml-4">Price: $200</p> {/* Price on the right */}
-            </div>
-            <div className="border-b border-gray-300 pb-2 mb-2 flex justify-between items-start">
-              <div className="flex flex-col">
-                <h4 className="font-semibold">Item 3</h4>
-                <p className="text-gray-500">Amount: 5</p> {/* Amount below item name */}
-              </div>
-              <p className="ml-4">Price: $50</p> {/* Price on the right */}
-            </div>
+        <div className="grid grid-cols-8">
+            <p className='col-span-1 '>Prod. ID</p>
+            <p className='col-span-2'>Prod. Name</p>
+            <p className='col-span-2'>Total Quan. Ordered</p>
+            <p className='col-span-1'>Bid Price</p>
+            <p className='col-span-2'>Remaining Quantity</p>
           </div>
+        <div className="bg-gray-100 p-1 rounded-md drop-shadow-md">
+          {mergedData.map((data, index) => (
+            <div 
+              className="grid grid-cols-8 gap-1 border-b border-gray-300 pb-1 items-center"
+              key={index}
+            >
+              <p className="col-span-1">
+                {data.product_id}
+              </p>
+              <p className="col-span-2">
+                {data.product.product_name}
+              </p>
+              <p className="col-span-2">
+                {data.quantity}
+              </p>
+              <p className="col-span-1">
+                ₱{data.price}
+              </p>
+              <p className="col-span-2 text-red-500">
+                {data.remaining_quantity}
+              </p>
+            </div>
+          ))}
         </div>
 
         <div className="flex justify-end mt-4">

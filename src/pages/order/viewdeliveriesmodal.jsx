@@ -1,8 +1,35 @@
-// src/pages/order/viewdeliveriesmodal.jsx
-import React from 'react';
+import axios from 'axios';
+import React, { useEffect, useState } from 'react';
 
-const ViewDeliveriesModal = ({ onClose, viewDeliveriesModalOpen }) => {
-  if (!viewDeliveriesModalOpen) return null; // Do not render if the modal is not open
+const ViewDeliveriesModal = ({ onClose, viewDeliveriesModalOpen, purchaseOrderId }) => {
+  const [deliveryData, setDeliveryData] = useState(null);
+
+  const formatDate = (dateString) => {
+    if (!dateString) return '';
+    const date = new Date(dateString);
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    const year = date.getFullYear();
+    return `${month}/${day}/${year}`;
+  };
+
+  const url = import.meta.env.VITE_API_URL;
+
+  useEffect(() => {
+    const fetchDeliveryData = async () => {
+      try {
+        const response = await axios.get(`${url}/api/purchase-orders-delivery-record/${purchaseOrderId}`);
+        const data = response.data;
+        setDeliveryData(data);
+      } catch (error) {
+        console.error("Error fetching delivery data:", error);
+      }
+    };
+
+    if (purchaseOrderId) fetchDeliveryData();
+  }, [purchaseOrderId, url]);
+
+  if (!viewDeliveriesModalOpen || !deliveryData) return null;
 
   return (
     <div
@@ -14,70 +41,53 @@ const ViewDeliveriesModal = ({ onClose, viewDeliveriesModalOpen }) => {
           <h3 className="text-lg font-bold">View Deliveries</h3>
         </div>
 
-        {/* Delivery 1 */}
+        {/* Customer Info */}
         <div className="mb-6">
-          <div className="flex justify-between items-center">
-            <h4 className="font-bold">Delivery 1</h4>
-          </div>
-          <p className="text-gray-500">Delivered to: <span className="font-bold">Barangay Lumbia</span></p>
-          <p className="text-sm text-gray-500">Address: Masterson Ave, Lumbia, Cagayan de Oro City, 9000</p>
-          <p className="text-sm text-gray-500">Date Delivered: 06/04/2024</p>
-          <p className="text-sm text-gray-500">Delivery man: <span className="font-bold">Daren Rebote</span></p>
-
-          {/* Items for Delivery 1 */}
-          <div className="mt-4">
-            <div className="border border-gray-300 rounded-md p-4 mb-2">
-              <div className="flex justify-between">
-                <p>₱1,500</p>
-                <p>Submersible Pump</p>
-                <p>x5</p>
-              </div>
-            </div>
-            <div className="border border-gray-300 rounded-md p-4 mb-2">
-              <div className="flex justify-between">
-                <p>₱500</p>
-                <p>Submersible Motor</p>
-                <p>x1</p>
-              </div>
-            </div>
-            <div className="border border-gray-300 rounded-md p-4">
-              <div className="flex justify-between">
-                <p>₱50</p>
-                <p>1 Inch Tube 1 Meter</p>
-                <p>x25</p>
-              </div>
-            </div>
-          </div>
+          <h4 className="font-bold">
+            Customer: {deliveryData.customer_name}
+          </h4>
+          <p className="text-gray-500">
+            Ordered Created by: {deliveryData.admin_name}
+          </p>
+          <p className="text-gray-500">
+            Address: {deliveryData.address?.street || 'N/A'}, 
+            {deliveryData.address?.barangay || 'N/A'}, 
+            {deliveryData.address?.city || 'N/A'}, 
+            {deliveryData.address?.province || 'N/A'}, 
+            {deliveryData.address?.zip_code || 'N/A'}
+          </p>
+          <p className="text-gray-500">
+            Order Date: {formatDate(deliveryData.created_at)}
+          </p>
         </div>
 
-        {/* Delivery 2 */}
-        <div className="mb-6">
-          <div className="flex justify-between items-center">
-            <h4 className="font-bold">Delivery 2</h4>
-          </div>
-          <p className="text-gray-500">Delivered to: <span className="font-bold">Barangay Lumbia</span></p>
-          <p className="text-sm text-gray-500">Address: Masterson Ave, Lumbia, Cagayan de Oro City, 9000</p>
-          <p className="text-sm text-gray-500">Date Delivered: 06/09/2024</p>
-          <p className="text-sm text-gray-500">Delivery man: <span className="font-bold">Owen Cabarribas</span></p>
+        {/* Delivery Data */}
+        {deliveryData.deliveries.length > 0 ? (
+          deliveryData.deliveries.map((delivery, index) => (
+            <div key={index} className="mb-6">
+              <div className="flex justify-between items-center">
+                <h4 className="font-bold">Delivery no:{delivery.delivery_no}</h4>
+              </div>
+              <p className="text-sm text-gray-500">Delivery man: <span className="font-bold">{delivery.delivery_man_name}</span></p>
+              <p className="text-sm text-gray-500">Delivery Status: {delivery.delivery_status}</p>
 
-          {/* Items for Delivery 2 */}
-          <div className="mt-4">
-            <div className="border border-gray-300 rounded-md p-4 mb-2">
-              <div className="flex justify-between">
-                <p>₱1,500</p>
-                <p>Submersible Pump</p>
-                <p>x5</p>
+              {/* Products for each delivery */}
+              <div className="mt-4">
+                {delivery.products.map((product, productIndex) => (
+                  <div key={productIndex} className="border border-gray-300 rounded-md p-4 mb-2">
+                    <div className="flex justify-around">
+                      <p>₱{product.price}</p>
+                      <p>{product.product_name}</p>
+                      <p>x{product.quantity}</p>
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
-            <div className="border border-gray-300 rounded-md p-4">
-              <div className="flex justify-between">
-                <p>₱50</p>
-                <p>1 Inch Tube 1 Meter</p>
-                <p>x15</p>
-              </div>
-            </div>
-          </div>
-        </div>
+          ))
+        ) : (
+          <h4 className="text-center text-gray-500">No Deliveries have been made yet.</h4>
+        )}
 
         {/* Close button */}
         <div className="flex justify-end mt-4">

@@ -56,6 +56,7 @@ function Order() {
   const [selectedPurchaseOrderId, setSelectedPurchaseOrderId] = useState(null);
   const [openDropDowns, setOpenDropDowns] = useState({}); // Declare only once
   const dropdownRef = useRef(null); // Reference for the dropdown container
+  const [selectedItemsOrderId, setSelectedItemsOrderId] = useState(null);
 
 
   // START CUSTOMER ORDER'S INFORMATION
@@ -110,61 +111,44 @@ function Order() {
     }));
   };
 
+  //! YAW SA HILABTI NI DIRE 
+    useEffect(() => {
+      const fetchOrders = async () => {
+        try {
+          const response = await fetch(`${url}/api/purchase-orders-delivery`);
+          const data = await response.json();
 
+          console.log
 
-        //! YAW SA HILABTI NI DIRE 
-          useEffect(() => {
-            const fetchOrders = async () => {
-              try {
-                const response = await fetch(`${url}/api/purchase-orders-delivery`);
-                const data = await response.json();
-
-                const combinedData = data.map(purchaseOrderData =>({
-                  purchase_order_id: purchaseOrderData.purchase_order_id,
-                  customer_name: purchaseOrderData.customer_name,
-                  street: purchaseOrderData.address.street,
-                  city: purchaseOrderData.address.city,
-                  barangay: purchaseOrderData.address.barangay,
-                  province: purchaseOrderData.address.province,
-                  created_at: purchaseOrderData.created_at,
-                }));
-
-                setPurchaseOrderData(combinedData);
-
-                // console.log(combinedData);
-                // const names = data.map(name => name.customer_name);
-                // console.log(data);
-                // const addresses = data.map(byAddress => byAddress.address)
-                // addresses.forEach(byAddress => {
-                //   console.log(byAddress.barangay)
-                // })
-
-                // setCustomerName(names); // Update the state with customer names
-
-                
-                // combinedData.forEach(order => {
-                //   console.log('Order Date:', order.created_at); // Log the date in the console
-                // });
+          const combinedData = data.map(purchaseOrderData =>({
+            purchase_order_id: purchaseOrderData.purchase_order_id,
+            customer_name: purchaseOrderData.customer_name,
+            street: purchaseOrderData.address.street,
+            city: purchaseOrderData.address.city,
+            barangay: purchaseOrderData.address.barangay,
+            province: purchaseOrderData.address.province,
+            created_at: purchaseOrderData.created_at,
+          }));
           
-                //! If you still want to log the customer names separately:
-                // const names = data.map(name => name.customer_name);
-                // setCustomerName(names); // Update the state with customer names
-              } catch (error) {
-                console.error('Error fetching orders:', error);
-              }
-            };
-          
-            // Fetch orders initially
-            fetchOrders();
-          
-            // Set up a recurring interval to fetch the orders periodically
-            const intervalId = setInterval(fetchOrders, 10000); // 10000ms = 10 seconds
-          
-            // Cleanup interval when the component is unmounted
-            return () => clearInterval(intervalId);
-          }, [url]); // Dependency array ensures the effect runs only when the URL changes
-        //! YAW SA HILABTI NI DIRE 
-          
+          setPurchaseOrderData(combinedData);
+
+          //! If you still want to log the customer names separately:
+        } catch (error) {
+          console.error('Error fetching orders:', error);
+        }
+      };
+    
+      // Fetch orders initially
+      fetchOrders();
+    
+      // Set up a recurring interval to fetch the orders periodically
+      const intervalId = setInterval(fetchOrders, 10000); // 10000ms = 10 seconds
+    
+      // Cleanup interval when the component is unmounted
+      return () => clearInterval(intervalId);
+    }, [url]); // Dependency array ensures the effect runs only when the URL changes
+  //! YAW SA HILABTI NI DIRE 
+    
 
   const handlePurchaseOrderClick = (purchaseOrderId) => {
     console.log(purchaseOrderId)
@@ -342,8 +326,12 @@ function Order() {
 
 
 // Items Ordered Modal
-const openItemsOrderedModal = () => setItemsOrderedModalOpen(true);
-const closeItemsOrderedModal = () => {
+const openItemsOrderedModal = (purchaseOrderId) => {
+  // console.log(purchaseOrderId);
+  setSelectedItemsOrderId(purchaseOrderId); // Set the selected Purchase Order ID
+  setItemsOrderedModalOpen(true); // Open the modal
+
+};const closeItemsOrderedModal = () => {
   setItemsOrderedModalOpen(false);
 };
 
@@ -358,7 +346,12 @@ const closeCreateDeliveryModal = () => {
 };
 
 // View Deliveries Modal
-const openViewDeliveriesModal = () => setViewDeliveriesModalOpen(true);
+const openViewDeliveriesModal = (purchaseOrderId) => {
+  console.log("Setting selectedPurchaseOrderId:", purchaseOrderId); // Check if purchaseOrderId is correct
+  setSelectedPurchaseOrderId(purchaseOrderId); // Set the selectedPurchaseOrderId
+  setViewDeliveriesModalOpen(true); // Open the modal after setting the ID
+};
+
 const closeViewDeliveriesModal = () => setViewDeliveriesModalOpen(false);
 
 // VIEW - 
@@ -396,10 +389,10 @@ return (
     <div className="flex w-full bg-white">
       <Navbar />
       <div className="flex flex-col w-full ml-72 bg-white">
-        <div className="w-4/5 mx-auto bg-white p-6 m-3 rounded-lg shadow-2xl mb-6 border">
+        <div className="w-4/5 mx-auto bg-white p-6 m-3 rounded-lg drop-shadow-md mb-6 border">
           <h2 className="text-1xl font-bold">MANAGEMENT SYSTEM ORDER</h2>
         </div>
-        <div className="w-4/5 mx-auto bg-white p-5 m-3 rounded-lg shadow-2xl">
+        <div className="w-4/5 mx-auto bg-white p-5 m-3 rounded-lg drop-shadow-md">
           <div className="relative mt-4 flex items-center space-x-4">
             <div className="flex items-center w-full px-4 py-3 border border-gray-300 rounded-md focus-within:border-blue-500 relative h-12">
               <span className="text-black-500 whitespace-nowrap">ORDER</span>
@@ -409,12 +402,12 @@ return (
                 className="flex-grow focus:outline-none px-4 py-2 rounded-md sm:text-sm border-gray-300 focus:ring-blue-500 focus:border-blue-500 block w-full"
                 placeholder="Search for Ongoing Order"
               />
-              <button className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-blue-500 text-white px-4 py-2 rounded-md shadow-2xl focus:outline-none">
+              <button className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-blue-500 text-white px-4 py-2 rounded-md focus:outline-none">
                 Search
               </button>
             </div>
             <button
-              className="bg-blue-500 text-black px-4 py-2 bg-blue-500 text-white rounded-md shadow-2xl focus:outline-none"
+              className="bg-blue-500 text-black px-4 py-2 bg-blue-500 text-white rounded-md focus:outline-none"
               onClick={openAddModal}
             >
               +
@@ -455,97 +448,103 @@ return (
           </div>
         </div>
   
-       {/* START SHOW PURCHASE ORDERS */}
-       <div className="w-4/5 mx-auto mt-6">
-          {/* White background container */}
-          <div className="bg-white p-6 rounded-lg shadow-xl">
-            {/* Header */}
-            <div>
-              <h3 className="text-sm px-4 text-gray-400 flex justify-between">
-                <div className="relative left-[30px] flex-1 text-left">Customer's Name</div>
-                <div className="relative left-[-89px] flex-1 text-left">Address</div>
-                <div className="relative left-[-240px] flex-1 text-left">Date</div>
-              </h3>
-            </div>
-            {/* Header */}
-
-            {/* Customer's Data */}
-            {purchaseOrderData.map((customerData, index) => (
-              <div
-                key={index}
-                className="bg-white p-6 m-6 rounded-lg shadow-2xl mb-1 border transition"
-              >
-                <div className="flex items-center">
-                  {/* Customer's Name */}
-                  <p className="relative justify-between items-center flex-1 text-1xl text-left">
-                    {index + 1}. {customerData.customer_name}
-                  </p>
-
-                  {/* Address */}
-                  <div className="relative left-[10px] flex-1 text-sm text-gray-700 text-left">
-                    <div>{customerData.street} {customerData.barangay},</div>
-                    <div>{customerData.province}</div>
-                    <div>{customerData.city}</div>
-                  </div>
-
-                  {/* Date */}
-                  <p className="relative left-[-10px] flex-1 text-sm text-gray-700 text-left">
-                    {customerData.created_at}
-                  </p>
-
-                  {/* Buttons */}
-                  <div className="buttons flex">
-                    <button 
-                      className="bg-blue-500 hover:bg-blue-600 text-white rounded-md w-40 h-12 mr-10"
-                      onClick={() => openCreateDeliveryModal(customerData.purchase_order_id)}                    >
-                      Create Deliveries
-                    </button>
-
-                    <button 
-                      className="bg-blue-500 hover:bg-blue-600 text-white rounded-md w-32 h-12"
-                      onClick={() => toggleDropDown(customerData.purchase_order_id)}
-                    >
-                      View
-                    </button>
-                    {/* DropDown*/}
-                    {openDropDowns[customerData.purchase_order_id] && (
-                        <div
-                          ref={dropDownRef} // Attach ref here to detect outside clicks
-                          className="absolute mt-2 w-48 bg-white border border-gray-300 rounded shadow-lg z-50"
-                          style={{ right: '200px' }}
-                        >
-                          <ul className="py-1">
-                            <li
-                              className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
-                              onClick={() => {
-                                openItemsOrderedModal();
-                                setOpenDropDowns({ ...openDropDowns, [customerData.purchase_order_id]: false });
-                              }}
-                            >
-                              View Items Ordered
-                            </li>
-                            <li
-                              className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
-                              onClick={() => {
-                                openViewDeliveriesModal();
-                                setOpenDropDowns({ ...openDropDowns, [customerData.purchase_order_id]: false });
-                              }}
-                            >
-                              View Deliveries
-                            </li>
-                          </ul>
-                        </div>
-                      )}
-                  </div>
-                </div>
-              </div>
-            ))}
-            {/* Customer's Data */}
+      {/* START SHOW PURCHASE ORDERS */}
+      <div className="w-4/5 mx-auto mt-6">
+        {/* White background container */}
+        <div className="bg-white p-2 rounded-lg shadow-xl">
+          {/* Header */}
+          <div className="grid grid-cols-[0.5fr_1.5fr_2fr_1fr_1fr] px-4 py-2 text-gray-400 text-sm ">
+            <p>
+              POID
+            </p>
+            <p>
+              Customer's Name
+            </p>
+            <p>
+              Address
+            </p>
+            <p>
+              Date
+            </p>
+            <p>
+              Actions
+            </p>
           </div>
+          {/* Header */}
+
+          {/* Customer's Data */}
+          {purchaseOrderData.map((customerData, index) => (
+            <div
+              key={index}
+              className="grid grid-cols-[0.5fr_1.5fr_2fr_1fr_1fr]  items-center bg-white px-4 py-2 rounded-lg shadow-2xl mb-1 border transition"
+            >
+              {/* POID */}
+              <p className="text-1xl text-left">{customerData.purchase_order_id}</p>
+
+              {/* Customer's Name */}
+              <p className="text-1xl text-left">{customerData.customer_name}</p>
+
+              {/* Address */}
+              <div className="text-sm text-gray-700 text-left px-2">
+                <p>{customerData.street} {customerData.barangay} {customerData.province} {customerData.city}</p>
+              </div>
+
+              {/* Date */}
+              <p className="text-sm text-gray-700 text-left">
+                {customerData.created_at}
+              </p>
+
+              {/* Buttons */}
+              <div className="flex space-x-2 justify-center">
+                <button 
+                  className="bg-blue-500 p-1 hover:bg-blue-600 text-white rounded-md w-[150px]"
+                  onClick={() => openCreateDeliveryModal(customerData.purchase_order_id)}
+                >
+                  Create Deliveries
+                </button>
+
+                <button 
+                  className="bg-blue-500 p-1 hover:bg-blue-600 text-white rounded-md w-[75px]"
+                  onClick={() => toggleDropDown(customerData.purchase_order_id)}
+                >
+                  View
+                </button>
+
+                {/* DropDown */}
+                {openDropDowns[customerData.purchase_order_id] && (
+                  <div
+                    ref={dropDownRef} // Attach ref here to detect outside clicks
+                    className="absolute mt-10 w-48 bg-white border border-gray-300 right-[60px] rounded shadow-lg z-50"
+                  >
+                    <ul className="py-1">
+                      <li
+                        className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                        onClick={() => {
+                          openItemsOrderedModal(customerData.purchase_order_id);
+                          setOpenDropDowns({ ...openDropDowns, [customerData.purchase_order_id]: false });
+                        }}
+                      >
+                        View Items Ordered
+                      </li>
+                      <li
+                        className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                        onClick={() => {
+                          openViewDeliveriesModal(customerData.purchase_order_id);
+                          setOpenDropDowns({ ...openDropDowns, [customerData.purchase_order_id]: false });
+                        }}
+                      >
+                        View Deliveries
+                      </li>
+                    </ul>
+                  </div>
+                )}
+              </div>
+            </div>
+          ))}
+          {/* Customer's Data */}
         </div>
+      </div>
       {/* END SHOW PURCHASE ORDERS */}
-
-
 
 
       {/* Add Modal */}
@@ -798,12 +797,11 @@ return (
        {/*View Items ordered Modal*/}
       {itemsOrderedModalOpen && (
         <ItemsOrderedModal
-        itemsOrderedModalOpen={itemsOrderedModalOpen}
-        onClose={closeItemsOrderedModal}
-      />
-   
-
-  )};
+          itemsOrderedModalOpen={itemsOrderedModalOpen}
+          onClose={closeItemsOrderedModal}
+          purchaseOrderID={selectedItemsOrderId}
+        />
+      )}
 
   {/* Create Delivery Modal */}
     {createDeliveryModalOpen && (
@@ -875,10 +873,11 @@ return (
     )}
 
         {/* View Deliveries Modal */}
-        <ViewDeliveriesModal
-          viewDeliveriesModalOpen={viewDeliveriesModalOpen}
-          onClose={closeViewDeliveriesModal}
-        />   
+        <ViewDeliveriesModal 
+          onClose={closeViewDeliveriesModal} 
+          viewDeliveriesModalOpen={viewDeliveriesModalOpen} 
+          purchaseOrderId={selectedPurchaseOrderId}
+        />
       </div>
     </div>
   );

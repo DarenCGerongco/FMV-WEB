@@ -168,12 +168,12 @@ const fetchProducts = async () => {
     <div className="flex w-full bg-white">
       <Navbar />
       <div className="flex flex-col w-full ml-72 bg-white"> {/* Adjust margin-left */}
-        <div className="w-4/5 mx-auto bg-white p-6 m-3 rounded-lg shadow-2xl mb-6 border">
+        <div className="w-4/5 mx-auto bg-white p-6 m-3 rounded-lg drop-shadow-md mb-6 border">
           <h2 className="text-1xl font-bold">INVENTORY</h2>
         </div>
 
         {/* Searchbar and Restock Button */}
-        <div className="w-4/5 mx-auto bg-white p-5 m-3 rounded-lg shadow-2xl">
+        <div className="w-4/5 mx-auto bg-white p-5 m-3 rounded-lg drop-shadow-md">
           <div className="relative mt-4 flex items-center space-x-4">
             <div className="flex items-center w-full px-4 py-3 border border-gray-300 rounded-md focus-within:border-blue-500 relative h-12">
               <span className="text-black-500 whitespace-nowrap">INVENTORY</span>
@@ -181,7 +181,7 @@ const fetchProducts = async () => {
               <input
                 type="text"
                 id="search" // Add id to search input
-                className="flex-grow focus:outline-none px-4 py-2 rounded-md shadow-2xl sm:text-sm border-gray-300 focus:ring-blue-500 focus:border-blue-500 block w-full"
+                className="flex-grow focus:outline-none px-4 py-2 rounded-md drop-shadow-md sm:text-sm border-gray-300 focus:ring-blue-500 focus:border-blue-500 block w-full"
                 placeholder="Search for items"
                 value={searchInput} // Bind search input to state
                 onChange={(e) => {
@@ -193,14 +193,14 @@ const fetchProducts = async () => {
                 }}
               />
               <button
-                className="text-white px-4 py-2 rounded-md shadow-2xl focus:outline-none bg-blue-500"
+                className="text-white px-4 py-2 rounded-md drop-shadow-md focus:outline-none bg-blue-500"
                 onClick={handleSearch} // Call search handler on click
               >
                 Search
               </button>
             </div>
             <button
-              className="text-white px-4 py-2 rounded-md shadow-2xl focus:outline-none bg-blue-500"
+              className="text-white px-4 py-2 rounded-md drop-shadow-md focus:outline-none bg-blue-500"
               onClick={openRestockModal}
             >
               Restock
@@ -208,7 +208,7 @@ const fetchProducts = async () => {
   
             {/* Add Item Button */}
             <button
-              className="text-white px-4 py-2 rounded-md shadow-2xl focus:outline-none bg-blue-500"
+              className="text-white px-4 py-2 rounded-md drop-shadow-md focus:outline-none bg-blue-500"
               onClick={openAddItemModal}
             >
               Register
@@ -218,11 +218,21 @@ const fetchProducts = async () => {
           {/* Labels */}
           <div className="mt-4 space-y-1">
             <div className="grid grid-cols-7 font-semibold">
-              <div className="col-span-2">Product Name</div>
-              <div className="col-span-2">Product Category</div>
-              <div className="col-span-1">Product Price (PHP)</div>
-              <div className="col-span-1">Product Amount (PCS)</div>
-              <div className="col-span-1">Edit</div>
+              <div className="col-span-2">
+                Product Name
+              </div>
+              <div className="col-span-2">
+                Product Category
+              </div>
+              <div className="col-span-1">
+                Product Price (PHP)
+              </div>
+              <div className="col-span-1">
+                Product Amount (PCS)
+              </div>
+              <div className="col-span-1 flex justify-center items-center">
+                Edit
+              </div>
             </div>
 
             {(searchResults.length > 0 ? searchResults : items).map((item, index) => (
@@ -234,7 +244,7 @@ const fetchProducts = async () => {
                 <div className="col-span-2">{item.category_name}</div>
                 <div className="col-span-1">P {item.original_price ? item.original_price : 'N/A'}</div>
                 <div className="col-span-1">{item.quantity}</div>
-                <div className="col-span-1">
+                <div className="col-span-1 flex justify-center items-center">
                   <img
                     src="./src/assets/edit.png"
                     alt="Edit"
@@ -311,7 +321,7 @@ const fetchProducts = async () => {
         {/* Restock Modal */}
         {restockModalOpen && (
           <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-            <div className="bg-white rounded-lg shadow-2xl p-6">
+            <div className="bg-white rounded-lg drop-shadow-md p-6">
               <h2 className="text-xl font-bold mb-4">Restock Item</h2>
               <input
                 type="text"
