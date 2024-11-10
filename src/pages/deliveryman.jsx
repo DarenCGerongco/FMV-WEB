@@ -220,7 +220,10 @@ function DeliveryMan() {
             </div>
 
             {deliveryMen.map((deliveryMan, index) => (
-              <div key={index} className="grid grid-cols-6 gap-1 text-left border-b border-gray-300 p-1">
+              <div 
+                key={index} 
+                className="grid grid-cols-6 rounded-lg hover:bg-gray-300 duration-300 text-left border-b border-gray-300 p-1"
+                >
                 <div className="col-span-2">{deliveryMan.name}</div>
                 <div className="col-span-2">{deliveryMan.number}</div>
                 <div className="col-span-1">

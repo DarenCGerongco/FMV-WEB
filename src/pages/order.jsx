@@ -392,9 +392,9 @@ return (
         <div className="w-4/5 mx-auto bg-white p-6 m-3 rounded-lg drop-shadow-md mb-6 border">
           <h2 className="text-1xl font-bold">MANAGEMENT SYSTEM ORDER</h2>
         </div>
-        <div className="w-4/5 mx-auto bg-white p-5 m-3 rounded-lg drop-shadow-md">
-          <div className="relative mt-4 flex items-center space-x-4">
-            <div className="flex items-center w-full px-4 py-3 border border-gray-300 rounded-md focus-within:border-blue-500 relative h-12">
+        <div className="w-4/5 mx-auto bg-white p-3 rounded-lg drop-shadow-md">
+          <div className="relative flex items-center space-x-4">
+            <div className="flex items-center w-full px-4 border border-gray-300 rounded-md shadow-md focus-within:border-blue-500 relative h-12">
               <span className="text-black-500 whitespace-nowrap">ORDER</span>
               <div className="border-l border-gray-300 h-10 mx-2"></div>
               <input
@@ -414,11 +414,11 @@ return (
             </button>
           </div>
 
-          <div id="order-container" className="mt-4 space-y-4">
+          <div id="order-container" className="space-y-4">
             {orders.map((order) => (
               <div
                 key={order.id}
-                className="flex items-center justify-between bg-white-200 p-4 rounded-lg shadow-2xl relative"
+                className="flex items-center justify-between bg-white-200 p-4 rounded-lg shadow-md relative"
               >
                 <div className="information flex">
                   <div className="font-bold">{order.deliveredTo}</div>
@@ -476,7 +476,7 @@ return (
           {purchaseOrderData.map((customerData, index) => (
             <div
               key={index}
-              className="grid grid-cols-[0.5fr_1.5fr_2fr_1fr_1fr]  items-center bg-white px-4 py-2 rounded-lg shadow-2xl mb-1 border transition"
+              className="grid grid-cols-[0.5fr_1.5fr_2fr_1fr_1fr]  items-center bg-white px-4 py-2 rounded-lg shadow-md mb-1 hover:bg-gray-300 duration-300 border "
             >
               {/* POID */}
               <p className="text-1xl text-left">{customerData.purchase_order_id}</p>
@@ -518,7 +518,7 @@ return (
                   >
                     <ul className="py-1">
                       <li
-                        className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                        className="px-4 p-1 hover:bg-gray-200 duration-300 cursor-pointer"
                         onClick={() => {
                           openItemsOrderedModal(customerData.purchase_order_id);
                           setOpenDropDowns({ ...openDropDowns, [customerData.purchase_order_id]: false });
@@ -527,7 +527,7 @@ return (
                         View Items Ordered
                       </li>
                       <li
-                        className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                        className="px-4 p-1 hover:bg-gray-200 duration-300 cursor-pointer"
                         onClick={() => {
                           openViewDeliveriesModal(customerData.purchase_order_id);
                           setOpenDropDowns({ ...openDropDowns, [customerData.purchase_order_id]: false });
@@ -635,7 +635,7 @@ return (
                 type="date"
                 id="date"
                 name="date"
-                className="w-full p-4 rounded-lg shadow-2xl mt-4 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full p-4 rounded-lg shadow-md mt-4 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 value={customerDetails.date}
                 onChange={handleAddOrderChange}
               />
@@ -645,20 +645,20 @@ return (
             <div className="flex justify-end p-4">
               <div className="flex flex-col items-end space-y-2">
                 <button
-                  className="bg-blue-500 text-white py-2 rounded-md shadow-2xl w-[100%]"
+                  className="bg-blue-500 text-white py-2 rounded-md shadow-md w-[100%]"
                   onClick={openCreateItemsOrderedModal}
                 >
                   Register Product
                 </button>
                 <div className="flex items-center space-x-2">
                   <button
-                    className="bg-white-500 text-black px-4 py-2 border border-gray-300 rounded-md shadow-2xl w-32"
+                    className="bg-white-500 text-black px-4 py-2 border border-gray-300 rounded-md shadow-md w-32"
                     onClick={closeAddModal}
                   >
                     Cancel
                   </button>
                   <button
-                    className="bg-blue-500 text-white px-4 py-2 rounded-md shadow-2xl w-32"
+                    className="bg-blue-500 text-white px-4 py-2 rounded-md shadow-md w-32"
                     onClick={()=>{
                       handleSave();
                       createOrder();
@@ -677,7 +677,7 @@ return (
       {/* Start listing of products */}
       {createItemsOrderedModalOpen && (
         <div className="modal fixed inset-0 flex justify-center items-center z-50">
-          <div className="bg-white p-6 rounded-lg shadow-2xl w-1/2">
+          <div className="bg-white p-6 rounded-lg shadow-md w-1/2">
             <h3 className="text-lg font-bold text-center mb-4">Create Items Ordered</h3>
 
             <div className="flex p-4 items-center space-between">
@@ -821,7 +821,7 @@ return (
         className="modal fixed inset-0 flex justify-center items-center z-50"
         style={{ backgroundColor: "rgba(0, 0, 0, 0.5)" }}
       >
-        <div className="bg-white p-6 rounded-lg shadow-2xl w-2/4">
+        <div className="bg-white p-6 rounded-lg shadow-md w-2/4">
           <div className="bg-blue-600 text-white text-center py-2 mb-4 rounded-md">
             <h3 className="text-lg font-bold">New Delivery Created</h3>
           </div>
@@ -852,14 +852,14 @@ return (
           {/* Cancel and Save Buttons */}
           <div className="flex justify-center space-x-4">
             <button
-              className="bg-gray-500 text-white hover:bg-gray-700 px-4 py-2 rounded-md shadow-2xl transition-all"
+              className="bg-gray-500 text-white hover:bg-gray-700 px-4 py-2 rounded-md shadow-md transition-all"
               onClick={() => setNewDeliveryModalOpen(false)} // Cancel button to close the modal
             >
               Cancel
             </button>
 
             <button
-              className="bg-blue-600 text-white hover:bg-blue-500 px-4 py-2 rounded-md shadow-2xl transition-all"
+              className="bg-blue-600 text-white hover:bg-blue-500 px-4 py-2 rounded-md shadow-md transition-all"
               onClick={() => {
                 // Save logic here
                 setNewDeliveryModalOpen(false); // You can also close the modal after saving if needed

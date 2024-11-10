@@ -100,36 +100,36 @@ function Delivery() {
   return (
     <div className="flex w-full bg-white-100">
       <Navbar />
-      <div className="w-full ml-80 bg-white">
-        <div className="w-4/5 mx-auto bg-white p-6 m-3 rounded-lg shadow-2xl mb-6 border">
-          <h2 className="text-1xl font-bold">Management System Delivery</h2>
+      <div className="flex flex-col w-full ml-72 bg-white">
+        <div className="w-4/5 mx-auto bg-white p-6 m-3 rounded-lg shadow-md mb-6 border">
+          <h2 className="text-1xl font-bold">MANAGEMENT SYSTEM DELIVERY</h2>
         </div>
-          <div className="relative mt-4 flex items-center space-x-4">
-            <div className="flex items-center w-full px-4 py-3 border border-gray-300 rounded-md shadow-xl focus-within:border-blue-500 relative h-12">
-              <span className="text-black-500 whitespace-nowrap">DELIVERY</span>
-              <div className="border-l border-gray-300 h-10 mx-2"></div>
-              <input
-                type="text"
-                className="flex-grow focus:outline-none px-4 py-2 rounded-md shadow-sm sm:text-sm border-gray-300 focus:ring-blue-500 focus:border-blue-500 block w-full"
-                placeholder="Search for Delivery man"
-              />
-              <button className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-blue-500 text-white px-4 py-2 rounded-md shadow-2xl focus:outline-none">
-                Search
-              </button>
-            </div>
+        <div className="w-4/5 mx-auto bg-white p-3 rounded-lg drop-shadow-md">
+          <div className="flex items-center w-full px-4 py-3 border border-gray-300 rounded-md shadow-md focus-within:border-blue-500 relative h-12">
+            <span className="text-black-500 whitespace-nowrap">DELIVERY</span>
+            <div className="border-l border-gray-300 h-10 mx-2"></div>
+            <input
+              type="text"
+              className="flex-grow focus:outline-none px-4 py-2 rounded-md sm:text-sm border-gray-300 focus:ring-blue-500 focus:border-blue-500 block w-full"
+              placeholder="Search for Delivery man"
+            />
+            <button className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-blue-500 text-white px-4 py-2 rounded-md shadow-md focus:outline-none">
+              Search
+            </button>
           </div>
-        <div className="w-4/5 mx-auto bg-white p-5 m-3 rounded-lg shadow-xl">
+        </div>
 
+        <div className="w-4/5 mx-auto bg-white p-5 m-3 rounded-lg shadow-md">
           {/* 1st Container - Confirmation */}
           <h2 className="text-xs mt-10 text-green-600 font-bold ">Confirmation</h2>
-          <div className="mt-2 bg-gray-100 p-4 rounded-lg shadow-2xl">
+          <div className="mt-2 bg-gray-100 p-4 rounded-lg shadow-md">
             <h3 className="text-sm text-gray-400 flex justify-between items-center">
               <span className="w-1/6 text-left">Purchase Order ID</span>
               <span className="w-1/3 text-left">Delivered to</span>
               <span className="w-1/3 text-left">Delivery Man</span>
               <span className="w-1/6 text-left">Date</span>
             </h3>
-            <div className="p-4 rounded-lg shadow-2xl flex justify-between items-center bg-[#8EF7A8]">
+            <div className="p-4 rounded-lg shadow-md flex justify-between items-center bg-[#8EF7A8]">
             <ul>
                 {pendingDeliveries && Object.values(pendingDeliveries).length > 0 ? (
                   Object.values(pendingDeliveries).map((pendingData, index)=> (
@@ -159,23 +159,25 @@ function Delivery() {
                 onClick={() => handleOpenConfirmationModal({ deliveryNo: 2, deliveredTo: 'Barangay Lumbia', deliveryMan: 'Arlene Abad', date: '06/04/2024' })}
               />
             </div>    
-            {/* <div className="mt-3 p-4 rounded-lg shadow-2xl flex justify-between items-center bg-[#8EF7A8]">
-              <span className="w-1/6">3</span>
-              <span className="w-1/3">Barangay Iponan</span>
-              <span className="w-1/3">John Smith</span>
-              <span className="w-1/6">06/05/2024</span>
-              <img
-                src="./src/assets/info.png"
-                alt="Delivery Image"
-                className="w-7 h-7 rounded-full cursor-pointer"
-                onClick={() => handleOpenConfirmationModal({ deliveryNo: 3, deliveredTo: 'Barangay Iponan', deliveryMan: 'John Smith', date: '06/05/2024' })}
-              />
-            </div>         */}
+            {/* 
+              <div className="mt-3 p-4 rounded-lg shadow-md flex justify-between items-center bg-[#8EF7A8]">
+                <span className="w-1/6">3</span>
+                <span className="w-1/3">Barangay Iponan</span>
+                <span className="w-1/3">John Smith</span>
+                <span className="w-1/6">06/05/2024</span>
+                <img
+                  src="./src/assets/info.png"
+                  alt="Delivery Image"
+                  className="w-7 h-7 rounded-full cursor-pointer"
+                  onClick={() => handleOpenConfirmationModal({ deliveryNo: 3, deliveredTo: 'Barangay Iponan', deliveryMan: 'John Smith', date: '06/05/2024' })}
+                />
+              </div>         
+            */}
           </div>
 
           {/* 2nd Container - Ongoing Delivery */}
           <h2 className="text-xs mt-10 text-green-600 font-bold">Ongoing Delivery</h2>
-          <div className="mt-2 bg-gray-100 p-4 rounded-lg shadow-2xl">
+          <div className="mt-2 bg-gray-100 p-4 rounded-lg shadow-md">
             <h3 className="text-sm text-gray-400 flex justify-between items-center">
               <span className="w-1/6 text-left">Purchase Order ID</span>
               <span className="relative left-[12px] w-1/3 text-left">Delivered to</span>
@@ -186,7 +188,7 @@ function Delivery() {
               Object.values(onDelivery).map((onDeliveryData, index) => (
                 <div
                   key={index}
-                  className="m-3 p-4 rounded-lg shadow-2xl flex justify-between items-center bg-[#E6FCE6]"
+                  className="m-3 p-4 rounded-lg shadow-md flex justify-between items-center bg-[#E6FCE6]"
                 >
                   <span className="w-1/6 text-left">{onDeliveryData.purchase_order_id}</span>
                   <span className="w-1/3 text-left">{onDeliveryData.customer_name}</span>
@@ -212,14 +214,14 @@ function Delivery() {
 
           {/* 3rd Container - Delivered Order */}
           <h2 className="text-xs mt-10 text-gray-400 font-bold">Delivered Order</h2>
-          <div className="mt-2 bg-gray-100 p-4 rounded-lg shadow-2xl">
+          <div className="mt-2 bg-gray-100 p-4 rounded-lg shadow-md">
             <h3 className="text-sm text-gray-400 flex justify-between items-center">
               <span className="w-1/6 text-left">Purchase Order ID</span>
               <span className="w-1/3 text-left">Delivered to</span>
               <span className="w-1/3 text-left">Delivery Man</span>
               <span className="w-1/6 text-left">Date</span>
             </h3>
-            <div className="bg-white p-4 rounded-lg shadow-2xl flex justify-between items-center">
+            <div className="bg-white p-4 rounded-lg shadow-md flex justify-between items-center">
               <span className="w-1/6">5</span>
               <span className="w-1/3">Barangay Talaga</span>
               <span className="w-1/3">Mark Cabarrubias</span>
@@ -244,14 +246,14 @@ function Delivery() {
                 <p><strong>Date:</strong> {selectedDelivery.date}</p>
 
                 {/* ongoing delivered modal content */}
-                <div className="mt-4 p-4 bg-gray-100 rounded-lg shadow-2xl">
+                <div className="mt-4 p-4 bg-gray-100 rounded-lg shadow-md">
                   <div className="flex justify-between">
                     <span>₱1500</span>
                     <span>Submersible Pump</span>
                     <span>x5</span>
                   </div>
                 </div>
-                <div className="mt-4 p-4 bg-gray-100 rounded-lg shadow-2xl">
+                <div className="mt-4 p-4 bg-gray-100 rounded-lg shadow-md">
                   <div className="flex justify-between">
                     <span>₱1500</span>
                     <span>Submersible Pump</span>
@@ -263,7 +265,7 @@ function Delivery() {
                   <img
                     src="./src/assets/darwen.png"
                     alt="Proof of Delivery"
-                    className="w-auto h-auto rounded-lg shadow-2xl"
+                    className="w-auto h-auto rounded-lg shadow-md"
                   />
                 </div>
                 <div className="mt-4">
@@ -272,7 +274,7 @@ function Delivery() {
                 </div>
 
                 <button
-                  className="mt-4 bg-blue-500 text-white ml-80 px-4 py-2 rounded-md shadow-2xl focus:outline-none"
+                  className="mt-4 bg-blue-500 text-white ml-80 px-4 py-2 rounded-md shadow-md focus:outline-none"
                   onClick={handleCloseModal}
                 >
                   Close
@@ -292,14 +294,14 @@ function Delivery() {
                 <p><strong>Date:</strong> {selectedDelivery.date}</p>
 
                 {/* Content for confirm delivery */}
-                <div className="mt-4 p-4 bg-gray-100 rounded-lg shadow-2xl">
+                <div className="mt-4 p-4 bg-gray-100 rounded-lg shadow-md">
                   <div className="flex justify-between">
                     <span>₱1500</span>
                     <span>Submersible Pump</span>
                     <span>x5</span>
                   </div>
                 </div>
-                <div className="mt-4 p-4 bg-gray-100 rounded-lg shadow-2xl">
+                <div className="mt-4 p-4 bg-gray-100 rounded-lg shadow-md">
                   <div className="flex justify-between">
                     <span>₱1500</span>
                     <span>Submersible Pump</span>
@@ -312,7 +314,7 @@ function Delivery() {
                   <img
                     src="./src/assets/darwen.png" 
                     alt="Proof of Delivery"
-                    className="w-auto h-auto rounded-lg shadow-2xl"
+                    className="w-auto h-auto rounded-lg shadow-md"
                   />
                 </div>
 
@@ -326,7 +328,7 @@ function Delivery() {
                 </div>
 
                 <button
-                  className="mt-4 bg-blue-500 text-white ml-80 px-4 py-2 rounded-md shadow-2xl focus:outline-none"
+                  className="mt-4 bg-blue-500 text-white ml-80 px-4 py-2 rounded-md shadow-md focus:outline-none"
                   onClick={handleCloseModal}
                 >
                   Close
@@ -359,7 +361,7 @@ function Delivery() {
                 <h3 className="text-lg font-semibold mb-2">Order List:</h3>
                 {selectedDelivery.products.map((product, productIndex) => (
                   <div
-                    className="p-4 bg-gray-100 rounded-lg shadow-2xl"
+                    className="p-4 bg-gray-100 rounded-lg shadow-md"
                     key={productIndex}
                   >
                     <div className="flex justify-between">
@@ -372,7 +374,7 @@ function Delivery() {
               </div>
 
               <button
-                className="mt-4 bg-blue-500 text-white ml-80 px-4 py-2 rounded-md shadow-2xl focus:outline-none"
+                className="mt-4 bg-blue-500 text-white ml-80 px-4 py-2 rounded-md shadow-md focus:outline-none"
                 onClick={handleCloseModal}
               >
                 Close
@@ -394,14 +396,14 @@ function Delivery() {
             <p><strong>Date:</strong> {selectedDelivery.date}</p>
 
             {/* Example content */}
-            <div className="mt-4 p-4 bg-gray-100 rounded-lg shadow-2xl">
+            <div className="mt-4 p-4 bg-gray-100 rounded-lg shadow-md">
               <div className="flex justify-between">
                 <span>₱1500</span>
                 <span>Submersible Pump</span>
                 <span>x5</span>
               </div>
             </div>
-            <div className="mt-4 p-4 bg-gray-100 rounded-lg shadow-2xl">
+            <div className="mt-4 p-4 bg-gray-100 rounded-lg shadow-md">
               <div className="flex justify-between">
                 <span>₱1500</span>
                 <span>Submersible Pump</span>
@@ -414,7 +416,7 @@ function Delivery() {
               <img
                 src="./src/assets/darwen.png"
                 alt="Proof of Delivery"
-                className="w-auto h-auto rounded-lg shadow-2xl"
+                className="w-auto h-auto rounded-lg shadow-md"
               />
             </div>
 
@@ -424,7 +426,7 @@ function Delivery() {
             </div>
 
             <button
-              className="mt-4 bg-blue-500 text-white ml-80 px-4 py-2 rounded-md shadow-2xl focus:outline-none"
+              className="mt-4 bg-blue-500 text-white ml-80 px-4 py-2 rounded-md shadow-md focus:outline-none"
               onClick={handleCloseModal}
             >
               Close
