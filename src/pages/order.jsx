@@ -1,49 +1,22 @@
-import React, { useState, useEffect, useRef, useContext } from 'react'; // Add useContext here
+import React, { useState, useEffect, useRef, useContext } from 'react';
 import Navbar from '../components/navbar';
 import axios from 'axios';
-import { GlobalContext } from '../../GlobalContext';  // Import GlobalContext
+import { GlobalContext } from '../../GlobalContext';
 
 import CreateDeliveryModal from './order/createdeliverymodal';
 import ViewDeliveriesModal from './order/viewdeliveriesmodal';
 import ItemsOrderedModal from './order/itemsorderedmodal';
 
-
-
 function Order() {
   const url = import.meta.env.VITE_API_URL;
-
-  
-  /** `START`
-   * THIS ENSURES THAT THE PURCHASE ORDER(PO) AND WHO CREATED THE `PO` WILL BE RECORDED
-   * EVEN WITH MULTIPLE TIMES OF TRANSACTIONS HAPPEN IN A SINGLE SESSION
-   */ 
-    const { id: userID, setID } = useContext(GlobalContext);  // This will fetch the stored ID from logging in of a admin
-    
-      // Ensure userID is set
-      useEffect(() => {
-        if (!userID) {
-          const storedID = localStorage.getItem('userID');
-          if (storedID) {
-            setID(storedID);  // Now setID is correctly called here
-          }
-        } else {
-          localStorage.setItem('userID', userID);  // Save the ID when logged in
-        }
-      }, [userID, setID]);  // Add setID to the dependency array
-      
-      const admin_id = userID;
-  /** `END`
-   * THIS ENSURES THAT THE PURCHASE ORDER(PO) AND WHO CREATED THE `PO` WILL BE RECORDED
-   * EVEN WITH MULTIPLE TIMES OF TRANSACTIONS HAPPEN IN A SINGLE SESSION
-   */ 
+  const { id: userID, setID } = useContext(GlobalContext);
 
   const [addModalOpen, setAddModalOpen] = useState(false);
-  
   const [orders, setOrders] = useState([]);
   const [itemsOrderedModalOpen, setItemsOrderedModalOpen] = useState(false);
   const [createDeliveryModalOpen, setCreateDeliveryModalOpen] = useState(false);
   const [newDeliveryModalOpen, setNewDeliveryModalOpen] = useState(false);
-  const [productsListed, setProductsListed] = useState([]); // State for stored products
+  const [productsListed, setProductsListed] = useState([]);
   const [viewDeliveriesModalOpen, setViewDeliveriesModalOpen] = useState(false);
   const [createItemsOrderedModalOpen, setCreateItemsOrderedModalOpen] = useState(false);
   const [purchaseOrderData, setPurchaseOrderData] = useState([]);
@@ -52,95 +25,121 @@ function Order() {
   const [price, setPrice] = useState('');
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [showDropdown, setShowDropdown] = useState(false);
-  const [products, setProducts] = useState([]); // Available products
+  const [products, setProducts] = useState([]);
   const [selectedPurchaseOrderId, setSelectedPurchaseOrderId] = useState(null);
-  const [openDropDowns, setOpenDropDowns] = useState({}); // Declare only once
-  const dropdownRef = useRef(null); // Reference for the dropdown container
+  const [openDropDowns, setOpenDropDowns] = useState({});
+  const dropdownRef = useRef(null);
   const [selectedItemsOrderId, setSelectedItemsOrderId] = useState(null);
-
   const [searchInput, setSearchInput] = useState('');
   const [searchResults, setSearchResults] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [paginationInfo, setPaginationInfo] = useState({});
 
-  // START CUSTOMER ORDER'S INFORMATION
-  const [purchaseOrderDetails, setPurchaseOrderDetails] = useState({
-    customer_name: '',
-    street: '',
-    barangay: '',
-    city: '',
-    zipcode: '',
-    province: '',
-    products: [], // To hold the list of ordered products
-  });
+  // Ensure userID is set
+  useEffect(() => {
+    if (!userID) {
+      const storedID = localStorage.getItem('userID');
+      if (storedID) {
+        setID(storedID);
+      }
+    } else {
+      localStorage.setItem('userID', userID);
+    }
+  }, [userID, setID]);
 
+  const admin_id = userID;
 
   const openAddModal = () => {
     setAddModalOpen(true);
   };
 
-    // Handle customer input changes
-    const handleCustomerChange = (e) => {
-      const { name, value } = e.target;
-      setPurchaseOrderDetails((prevOrder) => ({
-        ...prevOrder,
-        [name]: value,
-      }));
+  // Fetch purchase orders with pagination
+  useEffect(() => {
+    const fetchOrders = async () => {
+      try {
+        const response = await axios.get(`${url}/api/purchase-orders-delivery?page=${currentPage}`);
+        const data = response.data;
+        setPurchaseOrderData(data.orders);
+        setSearchResults(data.orders);
+        setPaginationInfo({
+          total: data.pagination.total,
+          perPage: data.pagination.perPage,
+          currentPage: data.pagination.currentPage,
+          lastPage: data.pagination.lastPage,
+        });
+      } catch (error) {
+        console.error('Error fetching orders:', error);
+      }
     };
-  
-    const handleChange = (e) => {
-      const { name, value } = e.target;
-      setPurchaseOrderDetails((prevDetails) => ({
-        ...prevDetails,
-        [name]: value,
-      }));
-    };
-    
 
-  //START -  THIS WILL CLOSE BOTH THE VIEW AREA AND THE CREATE PO 
-    const closeAddModal = () => {
-      setAddModalOpen(false);
-      // closeViewModal();
-      closeCreateItemsOrderedModal();
-    }
-  //END -  THIS WILL CLOSE BOTH THE VIEW AREA AND THE CREATE PO 
+    fetchOrders();
+  }, [url, currentPage]);
 
- 
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+  };
 
-  const handleAddOrderChange = (e) => {
-    const { name, value } = e.target;
-    setNewOrder((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+  // Render pagination controls
+  const renderPaginationControls = () => {
+    const { currentPage, lastPage } = paginationInfo;
+    return (
+      <div className="flex space-x-2 mt-4">
+        <button onClick={() => handlePageChange(1)} disabled={currentPage === 1}>
+          First
+        </button>
+        <button onClick={() => handlePageChange(currentPage - 1)} disabled={currentPage === 1}>
+          Previous
+        </button>
+        {Array.from({ length: lastPage }, (_, i) => (
+          <button
+            key={i + 1}
+            onClick={() => handlePageChange(i + 1)}
+            className={currentPage === i + 1 ? 'bg-blue-500 text-white' : ''}
+          >
+            {i + 1}
+          </button>
+        ))}
+        <button onClick={() => handlePageChange(currentPage + 1)} disabled={currentPage === lastPage}>
+          Next
+        </button>
+        <button onClick={() => handlePageChange(lastPage)} disabled={currentPage === lastPage}>
+          Last
+        </button>
+      </div>
+    );
   };
 
   //! YAW SA HILABTI NI DIRE 
-    useEffect(() => {
-      const fetchOrders = async () => {
-        try {
-          const response = await fetch(`${url}/api/purchase-orders-delivery`);
-          const data = await response.json();
-
-          const combinedData = data.map((order) => ({
-            purchase_order_id: order.purchase_order_id,
-            customer_name: order.customer_name,
-            street: order.address.street,
-            city: order.address.city,
-            barangay: order.address.barangay,
-            province: order.address.province,
-            created_at: order.created_at,
-          }));
-
-          setPurchaseOrderData(combinedData);
-          setSearchResults(combinedData); // Initialize search results with the fetched data
-        } catch (error) {
-          console.error('Error fetching orders:', error);
-        }
-      };
-
-      fetchOrders();
-      const intervalId = setInterval(fetchOrders, 10000);
-      return () => clearInterval(intervalId);
-    }, [url]);
+  useEffect(() => {
+    const fetchOrders = async () => {
+      try {
+        const response = await fetch(`${url}/api/purchase-orders-delivery?page=${currentPage}`);
+        const data = await response.json();
+  
+        // Assuming the data is structured with `orders` and `pagination` keys after modifying the backend
+        const combinedData = data.orders.map(order => ({
+          purchase_order_id: order.purchase_order_id,
+          customer_name: order.customer_name,
+          street: order.address.street,
+          city: order.address.city,
+          barangay: order.address.barangay,
+          province: order.address.province,
+          created_at: order.created_at,
+        }));
+  
+        setPurchaseOrderData(combinedData);
+        setSearchResults(combinedData); // Initialize or update search results with the fetched data
+        setPaginationInfo(data.pagination); // Store pagination details
+      } catch (error) {
+        console.error('Error fetching orders:', error);
+      }
+    };
+  
+    fetchOrders();
+    const intervalId = setInterval(() => fetchOrders(), 10000); // Optionally update to only refetch if needed
+    return () => clearInterval(intervalId);
+  }, [url, currentPage]); // Depend on currentPage to refetch when it changes
+  
   //! YAW SA HILABTI NI DIRE 
     
 
@@ -194,11 +193,6 @@ function Order() {
   };
 
   // View Modal
-
-
-  
-
-
  // START Create Items Ordered AREA
 
     // START BY SHOWING IT IN MODAL
@@ -503,14 +497,14 @@ return (
               {/* Buttons */}
               <div className="flex space-x-2 justify-center">
                 <button 
-                  className="bg-blue-500 p-1 hover:bg-blue-600 text-white rounded-md w-[150px]"
+                  className="bg-blue-500 p-1 hover:bg-blue-600 duration-300 text-white rounded-md w-[150px]"
                   onClick={() => openCreateDeliveryModal(customerData.purchase_order_id)}
                 >
                   Create Deliveries
                 </button>
 
                 <button 
-                  className="bg-blue-500 p-1 hover:bg-blue-600 text-white rounded-md w-[75px]"
+                  className="bg-blue-500 p-1 hover:bg-blue-600 duration-300 text-white rounded-md w-[75px]"
                   onClick={() => toggleDropDown(customerData.purchase_order_id)}
                 >
                   View
@@ -547,9 +541,48 @@ return (
               </div>
             </div>
           ))}
-
         </div>
 
+        {/* Pagination Controls */}
+        <div className="flex justify-center w-full bg-red space-x-2 my-4">
+          <button
+            onClick={() => handlePageChange(1)}
+            disabled={paginationInfo.currentPage === 1}
+            className="px-3 py-1 bg-white hover:bg-blue-500 hover:text-white duration-300 shadow-md cursor-pointer rounded"
+          >
+            First
+          </button>
+          <button
+            onClick={() => handlePageChange(paginationInfo.currentPage - 1)}
+            disabled={paginationInfo.currentPage === 1}
+            className="px-3 py-1 bg-white hover:bg-blue-500 hover:text-white duration-300 shadow-md cursor-pointer rounded"
+          >
+            Previous
+          </button>
+          {Array.from({ length: paginationInfo.lastPage }, (_, i) => (
+            <button
+              key={i + 1}
+              onClick={() => handlePageChange(i + 1)}
+              className={`px-3 py-1 rounded cursor-pointer duration-300 shadow-md ${paginationInfo.currentPage === i + 1 ? 'bg-blue-500 text-white' : 'bg-white hover:bg-blue-500 shadow-md hover:text-white'}`}
+              >
+              {i + 1}
+            </button>
+          ))}
+          <button
+            onClick={() => handlePageChange(paginationInfo.currentPage + 1)}
+            disabled={paginationInfo.currentPage === paginationInfo.lastPage}
+            className="px-3 py-1 bg-white hover:bg-blue-500 hover:text-white duration-300 shadow-md cursor-pointer rounded"
+          >
+            Next
+          </button>
+          <button
+            onClick={() => handlePageChange(paginationInfo.lastPage)}
+            disabled={paginationInfo.currentPage === paginationInfo.lastPage}
+            className="px-3 py-1 bg-white hover:bg-blue-500 hover:text-white duration-300 shadow-md cursor-pointer rounded"
+          >
+            Last
+          </button>
+        </div>
       </div>
       {/* END SHOW PURCHASE ORDERS */}
 
@@ -562,7 +595,6 @@ return (
         >
           <div className="bg-white p-6 rounded-lg w-1/3">
             <h3 className="text-center text-lg font-bold mb-4">Create Purchase Order</h3>
-            
             {/* Delivered To Field */}
             <div className="relative">
               <input
@@ -575,7 +607,7 @@ return (
                 onChange={handleChange}
               />
             </div>
-            
+
             {/* Address Fields */}
             <div className="flex flex-col  gap-4 mb-4">
               <div>
@@ -796,11 +828,8 @@ return (
           </div>
         </div>
       )}
-
       {/* End listing of products */}
-
-
-
+      
        {/*View Items ordered Modal*/}
       {itemsOrderedModalOpen && (
         <ItemsOrderedModal
@@ -809,7 +838,6 @@ return (
           purchaseOrderID={selectedItemsOrderId}
         />
       )}
-
   {/* Create Delivery Modal */}
     {createDeliveryModalOpen && (
       <CreateDeliveryModal 
@@ -819,9 +847,6 @@ return (
         purchaseOrderId={selectedPurchaseOrderId}
       />
     )}
-
-
-
         {/* View Deliveries Modal */}
         <ViewDeliveriesModal 
           onClose={closeViewDeliveriesModal} 

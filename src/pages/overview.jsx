@@ -13,7 +13,7 @@ function Overview() {
   const url = import.meta.env.VITE_API_URL;
   const [userNames, setUserNames] = useState([]);
   const [inventoryItems, setInventoryItems] = useState([]);
-  const [orders, setOrders] = useState([]);  // Add state for orders
+  const [orders, setOrders] = useState([]);
   const navigate = useNavigate(); // Initialize useNavigate
   const { id, userName } = useContext(GlobalContext);  // Retrieve id and userName
 
@@ -26,9 +26,9 @@ function Overview() {
   // Fetch order data
   const fetchOrderData = async () => {
     try {
-      const response = await axios.get(`${url}/api/purchase-orders-delivery`);
-      console.log('Fetched Orders:', response.data); // Log the fetched orders
-      setOrders(response.data);  // Set the fetched orders
+      const response = await axios.get(`${url}/api/purchase-orders-delivery-latest`);
+      console.log('Fetched Orders:', response.data); // Log the entire response to see its structure
+      setOrders(response.data.orders);  // Set the fetched orders correctly
     } catch (error) {
       console.error('Error fetching order data:', error);
     }
@@ -163,22 +163,16 @@ function Overview() {
         <div className="w-11/12 mx-auto flex space-x-4">
           <div className="flex flex-col space-y-4 w-1/3">
             {/* Order Container */}   
-            <div className="bg-white p-6 rounded-lg shadow-md cursor-pointer"
-            onClick={handleOrderClick}
-            >
-              <h3 className="text-lg font-bold mb-4">ORDER</h3>
-              {orders.map((customerData, index) => (
-                <div key={index} className="bg-gray-200 p-4 rounded-lg shadow-md mt-4 flex justify-between items-start">
-                  <div className="text-gray-700 text-sm">
-                    {/* Render each part of the address on a new line */}
-                    <div>{customerData.address.street}, {customerData.address.barangay}</div>
-                    <div>{customerData.address.province}</div>
-                    <div>{customerData.address.city}</div>
-                  </div>
-                  <span className="text-gray-700 text-sm">{customerData.created_at}</span>
+            <div className="bg-white p-6 rounded-lg shadow-md cursor-pointer" onClick={handleOrderClick}>
+              <h3 className="text-lg font-bold mb-4">ORDER (Latest Order)</h3>
+              {Array.isArray(orders) && orders.map((customerData, index) => (
+                <div key={index} className="bg-gray-200 p-4 rounded-lg shadow-md mt-4">
+                  <div className="text-gray-700 text-sm font-bold">{customerData.customer_name}</div>
+                  <div className="text-gray-700 text-xs mt-1">{customerData.created_at}</div>
                 </div>
               ))}
             </div>
+
 
 
             {/* Delivery Container */}
