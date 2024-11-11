@@ -58,6 +58,8 @@ function Order() {
   const dropdownRef = useRef(null); // Reference for the dropdown container
   const [selectedItemsOrderId, setSelectedItemsOrderId] = useState(null);
 
+  const [searchInput, setSearchInput] = useState('');
+  const [searchResults, setSearchResults] = useState([]);
 
   // START CUSTOMER ORDER'S INFORMATION
   const [purchaseOrderDetails, setPurchaseOrderDetails] = useState({
@@ -118,35 +120,27 @@ function Order() {
           const response = await fetch(`${url}/api/purchase-orders-delivery`);
           const data = await response.json();
 
-          console.log
-
-          const combinedData = data.map(purchaseOrderData =>({
-            purchase_order_id: purchaseOrderData.purchase_order_id,
-            customer_name: purchaseOrderData.customer_name,
-            street: purchaseOrderData.address.street,
-            city: purchaseOrderData.address.city,
-            barangay: purchaseOrderData.address.barangay,
-            province: purchaseOrderData.address.province,
-            created_at: purchaseOrderData.created_at,
+          const combinedData = data.map((order) => ({
+            purchase_order_id: order.purchase_order_id,
+            customer_name: order.customer_name,
+            street: order.address.street,
+            city: order.address.city,
+            barangay: order.address.barangay,
+            province: order.address.province,
+            created_at: order.created_at,
           }));
-          
-          setPurchaseOrderData(combinedData);
 
-          //! If you still want to log the customer names separately:
+          setPurchaseOrderData(combinedData);
+          setSearchResults(combinedData); // Initialize search results with the fetched data
         } catch (error) {
           console.error('Error fetching orders:', error);
         }
       };
-    
-      // Fetch orders initially
+
       fetchOrders();
-    
-      // Set up a recurring interval to fetch the orders periodically
-      const intervalId = setInterval(fetchOrders, 10000); // 10000ms = 10 seconds
-    
-      // Cleanup interval when the component is unmounted
+      const intervalId = setInterval(fetchOrders, 10000);
       return () => clearInterval(intervalId);
-    }, [url]); // Dependency array ensures the effect runs only when the URL changes
+    }, [url]);
   //! YAW SA HILABTI NI DIRE 
     
 
@@ -384,6 +378,20 @@ const closeViewDeliveriesModal = () => setViewDeliveriesModalOpen(false);
         }, []);
 // VIEW
 
+    const handleSearchChange = (event) => {
+      const input = event.target.value;
+      setSearchInput(input);
+
+      if (input.trim() === '') {
+        setSearchResults(purchaseOrderData); // Show all data if input is empty
+      } else {
+        const filteredResults = purchaseOrderData.filter((order) =>
+          order.customer_name.toLowerCase().includes(input.toLowerCase())
+        );
+        setSearchResults(filteredResults);
+      }
+    };
+
 
 return (
     <div className="flex w-full bg-white">
@@ -401,10 +409,9 @@ return (
                 type="text"
                 className="flex-grow focus:outline-none px-4 py-2 rounded-md sm:text-sm border-gray-300 focus:ring-blue-500 focus:border-blue-500 block w-full"
                 placeholder="Search for Ongoing Order"
+                value={searchInput} // Bind search input to state
+                onChange={handleSearchChange} // Trigger live search
               />
-              <button className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-blue-500 text-white px-4 py-2 rounded-md focus:outline-none">
-                Search
-              </button>
             </div>
             <button
               className="bg-blue-500 text-black px-4 py-2 bg-blue-500 text-white rounded-md focus:outline-none"
@@ -472,11 +479,10 @@ return (
           </div>
           {/* Header */}
 
-          {/* Customer's Data */}
-          {purchaseOrderData.map((customerData, index) => (
+          {searchResults.map((customerData, index) => (
             <div
               key={index}
-              className="grid grid-cols-[0.5fr_1.5fr_2fr_1fr_1fr]  items-center bg-white px-4 py-2 rounded-lg shadow-md mb-1 hover:bg-gray-300 duration-300 border "
+              className="grid grid-cols-[0.5fr_1.5fr_2fr_1fr_1fr] items-center bg-white px-4 py-2 rounded-lg shadow-md mb-1 hover:bg-gray-300 duration-300 border"
             >
               {/* POID */}
               <p className="text-1xl text-left">{customerData.purchase_order_id}</p>
@@ -541,8 +547,9 @@ return (
               </div>
             </div>
           ))}
-          {/* Customer's Data */}
+
         </div>
+
       </div>
       {/* END SHOW PURCHASE ORDERS */}
 
@@ -814,63 +821,6 @@ return (
     )}
 
 
-    {/* New Delivery Modal */ }
-    {newDeliveryModalOpen && (
-      <div
-        id="newDeliveryModal"
-        className="modal fixed inset-0 flex justify-center items-center z-50"
-        style={{ backgroundColor: "rgba(0, 0, 0, 0.5)" }}
-      >
-        <div className="bg-white p-6 rounded-lg shadow-md w-2/4">
-          <div className="bg-blue-600 text-white text-center py-2 mb-4 rounded-md">
-            <h3 className="text-lg font-bold">New Delivery Created</h3>
-          </div>
-
-          {/* Delivery Details */}
-          <div className="mb-4">
-            <p><strong>Delivered to:</strong> Barangay Lumbia</p>
-          </div>
-          <div className="mb-4">
-            <p><strong>Address:</strong> Materson ave, Lumbia, Cagayan de Oro City, 9000</p>
-          </div>
-          <div className="mb-4">
-            <p><strong>Date Delivered:</strong> 06/04/24</p>
-          </div>
-          <div className="mb-4">
-            <p><strong>Delivery Man:</strong> Daren Rebote</p>
-          </div>
-
-          {/* Items Ordered Container */}
-          <div className="mb-6 p-4 bg-gray-100 rounded-md shadow-md">
-            <div className="flex justify-between">
-              <span className="font-bold">₱ 1500</span>
-              <span className="font-bold">Submersible Pump</span>
-              <span className="font-bold">x5</span>
-            </div>
-          </div>
-
-          {/* Cancel and Save Buttons */}
-          <div className="flex justify-center space-x-4">
-            <button
-              className="bg-gray-500 text-white hover:bg-gray-700 px-4 py-2 rounded-md shadow-md transition-all"
-              onClick={() => setNewDeliveryModalOpen(false)} // Cancel button to close the modal
-            >
-              Cancel
-            </button>
-
-            <button
-              className="bg-blue-600 text-white hover:bg-blue-500 px-4 py-2 rounded-md shadow-md transition-all"
-              onClick={() => {
-                // Save logic here
-                setNewDeliveryModalOpen(false); // You can also close the modal after saving if needed
-              }}
-            >
-              Save
-            </button>
-          </div>
-        </div>
-      </div>
-    )}
 
         {/* View Deliveries Modal */}
         <ViewDeliveriesModal 
