@@ -150,20 +150,6 @@ const fetchProducts = async () => {
     console.log(`Editing item: ${itemName}`);
   };
 
-  // Function to highlight matching text
-  const highlightText = (text, search) => {
-    if (!search) return text;
-
-    const regex = new RegExp(`(${search})`, 'gi');
-    const parts = text.split(regex);
-    
-    return parts.map((part, index) => 
-      part.toLowerCase() === search.toLowerCase() 
-        ? <span key={index} className="bg-yellow-300">{part}</span> 
-        : part
-    );
-  };
-
   return (
     <div className="flex w-full bg-white">
       <Navbar />
@@ -240,7 +226,7 @@ const fetchProducts = async () => {
                 key={index}
                 className="grid grid-cols-7 rounded-lg hover:bg-gray-300 duration-300 text-left border-b border-gray-300 p-1"
               >
-                <div className="col-span-2">{highlightText(item.product_name, searchInput)}</div>
+                <div className="col-span-2">{item.product_name}</div>
                 <div className="col-span-2">{item.category_name}</div>
                 <div className="col-span-1">P {item.original_price ? item.original_price : 'N/A'}</div>
                 <div className="col-span-1">{item.quantity}</div>
