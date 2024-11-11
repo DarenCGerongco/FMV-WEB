@@ -162,7 +162,6 @@ function Overview() {
         <div className="w-11/12 mx-auto flex space-x-4">
           <div className="flex flex-col space-y-4 w-1/3">
             {/* Order Container */}   
-            <div className="bg-white p-6 rounded-lg shadow-md cursor-pointer" onClick={handleOrderClick}>
             <div className="bg-white p-6 rounded-lg shadow-md hover:bg-gray-200 duration-300 cursor-pointer" onClick={handleOrderClick}>
               <h3 className="text-lg font-bold mb-4">ORDER (Latest )</h3>
               {Array.isArray(orders) && orders.map((customerData, index) => (
