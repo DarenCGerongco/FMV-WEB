@@ -128,10 +128,22 @@ function Overview() {
   };
 
   const handleInventoryClick = () => {
-    navigate('/inventory'); // Redirect to Inventory page
+    navigate('/inventory'); // Redirect to inventory page
   };
   const handleDeliveryManClick = () => {
     navigate('/deliveryman'); // Redirect to deliveryman page
+  };
+
+  const handleOrderClick = () => {
+    navigate('/order'); // Redirect to order page
+  };
+
+  const handleDeliveryClick = () => {
+    navigate('/delivery'); // Redirect to delivery page
+  };
+
+  const handleSalesClick = () => {
+    navigate('/sales'); // Redirect to sales page
   };
 
   return (
@@ -150,8 +162,10 @@ function Overview() {
 
         <div className="w-11/12 mx-auto flex space-x-4">
           <div className="flex flex-col space-y-4 w-1/3">
-            {/* Order Container */}
-            <div className="bg-white p-6 rounded-lg shadow-md">
+            {/* Order Container */}   
+            <div className="bg-white p-6 rounded-lg shadow-md cursor-pointer"
+            onClick={handleOrderClick}
+            >
               <h3 className="text-lg font-bold mb-4">ORDER</h3>
               {orders.map((customerData, index) => (
                 <div key={index} className="bg-gray-200 p-4 rounded-lg shadow-md mt-4 flex justify-between items-start">
@@ -168,7 +182,9 @@ function Overview() {
 
 
             {/* Delivery Container */}
-            <div className="bg-white p-6 rounded-lg shadow-md">
+            <div className="bg-white p-6 rounded-lg shadow-md cursor-pointer"
+            onClick={handleDeliveryClick}
+            >
               <h3 className="text-lg font-bold mb-4">DELIVERY</h3>
               <div className="p-4 rounded-lg shadow-md mt-4 flex justify-between items-center bg-[#8EF7A8]">
                 <span className="text-gray-700 text-sm">Confirm Delivery:</span>
@@ -201,7 +217,9 @@ function Overview() {
           {/* Right Column for Larger Containers */}
           <div className="flex flex-col space-y-4 w-2/3">
             {/* Sales Container */}
-            <div className="bg-white p-6 rounded-lg shadow-md">
+            <div className="bg-white p-6 rounded-lg shadow-md cursor-pointer"
+            onClick={handleSalesClick}
+            >
               <h3 className="text-lg font-bold mb-4">SALES</h3>
               <div className="flex justify-center items-center h-80">
                 <div className="w-full h-full max-w-xs">
