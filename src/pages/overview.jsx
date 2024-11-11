@@ -159,21 +159,26 @@ function Overview() {
           </h2>
         </div>
 
-
         <div className="w-11/12 mx-auto flex space-x-4">
           <div className="flex flex-col space-y-4 w-1/3">
             {/* Order Container */}   
             <div className="bg-white p-6 rounded-lg shadow-md cursor-pointer" onClick={handleOrderClick}>
-              <h3 className="text-lg font-bold mb-4">ORDER (Latest Order)</h3>
+            <div className="bg-white p-6 rounded-lg shadow-md hover:bg-gray-200 duration-300 cursor-pointer" onClick={handleOrderClick}>
+              <h3 className="text-lg font-bold mb-4">ORDER (Latest )</h3>
               {Array.isArray(orders) && orders.map((customerData, index) => (
-                <div key={index} className="bg-gray-200 p-4 rounded-lg shadow-md mt-4">
-                  <div className="text-gray-700 text-sm font-bold">{customerData.customer_name}</div>
-                  <div className="text-gray-700 text-xs mt-1">{customerData.created_at}</div>
+                <div
+                  key={index}
+                  className="bg-gray-100 p-4 rounded-lg hover:bg-blue-500 duration-300 shadow-md mt-4 group"
+                >
+                  <div className="text-gray-700 group-hover:text-white text-sm font-bold duration-300">
+                    {customerData.customer_name}
+                  </div>
+                  <div className="text-gray-700 group-hover:text-white text-xs mt-1 duration-300">
+                    {customerData.created_at}
+                  </div>
                 </div>
               ))}
             </div>
-
-
 
             {/* Delivery Container */}
             <div className="bg-white p-6 rounded-lg shadow-md cursor-pointer"
