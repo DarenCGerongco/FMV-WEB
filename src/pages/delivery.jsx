@@ -177,9 +177,9 @@ function Delivery() {
           <div className="mt-2 bg-gray-100 p-4 rounded-lg shadow-md">
             <h3 className="text-sm text-gray-400 flex justify-between items-center">
               <span className="w-1/6 text-left">Purchase Order ID</span>
-              <span className="relative left-[12px] w-1/3 text-left">Delivered to</span>
-              <span className="relative left-[-10px] w-1/3 text-left">Delivery Man</span>
-              <span className="relative left-[-40px] w-1/6 text-left">Date</span>
+              <span className=" left-[12px] w-1/3 text-left">Delivered to</span>
+              <span className=" left-[-10px] w-1/3 text-left">Delivery Man</span>
+              <span className=" left-[-40px] w-1/6 text-left">Date</span>
             </h3>
             {onDelivery && Object.values(onDelivery).length > 0 ? (
               Object.values(onDelivery).map((onDeliveryData, index) => (

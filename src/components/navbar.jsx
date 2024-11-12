@@ -110,7 +110,7 @@ const Navbar = () => {
       {isModalOpen && (
         <div
           id="logoutModal"
-          className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white p-6 w-11/12 md:w-1/3 rounded-lg shadow-lg z-50"
+          className="fixed z-9999 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white p-6 w-11/12 md:w-1/3 rounded-lg shadow-lg"
         >
           <p id="modalText" className="text-lg font-semibold mb-4">
             Are you sure you want to logout?
@@ -134,7 +134,7 @@ const Navbar = () => {
 
       {/* Success Message after Logout */}
       {showSuccessMessage && (
-        <div className="fixed top-0 left-1/2 transform -translate-x-1/2 bg-green-500 text-white p-3 w-full items-center text-center rounded-lg">
+        <div className="fixed z-9999 top-0 left-1/2 transform -translate-x-1/2 bg-green-500 text-white p-3 w-full items-center text-center rounded-lg">
           {message}
         </div>
       )}
