@@ -169,10 +169,10 @@ function Overview() {
                   key={index}
                   className="bg-gray-100 p-4 rounded-lg hover:bg-blue-500 duration-300 shadow-md mt-4 group"
                 >
-                  <div className="text-gray-700 group-hover:text-white text-sm font-bold duration-300">
+                  <div className="text-gray-700 group-hover:text-white text-sm font-bold duration-200">
                     {customerData.customer_name}
                   </div>
-                  <div className="text-gray-700 group-hover:text-white text-xs mt-1 duration-300">
+                  <div className="text-gray-700 group-hover:text-white text-xs mt-1 duration-200">
                     {customerData.created_at}
                   </div>
                 </div>

@@ -10,6 +10,7 @@ import ItemsOrderedModal from './order/itemsorderedmodal';
 function Order() {
   const url = import.meta.env.VITE_API_URL;
   const { id: userID, setID } = useContext(GlobalContext);
+  const [loading, setLoading] = useState(true); // Initialize loading state
 
   const [addModalOpen, setAddModalOpen] = useState(false);
   const [orders, setOrders] = useState([]);
@@ -35,6 +36,23 @@ function Order() {
   const [currentPage, setCurrentPage] = useState(1);
   const [paginationInfo, setPaginationInfo] = useState({});
 
+  const [purchaseOrderDetails, setPurchaseOrderDetails] = useState({
+    customer_name: '',
+    street: '',
+    barangay: '',
+    city: '',
+    province: '',
+    zipcode: ''
+  });
+
+  const handleChange = (event) => {
+    const { name, value } = event.target;
+    setPurchaseOrderDetails(prevDetails => ({
+      ...prevDetails,
+      [name]: value
+    }));
+  };
+
   // Ensure userID is set
   useEffect(() => {
     if (!userID) {
@@ -53,22 +71,35 @@ function Order() {
     setAddModalOpen(true);
   };
 
-  // Fetch purchase orders with pagination
+  const closeAddModal = () => {
+    setAddModalOpen(false);
+  };
+  
+
+  // Fetch purchase orders with a 5-second delay
   useEffect(() => {
     const fetchOrders = async () => {
+      setLoading(true);
       try {
         const response = await axios.get(`${url}/api/purchase-orders-delivery?page=${currentPage}`);
         const data = response.data;
-        setPurchaseOrderData(data.orders);
-        setSearchResults(data.orders);
-        setPaginationInfo({
-          total: data.pagination.total,
-          perPage: data.pagination.perPage,
-          currentPage: data.pagination.currentPage,
-          lastPage: data.pagination.lastPage,
-        });
+        const combinedData = data.orders.map(order => ({
+          purchase_order_id: order.purchase_order_id,
+          customer_name: order.customer_name,
+          street: order.address.street,
+          city: order.address.city,
+          barangay: order.address.barangay,
+          province: order.address.province,
+          created_at: order.created_at,
+        }));
+        setPurchaseOrderData(combinedData);
+        setSearchResults(combinedData);
+        setPaginationInfo(data.pagination);
+
+        setTimeout(() => setLoading(false), 1000); // Delay display for 5 seconds
       } catch (error) {
         console.error('Error fetching orders:', error);
+        setLoading(false);
       }
     };
 
@@ -78,7 +109,6 @@ function Order() {
   const handlePageChange = (page) => {
     setCurrentPage(page);
   };
-
   // Render pagination controls
   const renderPaginationControls = () => {
     const { currentPage, lastPage } = paginationInfo;
@@ -408,7 +438,7 @@ return (
               />
             </div>
             <button
-              className="bg-blue-500 text-black px-4 py-2 bg-blue-500 text-white rounded-md focus:outline-none"
+              className="bg-blue-500 shadow-md font-bold text-black px-4 py-2 bg-blue-500 hover:bg-white hover:text-blue-500 duration-300 hover:text text-white rounded-md focus:outline-none"
               onClick={openAddModal}
             >
               +
@@ -473,74 +503,74 @@ return (
           </div>
           {/* Header */}
 
-          {searchResults.map((customerData, index) => (
-            <div
-              key={index}
-              className="grid grid-cols-[0.5fr_1.5fr_2fr_1fr_1fr] items-center bg-white px-4 py-2 rounded-lg shadow-md mb-1 hover:bg-gray-300 duration-300 border"
-            >
-              {/* POID */}
-              <p className="text-1xl text-left">{customerData.purchase_order_id}</p>
-
-              {/* Customer's Name */}
-              <p className="text-1xl text-left">{customerData.customer_name}</p>
-
-              {/* Address */}
-              <div className="text-sm text-gray-700 text-left px-2">
-                <p>{customerData.street} {customerData.barangay} {customerData.province} {customerData.city}</p>
-              </div>
-
-              {/* Date */}
-              <p className="text-sm text-gray-700 text-left">
-                {customerData.created_at}
-              </p>
-
-              {/* Buttons */}
-              <div className="flex space-x-2 justify-center">
-                <button 
-                  className="bg-blue-500 p-1 hover:bg-blue-600 duration-300 text-white rounded-md w-[150px]"
-                  onClick={() => openCreateDeliveryModal(customerData.purchase_order_id)}
-                >
-                  Create Deliveries
-                </button>
-
-                <button 
-                  className="bg-blue-500 p-1 hover:bg-blue-600 duration-300 text-white rounded-md w-[75px]"
-                  onClick={() => toggleDropDown(customerData.purchase_order_id)}
-                >
-                  View
-                </button>
-
-                {/* DropDown */}
-                {openDropDowns[customerData.purchase_order_id] && (
-                  <div
-                    ref={dropDownRef} // Attach ref here to detect outside clicks
-                    className="absolute mt-10 w-48 bg-white border border-gray-300 right-[60px] rounded shadow-lg z-50"
-                  >
-                    <ul className="py-1">
-                      <li
-                        className="px-4 p-1 hover:bg-gray-200 duration-300 cursor-pointer"
-                        onClick={() => {
-                          openItemsOrderedModal(customerData.purchase_order_id);
-                          setOpenDropDowns({ ...openDropDowns, [customerData.purchase_order_id]: false });
-                        }}
-                      >
-                        View Items Ordered
-                      </li>
-                      <li
-                        className="px-4 p-1 hover:bg-gray-200 duration-300 cursor-pointer"
-                        onClick={() => {
-                          openViewDeliveriesModal(customerData.purchase_order_id);
-                          setOpenDropDowns({ ...openDropDowns, [customerData.purchase_order_id]: false });
-                        }}
-                      >
-                        View Deliveries
-                      </li>
-                    </ul>
-                  </div>
-                )}
-              </div>
+          {loading ? (
+            <div className='flex justify-center'>
+                <h2>Loading...</h2>
+              <div className="spinner">
+                {/* Spinner animation */}              
+              </div>  
             </div>
-          ))}
+          ) : (
+            searchResults.map((customerData, index) => (
+              <div
+                key={index}
+                className="grid grid-cols-[0.5fr_1.5fr_2fr_1fr_1fr] items-center bg-white px-4 py-2 rounded-lg shadow-md mb-1 hover:bg-gray-300 duration-300 border"
+              >
+                <p className="text-1xl text-left">{customerData.purchase_order_id}</p>
+                <p className="text-1xl text-left">{customerData.customer_name}</p>
+                <div className="text-sm text-gray-700 text-left px-2">
+                  <p>{customerData.street} {customerData.barangay} {customerData.province} {customerData.city}</p>
+                </div>
+                <p className="text-sm text-gray-700 text-left">
+                  {customerData.created_at}
+                </p>
+                <div className="flex space-x-2 justify-center">
+                  <button 
+                    className="bg-blue-500 p-1 hover:bg-white hover:text-blue-500 font-bold duration-300 text-white rounded-md w-[150px]"
+                    onClick={() => openCreateDeliveryModal(customerData.purchase_order_id)}
+                  >
+                    Create Deliveries
+                  </button>
+
+                  <button 
+                    className="bg-blue-500 p-1 hover:bg-white hover:text-blue-500 font-bold duration-300 text-white rounded-md w-[75px]"
+                    onClick={() => toggleDropDown(customerData.purchase_order_id)}
+                  >
+                    View
+                  </button>
+
+                  {openDropDowns[customerData.purchase_order_id] && (
+                    <div
+                      ref={dropDownRef}
+                      className="absolute mt-10 w-48 bg-white border border-gray-300 right-[60px] rounded shadow-lg z-50"
+                    >
+                      <ul className="py-1">
+                        <li
+                          className="px-4 p-1 hover:bg-gray-200 duration-300 cursor-pointer"
+                          onClick={() => {
+                            openItemsOrderedModal(customerData.purchase_order_id);
+                            setOpenDropDowns({ ...openDropDowns, [customerData.purchase_order_id]: false });
+                          }}
+                        >
+                          View Items Ordered
+                        </li>
+                        <li
+                          className="px-4 p-1 hover:bg-gray-200 duration-300 cursor-pointer"
+                          onClick={() => {
+                            openViewDeliveriesModal(customerData.purchase_order_id);
+                            setOpenDropDowns({ ...openDropDowns, [customerData.purchase_order_id]: false });
+                          }}
+                        >
+                          View Deliveries
+                        </li>
+                      </ul>
+                    </div>
+                  )}
+                </div>
+              </div>
+            ))
+          )}
+        </div>
         </div>
 
         {/* Pagination Controls */}
@@ -548,14 +578,14 @@ return (
           <button
             onClick={() => handlePageChange(1)}
             disabled={paginationInfo.currentPage === 1}
-            className="px-3 py-1 bg-white hover:bg-blue-500 hover:text-white duration-300 shadow-md cursor-pointer rounded"
+            className="font-bold px-3 py-1 bg-white hover:bg-blue-500 hover:text-white duration-200 shadow-md cursor-pointer rounded"
           >
             First
           </button>
           <button
             onClick={() => handlePageChange(paginationInfo.currentPage - 1)}
             disabled={paginationInfo.currentPage === 1}
-            className="px-3 py-1 bg-white hover:bg-blue-500 hover:text-white duration-300 shadow-md cursor-pointer rounded"
+            className="font-bold px-3 py-1 bg-white hover:bg-blue-500 hover:text-white duration-200 shadow-md cursor-pointer rounded"
           >
             Previous
           </button>
@@ -563,7 +593,7 @@ return (
             <button
               key={i + 1}
               onClick={() => handlePageChange(i + 1)}
-              className={`px-3 py-1 rounded cursor-pointer duration-300 shadow-md ${paginationInfo.currentPage === i + 1 ? 'bg-blue-500 text-white' : 'bg-white hover:bg-blue-500 shadow-md hover:text-white'}`}
+              className={`font-bold px-3 py-1 rounded cursor-pointer duration-200 shadow-md ${paginationInfo.currentPage === i + 1 ? 'bg-blue-500 text-white' : 'bg-white hover:bg-blue-500 shadow-md hover:text-white'}`}
               >
               {i + 1}
             </button>
@@ -571,14 +601,14 @@ return (
           <button
             onClick={() => handlePageChange(paginationInfo.currentPage + 1)}
             disabled={paginationInfo.currentPage === paginationInfo.lastPage}
-            className="px-3 py-1 bg-white hover:bg-blue-500 hover:text-white duration-300 shadow-md cursor-pointer rounded"
+            className="font-bold px-3 py-1 bg-white hover:bg-blue-500 hover:text-white duration-200 shadow-md cursor-pointer rounded"
           >
             Next
           </button>
           <button
             onClick={() => handlePageChange(paginationInfo.lastPage)}
             disabled={paginationInfo.currentPage === paginationInfo.lastPage}
-            className="px-3 py-1 bg-white hover:bg-blue-500 hover:text-white duration-300 shadow-md cursor-pointer rounded"
+            className="font-bold px-3 py-1 bg-white hover:bg-blue-500 hover:text-white duration-200 shadow-md cursor-pointer rounded"
           >
             Last
           </button>
@@ -684,20 +714,20 @@ return (
             <div className="flex justify-end p-4">
               <div className="flex flex-col items-end space-y-2">
                 <button
-                  className="bg-blue-500 text-white py-2 rounded-md shadow-md w-[100%]"
+                  className="bg-blue-500 font-bold hover:bg-white hover:text-blue-500 duration-300 text-white py-2 rounded-md shadow-md w-[100%]"
                   onClick={openCreateItemsOrderedModal}
                 >
                   Register Product
                 </button>
                 <div className="flex items-center space-x-2">
                   <button
-                    className="bg-white-500 text-black px-4 py-2 border border-gray-300 rounded-md shadow-md w-32"
+                    className="bg-red-500 font-bold hover:bg-white hover:text-red-500 duration-300 text-white px-4 py-2 border border-gray-300 rounded-md shadow-md w-32"
                     onClick={closeAddModal}
                   >
                     Cancel
                   </button>
                   <button
-                    className="bg-blue-500 text-white px-4 py-2 rounded-md shadow-md w-32"
+                    className="bg-blue-500 font-bold hover:bg-white hover:text-blue-500 duration-300 text-white px-4 py-2 rounded-md shadow-md w-32"
                     onClick={()=>{
                       handleSave();
                       createOrder();
@@ -758,7 +788,7 @@ return (
                       .map(product => (
                         <div
                           key={product.product_id}
-                          className="flex p-3 justify-between border-b border-gray-300 py-2 cursor-pointer hover:bg-gray-100"
+                          className="flex p-3 justify-between duration-300 border-b border-gray-300 py-2 cursor-pointer hover:bg-gray-100"
                           onMouseDown={() => handleProductSelect(product)}
                         >
                           <span>{product.product_id}. {product.product_name}</span>
@@ -769,11 +799,11 @@ return (
                 )}
               </div>
 
-              <div className='flex justify-center w-[10%] bg-custom-blue rounded-md p-2 '>
-                <button className='md:text-white ' onClick={handleAddProduct}>
-                  Add
-                </button>
-              </div>
+              <div className='flex justify-center w-[10%] shadow-md bg-blue-500 font-bold hover:bg-white duration-300 rounded-md p-2 group'>
+              <button className='text-white group-hover:text-blue-500' onClick={handleAddProduct}>
+                Add
+              </button>
+            </div>
             </div>
 
             <div className="mt-6">
@@ -813,13 +843,13 @@ return (
 
             <div className="flex justify-end mt-4 space-x-2">
               <button
-                className="bg-red-500 text-white hover:bg-red-700 px-4 py-2 rounded-md"
+                className="bg-red-500 shadow-md font-bold duration-300 text-white hover:bg-white hover:text-red-500 px-4 py-2 rounded-md"
                 onClick={closeCreateItemsOrderedModal} // Call to close the modal
               >
                 Close
               </button>
               <button
-                className="bg-gray-500 text-white hover:bg-gray-700 px-4 py-2 rounded-md"
+                className="bg-blue-500 shadow-md text-white font-bold hover:bg-white hover:text-blue-500 duration-300 px-4 py-2 rounded-md"
                 onClick={handleSave} // Call handleSave on click
               >
                 Save
@@ -854,7 +884,6 @@ return (
           purchaseOrderId={selectedPurchaseOrderId}
         />
       </div>
-    </div>
   );
 }
 

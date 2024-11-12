@@ -136,9 +136,6 @@ function Delivery() {
                     <div key={index}>
                       <li>
                         {pendingData.purchase_order_id} {pendingData.address.street}, {pendingData.address.barangay}, AmangKokak ka {pendingData.address.province}
-
-                      </li>
-                      <li>
                       </li>
                     </div>
                   ))
@@ -188,7 +185,7 @@ function Delivery() {
               Object.values(onDelivery).map((onDeliveryData, index) => (
                 <div
                   key={index}
-                  className="m-3 p-4 rounded-lg shadow-md flex justify-between items-center bg-[#E6FCE6]"
+                  className="m-3 p-4 rounded-lg hover:bg-green-300 duration-300 cursor-pointer shadow-md flex justify-between items-center bg-[#E6FCE6]"
                 >
                   <span className="w-1/6 text-left">{onDeliveryData.purchase_order_id}</span>
                   <span className="w-1/3 text-left">{onDeliveryData.customer_name}</span>
