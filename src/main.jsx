@@ -10,6 +10,8 @@ import Delivery from './pages/delivery.jsx';
 import Overview from './pages/overview.jsx';
 import Order from './pages/order.jsx';
 import Navbar from './components/navbar.jsx';
+import CreateDelivery from './pages/order/pages/CreateDelivery';
+import WalkIn from './pages/order/pages/WalkIn.jsx'
 import { GlobalProvider } from '../GlobalContext'; // Import GlobalProvider
 
 const root = createRoot(document.getElementById('root'));
@@ -19,13 +21,15 @@ root.render(
     <GlobalProvider> {/* Wrap the app inside GlobalProvider */}
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/deliveryman" element={<DeliveryMan />} />
-          <Route path="/inventory" element={<Inventory />} />
-          <Route path="/sales" element={<Sales />} />
-          <Route path="/delivery" element={<Delivery />} />
-          <Route path="/overview" element={<Overview />} />
-          <Route path="/order" element={<Order />} />
+          <Route path="/" element={<Index/>} />
+          <Route path="/deliveryman" element={<DeliveryMan/>} />
+          <Route path="/inventory" element={<Inventory/>} />
+          <Route path="/sales" element={<Sales/>} />
+          <Route path="/delivery" element={<Delivery/>} />
+          <Route path="/overview" element={<Overview/>} />
+          <Route path="/order" element={<Order/>} />
+          <Route path="/order/create-delivery" element={<CreateDelivery/>} />
+          <Route path="/order/create-walk-in" element={<WalkIn/>} />
         </Routes>
       </BrowserRouter>
     </GlobalProvider>

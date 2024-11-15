@@ -121,83 +121,68 @@ function Delivery() {
 
         <div className="w-4/5 mx-auto bg-white p-5 m-3 rounded-lg shadow-md">
           {/* 1st Container - Confirmation */}
-          <h2 className="text-xs mt-10 text-green-600 font-bold ">Confirmation</h2>
-          <div className="mt-2 bg-gray-100 p-4 rounded-lg shadow-md">
-            <h3 className="text-sm text-gray-400 flex justify-between items-center">
-              <span className="w-1/6 text-left">Purchase Order ID</span>
-              <span className="w-1/3 text-left">Delivered to</span>
-              <span className="w-1/3 text-left">Delivery Man</span>
-              <span className="w-1/6 text-left">Date</span>
-            </h3>
-            <div className="p-4 rounded-lg shadow-md flex justify-between items-center bg-[#8EF7A8]">
-            <ul>
-                {pendingDeliveries && Object.values(pendingDeliveries).length > 0 ? (
-                  Object.values(pendingDeliveries).map((pendingData, index)=> (
-                    <div key={index}>
-                      <li>
-                        {pendingData.purchase_order_id} {pendingData.address.street}, {pendingData.address.barangay}, AmangKokak ka {pendingData.address.province}
-                      </li>
-                    </div>
-                  ))
-                ): (
-                  <li>
-                    No Pending Deliveries
-                  </li>
-                )}
-              </ul>
-              {/* <span className="w-1/6">2</span>
-              <span className="w-1/3">Barangay Lumbia</span>
-              <span className="w-1/3">Arlene Abad</span>
-              <span className="w-1/6">06/04/2024</span> */}
-              <img
-                src="./src/assets/info.png"
-                alt="Delivery Image"
-                className="w-7 h-7 rounded-full cursor-pointer"
-                onClick={() => handleOpenConfirmationModal({ deliveryNo: 2, deliveredTo: 'Barangay Lumbia', deliveryMan: 'Arlene Abad', date: '06/04/2024' })}
-              />
-            </div>    
-            {/* 
-              <div className="mt-3 p-4 rounded-lg shadow-md flex justify-between items-center bg-[#8EF7A8]">
-                <span className="w-1/6">3</span>
-                <span className="w-1/3">Barangay Iponan</span>
-                <span className="w-1/3">John Smith</span>
-                <span className="w-1/6">06/05/2024</span>
-                <img
-                  src="./src/assets/info.png"
-                  alt="Delivery Image"
-                  className="w-7 h-7 rounded-full cursor-pointer"
-                  onClick={() => handleOpenConfirmationModal({ deliveryNo: 3, deliveredTo: 'Barangay Iponan', deliveryMan: 'John Smith', date: '06/05/2024' })}
-                />
-              </div>         
-            */}
+          <h2 className="text-xs mt-10 text-green-600 font-bold ">Confirmation (Delivery.status = P)</h2>
+          <div className=" my-3 p-2 bg-gray-100 rounded-lg shadow-md">
+            <div className="text-sm font-bold grid grid-cols-6 text-gray-400 flex justify-between items-center">
+              <span className="col-span-1 text-left">Purchase Order ID</span>
+              <span className="col-span-2 text-left">Delivered to</span>
+              <span className="col-span-2 text-left">Delivery Man</span>
+              <span className="col-span-1 text-left">Date</span>
+            </div>
+              {pendingDeliveries && Object.values(pendingDeliveries).length > 0 ? (
+                Object.values(pendingDeliveries).map((pendingData, index)=> (
+                  <div 
+                    key={index}
+                    className="my-3 p-2 grid grid-cols-6 rounded-lg hover:bg-green-300 duration-300 cursor-pointer shadow-md flex bg-[#E6FCE6]"
+                    >
+                    <span className='col-span-1'>
+                      {pendingData.purchase_order_id} 
+                    </span>
+                    <span className='col-span-2 p'>
+                      {pendingData.address.street}, {pendingData.address.barangay},{pendingData.address.province}
+                    </span>
+                    <span className='col-span-2'>
+                      {pendingData.deliveryman_name}
+                    </span>
+                    <span className='col-span-1'>
+                      {pendingData.date}
+                    </span>
+                  </div>
+                ))
+              ): (
+                <li>
+                  No Pending Deliveries
+                </li>
+              )}
           </div>
 
           {/* 2nd Container - Ongoing Delivery */}
-          <h2 className="text-xs mt-10 text-green-600 font-bold">Ongoing Delivery</h2>
+          <h2 className="text-xs mt-10 text-green-600 font-bold">Ongoing Delivery (Delivery.status = OD)</h2>
           <div className="mt-2 bg-gray-100 p-4 rounded-lg shadow-md">
-            <h3 className="text-sm text-gray-400 flex justify-between items-center">
-              <span className="w-1/6 text-left">Purchase Order ID</span>
-              <span className=" left-[12px] w-1/3 text-left">Delivered to</span>
-              <span className=" left-[-10px] w-1/3 text-left">Delivery Man</span>
-              <span className=" left-[-40px] w-1/6 text-left">Date</span>
-            </h3>
+            <div className="text-sm grid font-bold grid-cols-6 text-gray-400 flex justify-between items-center">
+              <span className="col-span-1 text-left">Purchase Order ID</span>
+              <span className="col-span-2 text-left">Delivered to</span>
+              <span className="col-span-2 text-left">Delivery Man</span>
+              <span className="col-span-1 text-left">Date</span>
+            </div>
             {onDelivery && Object.values(onDelivery).length > 0 ? (
               Object.values(onDelivery).map((onDeliveryData, index) => (
                 <div
                   key={index}
-                  className="m-3 p-4 rounded-lg hover:bg-green-300 duration-300 cursor-pointer shadow-md flex justify-between items-center bg-[#E6FCE6]"
+                  className="my-3 p-2 grid grid-cols-6 rounded-lg hover:bg-green-300 duration-300 cursor-pointer shadow-md flex bg-[#E6FCE6]"
+                  onClick={() => handleOpenOngoingDeliveryModal(onDeliveryData)}
                 >
-                  <span className="w-1/6 text-left">{onDeliveryData.purchase_order_id}</span>
-                  <span className="w-1/3 text-left">{onDeliveryData.customer_name}</span>
-                  <span className="w-1/3 text-left">{onDeliveryData.deliveryman_name}</span>
-                  <span className="w-1/6 text-left">{onDeliveryData.date}</span>
+                  <span className="col-span-1 text-left">{onDeliveryData.purchase_order_id}</span>
+                  <span className="col-span-2 text-left">{onDeliveryData.customer_name}</span>
+                  <span className="col-span-2 text-left">{onDeliveryData.deliveryman_name}</span>
+                  <span className="col-span-1 text-left">{onDeliveryData.date}</span>
 
-                  <img
+                  {/* <img
                     src="./src/assets/info.png"
                     alt="Delivery Image"
                     className="w-7 h-7 rounded-full cursor-pointer"
                     onClick={() => handleOpenOngoingDeliveryModal(onDeliveryData)} // Pass specific delivery
-                  />
+                  /> */}
                 </div>
               ))
             ) : (
@@ -340,7 +325,9 @@ function Delivery() {
             <div
               className="bg-white p-6 rounded-lg shadow-lg w-1/3 max-h-screen overflow-y-auto"
             >
-              <h2 className="text-xl font-bold mb-4">Ongoing Delivery Details</h2>
+              <h2 className="text-xl font-bold mb-4">
+                Ongoing Delivery Details
+              </h2>
               <p>
                 <strong>Delivery Number:</strong> {selectedDelivery.delivery_no}
               </p>
@@ -355,10 +342,12 @@ function Delivery() {
               </p>
 
               <div className="mt-4">
-                <h3 className="text-lg font-semibold mb-2">Order List:</h3>
+                <h3 className="text-lg font-semibold mb-2">
+                  On-Delivery Product List:
+                </h3>
                 {selectedDelivery.products.map((product, productIndex) => (
                   <div
-                    className="p-4 bg-gray-100 rounded-lg shadow-md"
+                    className="p-4 bg-gray-100 hover:bg-gray-300 duration-200 rounded-lg shadow-md mb-2"
                     key={productIndex}
                   >
                     <div className="flex justify-between">
@@ -370,12 +359,15 @@ function Delivery() {
                 ))}
               </div>
 
-              <button
-                className="mt-4 bg-blue-500 text-white ml-80 px-4 py-2 rounded-md shadow-md focus:outline-none"
-                onClick={handleCloseModal}
-              >
-                Close
-              </button>
+              <div className="flex justify-center  ">
+                <button
+                  className=" bg-blue-500 text-white hover:bg-white hover:text-blue-500 font-bold duration-200 px-4 py-2 rounded-md shadow-md focus:outline-none"
+                  onClick={handleCloseModal}
+                >
+                  Close
+                </button>
+              </div>
+
             </div>
           </div>
         )}

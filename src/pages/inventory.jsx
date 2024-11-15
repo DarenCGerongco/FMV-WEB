@@ -204,21 +204,21 @@ const fetchProducts = async () => {
           {/* Labels */}
           <div className="mt-4 space-y-1">
             <div className="grid grid-cols-7 font-semibold">
-              <div className="col-span-2">
+              <h2 className="col-span-2">
                 Product Name
-              </div>
-              <div className="col-span-2">
+              </h2>
+              <h2 className="col-span-2">
                 Product Category
-              </div>
-              <div className="col-span-1">
+              </h2>
+              <h2 className="col-span-1">
                 Product Price (PHP)
-              </div>
-              <div className="col-span-1">
+              </h2>
+              <h2 className="col-span-1">
                 Product Amount (PCS)
-              </div>
-              <div className="col-span-1 flex justify-center items-center">
+              </h2>
+              <h2 className="col-span-1 flex justify-center items-center">
                 Edit
-              </div>
+              </h2>
             </div>
 
             {(searchResults.length > 0 ? searchResults : items).map((item, index) => (

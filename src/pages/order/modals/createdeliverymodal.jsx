@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import './_style.css';
 
-import qm from './assets/qm.png';
+import qm from '../assets/qm.png';
 
 const CreateDeliveryModal = ({ createDeliveryModalOpen, closeCreateDeliveryModal, setNewDeliveryModalOpen, purchaseOrderId }) => {
   if (!createDeliveryModalOpen) return null;
@@ -110,10 +110,6 @@ const CreateDeliveryModal = ({ createDeliveryModalOpen, closeCreateDeliveryModal
     }
   };
   
-  
-  
-  
-
 
   return (
     <div
@@ -129,7 +125,9 @@ const CreateDeliveryModal = ({ createDeliveryModalOpen, closeCreateDeliveryModal
           &times;
         </button>
         <div className="text-Black text-center py-2 mb-4 rounded-md">
-          <h3 className="text-lg font-bold">Create Delivery</h3>
+          <h3 className="text-lg font-bold">
+            Create Delivery
+          </h3>
         </div>
 
         <form>

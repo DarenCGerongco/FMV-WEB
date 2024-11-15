@@ -2,56 +2,33 @@ import React, { useState, useEffect, useRef, useContext } from 'react';
 import Navbar from '../components/navbar';
 import axios from 'axios';
 import { GlobalContext } from '../../GlobalContext';
+import { useNavigate } from 'react-router-dom';
 
-import CreateDeliveryModal from './order/createdeliverymodal';
-import ViewDeliveriesModal from './order/viewdeliveriesmodal';
-import ItemsOrderedModal from './order/itemsorderedmodal';
+import CreateDeliveryModal from './order/modals/createdeliverymodal';
+import ViewDeliveriesModal from './order/modals/viewdeliveriesmodal';
+import ItemsOrderedModal from './order/modals/itemsorderedmodal';
 
 function Order() {
+  const navigate = useNavigate(); // Initialize navigate
   const url = import.meta.env.VITE_API_URL;
   const { id: userID, setID } = useContext(GlobalContext);
   const [loading, setLoading] = useState(true); // Initialize loading state
 
-  const [addModalOpen, setAddModalOpen] = useState(false);
   const [orders, setOrders] = useState([]);
   const [itemsOrderedModalOpen, setItemsOrderedModalOpen] = useState(false);
   const [createDeliveryModalOpen, setCreateDeliveryModalOpen] = useState(false);
-  const [newDeliveryModalOpen, setNewDeliveryModalOpen] = useState(false);
   const [productsListed, setProductsListed] = useState([]);
   const [viewDeliveriesModalOpen, setViewDeliveriesModalOpen] = useState(false);
-  const [createItemsOrderedModalOpen, setCreateItemsOrderedModalOpen] = useState(false);
   const [purchaseOrderData, setPurchaseOrderData] = useState([]);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [quantity, setQuantity] = useState(1);
   const [price, setPrice] = useState('');
-  const [selectedProduct, setSelectedProduct] = useState(null);
-  const [showDropdown, setShowDropdown] = useState(false);
   const [products, setProducts] = useState([]);
   const [selectedPurchaseOrderId, setSelectedPurchaseOrderId] = useState(null);
   const [openDropDowns, setOpenDropDowns] = useState({});
-  const dropdownRef = useRef(null);
   const [selectedItemsOrderId, setSelectedItemsOrderId] = useState(null);
   const [searchInput, setSearchInput] = useState('');
   const [searchResults, setSearchResults] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [paginationInfo, setPaginationInfo] = useState({});
-
-  const [purchaseOrderDetails, setPurchaseOrderDetails] = useState({
-    customer_name: '',
-    street: '',
-    barangay: '',
-    city: '',
-    province: '',
-    zipcode: ''
-  });
-
-  const handleChange = (event) => {
-    const { name, value } = event.target;
-    setPurchaseOrderDetails(prevDetails => ({
-      ...prevDetails,
-      [name]: value
-    }));
-  };
 
   // Ensure userID is set
   useEffect(() => {
@@ -65,15 +42,12 @@ function Order() {
     }
   }, [userID, setID]);
 
-  const admin_id = userID;
 
-  const openAddModal = () => {
-    setAddModalOpen(true);
+  const createDeliveryPage = () => {
+    navigate('/order/create-delivery');
+
   };
 
-  const closeAddModal = () => {
-    setAddModalOpen(false);
-  };
   
 
   // Fetch purchase orders with a 5-second delay
@@ -171,130 +145,6 @@ function Order() {
   }, [url, currentPage]); // Depend on currentPage to refetch when it changes
   
   //! YAW SA HILABTI NI DIRE 
-    
-
-  const handlePurchaseOrderClick = (purchaseOrderId) => {
-    console.log(purchaseOrderId)
-  }
-
-
-  const createOrder = async () => {
-    if (!admin_id) {
-      console.error('User ID is missing.');
-      return;
-    }
-  
-    const orderData = {
-      user_id: admin_id,
-      sale_type_id: 1,
-      customer_name: purchaseOrderDetails.customer_name,
-      status: 'P',
-      address: {
-        street: purchaseOrderDetails.street,
-        barangay: purchaseOrderDetails.barangay,
-        city: purchaseOrderDetails.city,
-        province: purchaseOrderDetails.province,
-        zip_code: purchaseOrderDetails.zipcode,
-      },
-      product_details: productsListed.map(product => ({
-        product_id: product.product_id,
-        price: product.price,
-        quantity: product.quantity,
-      })),
-    };
-  
-    try {
-      const response = await axios.post(`${url}/api/purchase-orders-delivery`, orderData, {
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-  
-      console.log('Order created successfully:', response.data);
-      closeAddModal();
-    } catch (error) {
-      if (error.response) {
-        alert('Error creating order: Text Inputs needed to be filled!');
-        console.log('Error creating order:', error.response.data);
-      } else {
-        alert("An error occurred: " + error.message);
-      }
-    }
-  };
-
-  // View Modal
- // START Create Items Ordered AREA
-
-    // START BY SHOWING IT IN MODAL
-      const openCreateItemsOrderedModal = () => {
-        setCreateItemsOrderedModalOpen(true);
-      };
-      
-      const closeCreateItemsOrderedModal = () => {
-        setCreateItemsOrderedModalOpen(false);
-      };
-
-    // Handle product selection
-    const handleProductSelect = (product) => {
-      setSelectedProduct(product);
-      setSearchTerm(product.product_name);
-      setShowDropdown(false);
-    };
-  
-    // Function to check if a product is already listed
-    const isProductListed = (product_id) => {
-      return productsListed.some(product => product.product_id === product_id);
-    };
-  
-  // Filter products to exclude those already listed
-    const filteredProducts = products.filter(product => {
-      return (
-        product.product_name.toLowerCase().includes(searchTerm.toLowerCase()) &&
-        !isProductListed(product.product_id) // Exclude products already in productsListed
-      );
-    });
-
-    // Function to add or edit a product
-    const handleAddProduct = () => {
-      if (selectedProduct && quantity > 0 && price > 0) {
-        const newProduct = {
-          product_id: selectedProduct.product_id,
-          product_name: selectedProduct.product_name,
-          quantity: Number(quantity),
-          price: Number(price),
-        };
-
-        // Check if the product is already listed (editing mode)
-        const existingProductIndex = productsListed.findIndex(
-          (item) => item.product_id === selectedProduct.product_id
-        );
-
-        if (existingProductIndex !== -1) {
-          // Edit the existing product
-          const updatedProducts = [...productsListed];
-          updatedProducts[existingProductIndex] = newProduct;
-          setProductsListed(updatedProducts);
-        } else {
-          // Add a new product
-          setProductsListed([...productsListed, newProduct]);
-        }
-
-        // Reset fields after adding/editing
-        setSelectedProduct(null);
-        setSearchTerm(''); // Clear search field
-        setQuantity(1);
-        setPrice(0);
-      }
-    };
-
-    // Function to handle product edit
-    const handleEditProduct = (product) => {
-      setSelectedProduct(product); // Set the selected product for editing
-      setSearchTerm(product.product_name); // Populate search term with product name
-      setQuantity(product.quantity); // Set quantity for editing
-      setPrice(product.price); // Set price for editing
-    };
-
     // Function to delete a product
     const handleDeleteProduct = (product_id) => {
       const updatedProducts = productsListed.filter(
@@ -302,13 +152,6 @@ function Order() {
       );
       setProductsListed(updatedProducts); // Update the state without the deleted product
     };
-
-    // Modify the products filter to exclude already listed products from search
-    const availableProducts = products.filter(
-      (product) =>
-        !productsListed.some((listedProduct) => listedProduct.product_id === product.product_id)
-    );
-
 
 
   // Fetch available products
@@ -373,19 +216,15 @@ const openViewDeliveriesModal = (purchaseOrderId) => {
 const closeViewDeliveriesModal = () => setViewDeliveriesModalOpen(false);
 
 // VIEW - 
-  const [viewDropDown, setViewDropDown] = useState(false);
-  const dropDownRef = useRef(null);
+    const dropDownRef = useRef(null);
 
-  const toggleDropDown = (id) => {
-    setOpenDropDowns((prevState) => ({
-      ...prevState,
-      [id]: !prevState[id],
-    }));
-  };
+    const toggleDropDown = (id) => {
+      setOpenDropDowns((prevState) => ({
+        ...prevState,
+        [id]: !prevState[id],
+      }));
+    };
 
-  // const toggleDropDown = () => {
-  //   setViewDropDown(!viewDropDown);
-  // };
 
       // Close dropdown when clicking outside
         useEffect(() => {
@@ -438,10 +277,10 @@ return (
               />
             </div>
             <button
-              className="bg-blue-500 shadow-md font-bold text-black px-4 py-2 bg-blue-500 hover:bg-white hover:text-blue-500 duration-300 hover:text text-white rounded-md focus:outline-none"
-              onClick={openAddModal}
+              className="bg-blue-500 shadow-md font-bold px-4 py-2 bg-blue-500 hover:bg-white hover:text-blue-500 duration-300 hover:text text-white rounded-md w-[15%]"
+              onClick={createDeliveryPage}
             >
-              +
+              Create Order
             </button>
           </div>
 
@@ -571,7 +410,7 @@ return (
             ))
           )}
         </div>
-        </div>
+      </div>
 
         {/* Pagination Controls */}
         <div className="flex justify-center w-full bg-red space-x-2 my-4">
@@ -616,249 +455,7 @@ return (
       </div>
       {/* END SHOW PURCHASE ORDERS */}
 
-
-      {/* Add Modal */}
-      {addModalOpen && (
-        <div
-          id="addModal"
-          className="modal fixed top-0 left-0 w-full h-full bg-gray-500 bg-opacity-60 flex justify-center items-center"
-        >
-          <div className="bg-white p-6 rounded-lg w-1/3">
-            <h3 className="text-center text-lg font-bold mb-4">Create Purchase Order</h3>
-            {/* Delivered To Field */}
-            <div className="relative">
-              <input
-                type="text"
-                id="customer_name"
-                name="customer_name"
-                placeholder="Customer's Name"
-                className="w-full p-4 rounded-lg mt-4 border-black border-[1px] "
-                value={purchaseOrderDetails.customer_name}
-                onChange={handleChange}
-              />
-            </div>
-
-            {/* Address Fields */}
-            <div className="flex flex-col  gap-4 mb-4">
-              <div>
-                <input
-                  type="text"
-                  id="street"
-                  name="street"
-                  placeholder="Street"
-                  className="w-full p-4 rounded-lg mt-4 rounded-md  rounded-lg border-black border-[1px]"
-                  value={purchaseOrderDetails.street}
-                  onChange={handleChange}
-                />
-              </div>
-              <div>
-                <input
-                  type="text"
-                  id="barangay"
-                  name="barangay"
-                  placeholder="Barangay"
-                  className="w-full p-4 rounded-lg mt-4 rounded-md rounded-lg border-black border-[1px]"
-                  value={purchaseOrderDetails.barangay}
-                  onChange={handleChange}
-                />
-              </div>
-              <div>
-                <input
-                  type="text"
-                  id="city"
-                  name="city"
-                  placeholder="City"
-                  className="w-full p-4 rounded-lg mt-4 rounded-md rounded-lg border-black border-[1px]"
-                  value={purchaseOrderDetails.city}
-                  onChange={handleChange}
-                />
-              </div>
-              <div>
-                <input
-                  type="text"
-                  id="province"
-                  name="province"
-                  placeholder="Province"
-                  className="w-full p-4 rounded-lg mt-4 rounded-md rounded-lg border-black border-[1px]"
-                  value={purchaseOrderDetails.province}
-                  onChange={handleChange}
-                />
-              </div>
-              <div>
-                <input
-                  type="text"
-                  id="zipcode"
-                  name="zipcode"
-                  placeholder="Zipcode"
-                  className="w-full p-4 rounded-lg mt-4 rounded-md rounded-lg border-black border-[1px]"
-                  value={purchaseOrderDetails.zipcode}
-                  onChange={handleChange}
-                />
-              </div>
-            </div>
-            
-            {/* Deadline Date Field */}
-            {/* <div className="mb-4">
-              <label htmlFor="date" className="block text-gray-700">Deadline Date:</label>
-              <input
-                type="date"
-                id="date"
-                name="date"
-                className="w-full p-4 rounded-lg shadow-md mt-4 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                value={customerDetails.date}
-                onChange={handleAddOrderChange}
-              />
-            </div> */}
-            
-            {/* Action Buttons */}
-            <div className="flex justify-end p-4">
-              <div className="flex flex-col items-end space-y-2">
-                <button
-                  className="bg-blue-500 font-bold hover:bg-white hover:text-blue-500 duration-300 text-white py-2 rounded-md shadow-md w-[100%]"
-                  onClick={openCreateItemsOrderedModal}
-                >
-                  Register Product
-                </button>
-                <div className="flex items-center space-x-2">
-                  <button
-                    className="bg-red-500 font-bold hover:bg-white hover:text-red-500 duration-300 text-white px-4 py-2 border border-gray-300 rounded-md shadow-md w-32"
-                    onClick={closeAddModal}
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    className="bg-blue-500 font-bold hover:bg-white hover:text-blue-500 duration-300 text-white px-4 py-2 rounded-md shadow-md w-32"
-                    onClick={()=>{
-                      handleSave();
-                      createOrder();
-                    }}
-                  >
-                    Submit
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
  
-
-      {/* Start listing of products */}
-      {createItemsOrderedModalOpen && (
-        <div className="modal fixed inset-0 flex justify-center items-center z-50">
-          <div className="bg-white p-6 rounded-lg shadow-md w-1/2">
-            <h3 className="text-lg font-bold text-center mb-4">Create Items Ordered</h3>
-
-            <div className="flex p-4 items-center space-between">
-              <div className="relative w-[90%] flex">
-                <input
-                  type="number"
-                  placeholder="Bid Price (PHP)"
-                  className="m-1 border border-gray-300 p-2 rounded-md w-[50%]"
-                  value={price}
-                  onChange={(e) => setPrice(e.target.value)}
-                  min="0"
-                />
-                <input
-                  type="text"
-                  placeholder="Search for a product"
-                  className="m-1 border border-gray-300 p-2 rounded-md w-[50%]"
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  onFocus={() => setShowDropdown(true)}
-                  onBlur={() => setShowDropdown(false)}
-                />
-
-                <input
-                  type="number"
-                  placeholder="Quantity (PCS)"
-                  className="m-1 border border-gray-300 p-2 rounded-md w-[50%]"
-                  value={quantity}
-                  onChange={(e) => setQuantity(e.target.value)}
-                  // min="1"
-                />
-
-                {showDropdown && (
-                  <div className="absolute left-0 right-0 mt-11 border border-gray-300 rounded-md bg-white z-10 max-h-48 overflow-y-auto shadow-lg">
-                    {products
-                      .filter(product =>
-                        product.product_name.toLowerCase().includes(searchTerm.toLowerCase()) &&
-                        !productsListed.some(item => item.product_id === product.product_id) // Filtering out already listed products
-                      )
-                      .map(product => (
-                        <div
-                          key={product.product_id}
-                          className="flex p-3 justify-between duration-300 border-b border-gray-300 py-2 cursor-pointer hover:bg-gray-100"
-                          onMouseDown={() => handleProductSelect(product)}
-                        >
-                          <span>{product.product_id}. {product.product_name}</span>
-                          <span>Available: {product.quantity}</span>
-                        </div>
-                      ))}
-                  </div>
-                )}
-              </div>
-
-              <div className='flex justify-center w-[10%] shadow-md bg-blue-500 font-bold hover:bg-white duration-300 rounded-md p-2 group'>
-              <button className='text-white group-hover:text-blue-500' onClick={handleAddProduct}>
-                Add
-              </button>
-            </div>
-            </div>
-
-            <div className="mt-6">
-              <h3>Products Listed:</h3>
-              <div>
-                <h3 className="grid grid-cols-5 text-sm px-4 text-gray-400">
-                  <span className="relative left-[1px] col-span-1">Price</span>
-                  <span className="relative left-[-10px] col-span-2">Product Name</span>
-                  <span className="col-span-1">Quantity</span>
-                </h3>
-              </div>
-              <div className="border-t border-gray-300">
-                {productsListed.map((item, index) => (
-                  <div key={index} className="grid grid-cols-5 border-b border-gray-300 py-2 items-center">
-                    <span className="col-span-1">₱ {item.price.toFixed(2)}</span>
-                    <span className="col-span-2">{item.product_name}</span>
-                    <span className="col-span-1">x{item.quantity}</span>
-                    {/* Actions: Edit and Delete Buttons */}
-                    <div className="col-span-1.5 justify-end flex space-x-3">
-                      <button
-                        className="text-blue-500 hover:underline"
-                        onClick={() => handleEditProduct(item)}
-                      >
-                        Edit
-                      </button>
-                      <button
-                        className="text-red-500 hover:underline"
-                        onClick={() => handleDeleteProduct(item.product_id)}
-                      >
-                        Delete
-                      </button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            <div className="flex justify-end mt-4 space-x-2">
-              <button
-                className="bg-red-500 shadow-md font-bold duration-300 text-white hover:bg-white hover:text-red-500 px-4 py-2 rounded-md"
-                onClick={closeCreateItemsOrderedModal} // Call to close the modal
-              >
-                Close
-              </button>
-              <button
-                className="bg-blue-500 shadow-md text-white font-bold hover:bg-white hover:text-blue-500 duration-300 px-4 py-2 rounded-md"
-                onClick={handleSave} // Call handleSave on click
-              >
-                Save
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-      {/* End listing of products */}
       
        {/*View Items ordered Modal*/}
       {itemsOrderedModalOpen && (
@@ -868,6 +465,7 @@ return (
           purchaseOrderID={selectedItemsOrderId}
         />
       )}
+      
   {/* Create Delivery Modal */}
     {createDeliveryModalOpen && (
       <CreateDeliveryModal 
@@ -877,13 +475,15 @@ return (
         purchaseOrderId={selectedPurchaseOrderId}
       />
     )}
+
         {/* View Deliveries Modal */}
         <ViewDeliveriesModal 
           onClose={closeViewDeliveriesModal} 
           viewDeliveriesModalOpen={viewDeliveriesModalOpen} 
           purchaseOrderId={selectedPurchaseOrderId}
         />
-      </div>
+        
+  </div>
   );
 }
 
