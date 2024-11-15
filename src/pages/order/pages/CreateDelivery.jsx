@@ -69,7 +69,7 @@ const CreateDelivery = () => {
   };
 
   return (
-    <div className="p-6">
+    <div className="p-6 flex">
       <h3 className="text-center text-lg font-bold mb-4">Create Purchase Order</h3>
       <div className="flex flex-col justify-center">
         {/* Customer Name */}
