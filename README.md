@@ -14,6 +14,7 @@ Currently, two official plugins are available:
 - `npm install vite --save-dev`
 - `npm install vite @vitejs/plugin-react --save-dev`
 - `npm install vite-plugin-node-polyfills --save-dev`
+- `npm i react-toastify`
 
 
 # To run the Code:

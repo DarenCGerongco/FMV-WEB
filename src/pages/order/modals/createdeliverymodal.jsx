@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import './_style.css';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 import qm from '../assets/qm.png';
 
@@ -52,7 +54,7 @@ const CreateDeliveryModal = ({ createDeliveryModalOpen, closeCreateDeliveryModal
   const assignEmployeeFunction = async () => {
     // Validation logic
     if (!selectedUser) {
-      alert('Please select a delivery man.');
+      toast.error('Please select a delivery man.');
       return; // Stops here if validation fails
     }
   
@@ -67,7 +69,7 @@ const CreateDeliveryModal = ({ createDeliveryModalOpen, closeCreateDeliveryModal
         `Product: ${product.product_name} exceeds the remaining quantity. Remaining: ${product.remaining_quantity}, Entered: ${quantityInputs[product.product_id] || 0}`
       ).join('\n');
   
-      alert(`Error:\n${errorMessage}`);
+      toast.error(`Error:\n${errorMessage}`);
       return; // Stops here if validation fails
     }
   
@@ -79,7 +81,7 @@ const CreateDeliveryModal = ({ createDeliveryModalOpen, closeCreateDeliveryModal
     });
   
     if (!hasValidQuantity) {
-      alert('Please fill in at least one valid quantity to create a delivery.');
+      toast.error('Please fill in at least one valid quantity to create a delivery.');
       return; // Stops here if validation fails
     }
   
@@ -102,11 +104,25 @@ const CreateDeliveryModal = ({ createDeliveryModalOpen, closeCreateDeliveryModal
         },
       });
       console.log('Response:', response.data);
-      alert('Employee assigned successfully!');
-      closeCreateDeliveryModal(); // Only called if the request is successful
+      
+      // Show the success toast
+      toast.success('Employee assigned successfully!');
+
+      // Wait for the toast to display, then close the modal
+      setTimeout(() => {
+        // Close the modal
+        closeCreateDeliveryModal();
+
+        // Redirect to the Order page after closing the modal
+        setTimeout(() => {
+          navigate('/order'); // Replace '/order' with the actual path of your Order page
+        }, 500); // Delay the navigation slightly for smoother transition
+      }, 2000); // Wait 2 seconds before closing the modal
+
+      
     } catch (error) {
       console.error('Error assigning employee:', error);
-      alert('Failed to assign employee. Please try again.');
+      toast.error('Failed to assign employee. Please try again.');
     }
   };
   
@@ -247,6 +263,7 @@ const CreateDeliveryModal = ({ createDeliveryModalOpen, closeCreateDeliveryModal
           </div>
         </form>
       </div>
+      <ToastContainer />
     </div>
   );
 };
