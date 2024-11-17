@@ -14,24 +14,17 @@ function Order() {
   const { id: userID, setID } = useContext(GlobalContext);
   const [loading, setLoading] = useState(true); // Initialize loading state
 
-  const [addModalOpen, setAddModalOpen] = useState(false);
+
   const [orders, setOrders] = useState([]);
   const [itemsOrderedModalOpen, setItemsOrderedModalOpen] = useState(false);
   const [createDeliveryModalOpen, setCreateDeliveryModalOpen] = useState(false);
   const [newDeliveryModalOpen, setNewDeliveryModalOpen] = useState(false);
   const [productsListed, setProductsListed] = useState([]);
   const [viewDeliveriesModalOpen, setViewDeliveriesModalOpen] = useState(false);
-  const [createItemsOrderedModalOpen, setCreateItemsOrderedModalOpen] = useState(false);
   const [purchaseOrderData, setPurchaseOrderData] = useState([]);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [quantity, setQuantity] = useState(1);
-  const [price, setPrice] = useState('');
-  const [selectedProduct, setSelectedProduct] = useState(null);
-  const [showDropdown, setShowDropdown] = useState(false);
   const [products, setProducts] = useState([]);
   const [selectedPurchaseOrderId, setSelectedPurchaseOrderId] = useState(null);
   const [openDropDowns, setOpenDropDowns] = useState({});
-  const dropdownRef = useRef(null);
   const [selectedItemsOrderId, setSelectedItemsOrderId] = useState(null);
   const [searchInput, setSearchInput] = useState('');
   const [searchResults, setSearchResults] = useState([]);
@@ -298,10 +291,10 @@ return (
               />
             </div>
             <button
-              className="bg-blue-500 shadow-md font-bold text-black px-4 py-2 bg-blue-500 hover:bg-white hover:text-blue-500 duration-300 hover:text text-white rounded-md focus:outline-none"
+              className="bg-blue-500 w-[15%] shadow-md font-bold text-black px-4 py-2 bg-blue-500 hover:bg-white hover:text-blue-500 duration-300 hover:text text-white rounded-md focus:outline-none"
               onClick={createDeliveryPage}
             >
-              +
+              Create Order
             </button>
           </div>
 

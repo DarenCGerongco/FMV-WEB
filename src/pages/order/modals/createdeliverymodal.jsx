@@ -226,21 +226,21 @@ const CreateDeliveryModal = ({ createDeliveryModalOpen, closeCreateDeliveryModal
 
               </div>
             ))}
-            <div className='deliveryButtonContainer'>
+            <div className='flex flex-row-reverse'>
               <button 
-                className='createDeliveryButton'
-                onClick={closeCreateDeliveryModal} // This is your cancel button
-              >
-                Cancel
-              </button>
-              <button 
-                className='createDeliveryButton' 
+                className=' ml-2  bg-blue-500 duration-200 shadow-md rounded-md p-2 text-white font-bold hover:bg-white hover:text-blue-500' 
                 onClick={(e) => {
                   e.preventDefault(); // Prevents the form submission and modal close
                   assignEmployeeFunction();
                 }}
               >
                 Create delivery
+              </button>
+              <button 
+                className='bg-red-500 duration-200 shadow-md rounded-md p-2 text-white font-bold hover:bg-white hover:text-red-500' 
+                onClick={closeCreateDeliveryModal} // This is your cancel button
+              >
+                Cancel
               </button>
 
             </div>

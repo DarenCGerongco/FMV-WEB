@@ -10,7 +10,7 @@ import Delivery from './pages/delivery.jsx';
 import Overview from './pages/overview.jsx';
 import Order from './pages/order.jsx';
 import Navbar from './components/navbar.jsx';
-import CreateDelivery from './pages/order/pages/CreateDelivery';
+import CreatePurchaseOrder from './pages/order/pages/CreatePurchaseOrder';
 import WalkIn from './pages/order/pages/WalkIn.jsx'
 import { GlobalProvider } from '../GlobalContext'; // Import GlobalProvider
 
@@ -28,7 +28,7 @@ root.render(
           <Route path="/delivery" element={<Delivery/>} />
           <Route path="/overview" element={<Overview/>} />
           <Route path="/order" element={<Order/>} />
-          <Route path="/order/create-delivery" element={<CreateDelivery/>} />
+          <Route path="/order/create-delivery" element={<CreatePurchaseOrder/>} />
           <Route path="/order/create-walk-in" element={<WalkIn/>} />
         </Routes>
       </BrowserRouter>

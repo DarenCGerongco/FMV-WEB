@@ -150,9 +150,9 @@ function Delivery() {
                   </div>
                 ))
               ): (
-                <li>
+                <h2>
                   No Pending Deliveries
-                </li>
+                </h2>
               )}
           </div>
 
@@ -176,13 +176,6 @@ function Delivery() {
                   <span className="col-span-2 text-left">{onDeliveryData.customer_name}</span>
                   <span className="col-span-2 text-left">{onDeliveryData.deliveryman_name}</span>
                   <span className="col-span-1 text-left">{onDeliveryData.date}</span>
-
-                  {/* <img
-                    src="./src/assets/info.png"
-                    alt="Delivery Image"
-                    className="w-7 h-7 rounded-full cursor-pointer"
-                    onClick={() => handleOpenOngoingDeliveryModal(onDeliveryData)} // Pass specific delivery
-                  /> */}
                 </div>
               ))
             ) : (

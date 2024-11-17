@@ -39,12 +39,22 @@ function Overview() {
   // Fetch inventory data
   const fetchInventoryData = async () => {
     try {
-      const response = await axios.get(`${url}/api/products`);
-      setInventoryItems(response.data);
+      const response = await axios.get(`${url}/api/products-overview`);
+      console.log('Inventory API response:', response.data);
+
+      // Check if data is in the expected format
+      if (Array.isArray(response.data.data)) {
+        setInventoryItems(response.data.data);
+      } else {
+        console.error('Expected an array for inventory items, received:', response.data.data);
+        setInventoryItems([]); // Set to empty array if not in expected format
+      }
     } catch (error) {
       console.error('Error fetching inventory data:', error);
+      setInventoryItems([]); // Ensure it's always an array even on error
     }
   };
+
 
   // console.log("This is from Overview: " + userName);
 
@@ -239,20 +249,26 @@ function Overview() {
             </div>
 
             {/* Inventory Container */}   
-            <div className="bg-white p-6 rounded-lg shadow-md cursor-pointer"
-                onClick={handleInventoryClick}
-            > 
-              <h3 className="text-lg font-bold mb-4">INVENTORY</h3>
-              <div className="bg-white text-sm mt-10 flex border-b">
-              </div>
-              {inventoryItems.map((item, index) => (
+          <div className="bg-white p-5 rounded-lg shadow-md cursor-pointer"
+              onClick={handleInventoryClick}
+          > 
+            <h3 className="text-lg font-bold">INVENTORY</h3>
+            <div className="bg-white text-sm flex border-b">
+            </div>
+            {inventoryItems.length > 0 ? (
+              inventoryItems.map((item, index) => (
                 <div key={index} className="bg-gray-200 p-4 rounded-lg shadow-md mt-4 flex justify-between items-center border-b">
                   <div className="flex-1">{item.product_name}</div>
                   <div className="flex-1 text-center">{item.category_name}</div>
                   <div className="flex-1 text-right">{item.quantity}</div>
                 </div>
-              ))}
-              </div>           
+              ))
+            ) : (
+              <div className="text-center py-1">
+                All products are above 100+ quantity
+              </div>
+            )}
+          </div>
           </div>
         </div>
       </div>

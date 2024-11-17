@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
+import companyImage from './../assets/Logo.png';
 
 const Navbar = () => {
   const url = import.meta.env.VITE_API_URL;
@@ -14,7 +15,7 @@ const Navbar = () => {
     try {
       const token = localStorage.getItem('token');
       if (!token) {
-        setMessage('No active session found.'); // Handle case where token is not present
+        setMessage('No active session found.');
         return;
       }
       
@@ -27,12 +28,12 @@ const Navbar = () => {
       if (response.data.success) {
         setMessage('Logout successfully');
         setShowSuccessMessage(true);
-        localStorage.removeItem('token'); // Remove token after successful logout
+        localStorage.removeItem('token');
         
         setTimeout(() => {
           setShowSuccessMessage(false);
           setMessage('');
-          navigate('/'); // Redirect to the home page
+          navigate('/');
         }, 1000);
       } else {
         setMessage('Logout failed');
@@ -63,14 +64,13 @@ const Navbar = () => {
     <nav className="rounded-[20px] shadow-[20px] fixed top-0 left-0 w-72 h-screen bg-custom-blue p-4 flex flex-col justify-between items-center border-t-[5px] border-b-[5px] border-l-[5px] z-1">
       <div className="flex flex-col items-center md:items-start w-full">
         <div className="flex items-center mb-3 justify-center md:justify-start">
-          
           <h1 className="text-white text-2xl md:text-3xl font-bold mr-3 text-center">
             FMV Management System
           </h1>
-          <img
-            src="./src/assets/Logo.png"
-            alt="Client's Company Image"
-            className="w-24 h-auto md:max-w-16"
+          <img 
+            src={companyImage} 
+            alt="Client's Company Image" 
+            className="w-24 h-auto md:max-w-16" 
           />
         </div>
         <div className="mt-8 w-full">
@@ -83,7 +83,6 @@ const Navbar = () => {
               <Link to="/order" className={`text-base md:text-xl ${isActive('/order') ? 'text-black' : 'text-white group-hover:text-black'}`}>ORDER</Link>
             </li>
             <li className={`mb-4 flex items-center transition pl-2 md:pl-5 group ${isActive('/delivery') ? 'bg-white text-black rounded' : 'hover:bg-white hover:text-black rounded'}`}>
-
               <Link to="/delivery" className={`text-base md:text-xl ${isActive('/delivery') ? 'text-black' : 'text-white group-hover:text-black'}`}>DELIVERY</Link>
             </li>
             <li className={`mb-4 flex items-center transition pl-2 md:pl-5 group ${isActive('/sales') ? 'bg-white text-black rounded' : 'hover:bg-white hover:text-black rounded'}`}>
@@ -106,7 +105,6 @@ const Navbar = () => {
           <button onClick={openModal} className="text-base md:text-xl text-white group-hover:text-black">LOGOUT</button>
         </li>
       </div>
-      {/* Logout Confirmation Modal */}
       {isModalOpen && (
         <div
           id="logoutModal"
@@ -131,8 +129,6 @@ const Navbar = () => {
           </div>
         </div>
       )}
-
-      {/* Success Message after Logout */}
       {showSuccessMessage && (
         <div className="fixed z-9999 top-0 left-1/2 transform -translate-x-1/2 bg-green-500 text-white p-3 w-full items-center text-center rounded-lg">
           {message}
