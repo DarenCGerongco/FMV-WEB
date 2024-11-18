@@ -82,7 +82,7 @@ const CreatePurchaseOrder = () => {
     try {
       await axios.post(`${url}/api/purchase-orders-delivery`, orderData);
       alert('Order created successfully!');
-      navigate('/orders');
+      navigate('/order');
     } catch (error) {
       alert('Error creating order. Please check your inputs.');
       console.error('Error creating order:', error);
@@ -140,10 +140,10 @@ const CreatePurchaseOrder = () => {
             <span className='col-span-1 font-bold'>
               Available Quantity
             </span>
-            <span className='col-span-1 font-bold bg-blue-500 rounded text-white text-center'>
+            <span className='col-span-1 font-bold rounded text-red-500 text-center'>
               Bid Price
             </span>
-            <span className='col-span-1 font-bold bg-blue-500 rounded text-white text-center'>
+            <span className='col-span-1 font-bold rounded text-red-500 text-center'>
               Quantity
             </span>
           </div>
@@ -156,16 +156,30 @@ const CreatePurchaseOrder = () => {
                 <span className="col-span-1">{product.original_price}</span>
                 <span className="col-span-1 text-red-600">{product.quantity}</span>
                 <input 
-                  type="text" 
+                  type="number" 
                   value={productInputs[product.product_id].bidPrice}
-                  onChange={(e) => handleInputChange(product.product_id, 'bidPrice', e.target.value)}
-                  className="col-span-1 bg-gray-200 flex item-center mx-1"
+                  onChange={(e) => {
+                    // Update only if the input is empty or a valid number
+                    const value = e.target.value;
+                    if (value === '' || /^\d+$/.test(value)) {
+                      handleInputChange(product.product_id, 'bidPrice', value);
+                    }
+                  }}
+                  className="col-span-1 bg-gray-300 font-bold text-blue-500 rounded text-center mx-1"
+                  placeholder='PHP'
                 />
                 <input 
                   type="text" 
                   value={productInputs[product.product_id].quantity}
-                  onChange={(e) => handleInputChange(product.product_id, 'quantity', e.target.value)}
-                  className="col-span-1 bg-gray-200 mx-1"
+                  onChange={(e) => {
+                    // Update only if the input is empty or a valid number
+                    const value = e.target.value;
+                    if (value === '' || /^\d+$/.test(value)) {
+                      handleInputChange(product.product_id, 'quantity', value);
+                    }
+                  }}
+                  className="col-span-1 bg-gray-200 text-blue-500 font-bold rounded text-center mx-1"
+                  placeholder='Quantity'
                 />
               </div>
             ))

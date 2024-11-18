@@ -9,20 +9,21 @@ const CreatePurchaseOrderModal = ({ isOpen, onClose, addProductToList }) => {
   const url = import.meta.env.VITE_API_URL;
 
   useEffect(() => {
-    // Example of fetching and logging the product data structure
-    const fetchProducts = async (page = 1) => {
-        try {
-          const response = await axios.get(`${url}/api/products?page=${page}`);
-          setProducts(response.data.products);  // Assume response structure is correct
-          console.log('Products set:', response.data.products);  // Debugging
-          setTotalPages(response.data.pagination.lastPage);
-        } catch (error) {
-          console.error('Error fetching products:', error);
-        }
-      };
-      
-      fetchProducts();
-  }, []);
+    const fetchProducts = async (page) => {
+      try {
+        const response = await axios.get(`${url}/api/products?page=${page}`);
+        setProducts(response.data.products);
+        setTotalPages(response.data.pagination.lastPage);
+      } catch (error) {
+        console.error('Error fetching products:', error);
+      }
+    };
+  
+    if (isOpen) {
+      fetchProducts(currentPage);
+    }
+  }, [isOpen, currentPage]);  // Add currentPage as a dependency
+  
   
 
   const handleSelectProduct = (event, product) => {
@@ -58,7 +59,7 @@ const CreatePurchaseOrderModal = ({ isOpen, onClose, addProductToList }) => {
   return (
     <div className={`${isOpen ? 'fixed inset-0 z-40 flex items-center justify-center' : 'hidden'}`}>
       <div className="fixed inset-0 bg-gray-600 bg-opacity-50 transition-opacity" onClick={onClose}></div>
-      <div className="bg-white absolute p-6 rounded-lg shadow-lg overflow-hidden transform transition-all w-[70%]">
+      <div className="bg-white absolute p-6 rounded-lg shadow-lg overflow-hidden  transform transition-all min-h-[54rem] w-[70%]">
         <h3 className="text-lg font-bold mb-4">
             Select a Product
         </h3>
