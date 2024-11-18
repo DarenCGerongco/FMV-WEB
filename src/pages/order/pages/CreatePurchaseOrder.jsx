@@ -35,6 +35,16 @@ const CreatePurchaseOrder = () => {
     setProductInputs(inputs);
   }, []);
 
+  
+  const removeProductFromList = useCallback((productId) => {
+    setProductsListed(currentProducts => currentProducts.filter(p => p.product_id !== productId));
+    setProductInputs(currentInputs => {
+      const newInputs = { ...currentInputs };
+      delete newInputs[productId];
+      return newInputs;
+    });
+  }, []);
+
   const handleChange = useCallback((event) => {
     const { name, value } = event.target;
     setPurchaseOrderDetails(prevDetails => ({
@@ -124,7 +134,7 @@ const CreatePurchaseOrder = () => {
           <h1 className="text-xl font-bold">
             Product Listed:
           </h1>
-          <div className='grid grid-cols-9 bg-gray-300 px-2 rounded'>
+          <div className='grid grid-cols-10 bg-gray-300 px-2 rounded'>
             <span className='col-span-1 font-bold'>
               ID
             </span>
@@ -146,14 +156,17 @@ const CreatePurchaseOrder = () => {
             <span className='col-span-1 font-bold rounded text-red-500 text-center'>
               Quantity
             </span>
+            <span className='col-span-1 font-bold rounded text-red-500 text-center'>
+              Option
+            </span>
           </div>
           {productsListed.length > 0 ? (
             productsListed.map((product, index) => (
-              <div key={index} className="grid grid-cols-9 mt-1 border px-2 rounded border-gray-300">
+              <div key={index} className="grid grid-cols-10 border p-0.5 rounded border-gray-500">
                 <span className="col-span-1">{product.product_id}</span>
                 <span className="col-span-2">{product.product_name}</span>
                 <span className="col-span-2">{product.category_name}</span>
-                <span className="col-span-1">{product.original_price}</span>
+                <span className="col-span-1">₱ {product.original_price}</span>
                 <span className="col-span-1 text-red-600">{product.quantity}</span>
                 <input 
                   type="number" 
@@ -165,8 +178,8 @@ const CreatePurchaseOrder = () => {
                       handleInputChange(product.product_id, 'bidPrice', value);
                     }
                   }}
-                  className="col-span-1 bg-gray-300 font-bold text-blue-500 rounded text-center mx-1"
-                  placeholder='PHP'
+                  className="col-span-1 bg-gray-100 font-bold text-blue-500 rounded text-center mx-1"
+                  placeholder="Php"
                 />
                 <input 
                   type="text" 
@@ -178,13 +191,19 @@ const CreatePurchaseOrder = () => {
                       handleInputChange(product.product_id, 'quantity', value);
                     }
                   }}
-                  className="col-span-1 bg-gray-200 text-blue-500 font-bold rounded text-center mx-1"
+                  className="col-span-1 bg-gray-100 text-blue-500 font-bold rounded text-center mx-1"
                   placeholder='Quantity'
                 />
+                <button 
+                  className="col-span-1 text-red-600 hover:text-red-100 duration-100"
+                  onClick={() => removeProductFromList(product.product_id)}
+                >
+                  Remove
+                </button>
               </div>
             ))
           ) : (
-            <div className="text-center border rounded my-2">No products added yet.</div>
+            <div className="text-center border rounded my-0.5">No products added yet.</div>
           )}
         </div>
       </div>

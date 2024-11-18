@@ -30,7 +30,7 @@
 }
 
 .data{
-    width: 60%;
+    width: 70%;
     border-width: 1px;
     padding: 5px;
     border-radius: 10px;
@@ -39,7 +39,7 @@
 }
 
 .quantityInput{
-    width: 60%;
+    width: 50%;
     border-width: 1px;
     padding: 5px;
     border-radius: 10px;
@@ -62,19 +62,17 @@
 .tooltip-text {
     visibility: hidden;
     background-color: #2955BB;
-    width: auto;
+    width: 10rem;
     color: #fff;
     padding: 5px;
     border-radius: 4px;
     position: absolute;
-    top: 50%;
-    left: 100%;
-    margin-left: 10px;
-    white-space: nowrap;
+    top: 80%;
+    left: -6rem;
+    /* margin-left: 10px; */
     opacity: 0;
-    transform: translateY(-50%);
     transition: opacity 0.3s;
-    z-index: 1000;
+    z-index: 500;
     font-weight: bolder;
     font-size: small;
 }

@@ -3,18 +3,17 @@ import axios from 'axios';
 import './_style.css';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import qm from '../assets/qm.png'; // Ensure your image path is correct
 
-import qm from '../assets/qm.png';
-
-const CreateDeliveryModal = ({ createDeliveryModalOpen, closeCreateDeliveryModal, setNewDeliveryModalOpen, purchaseOrderId }) => {
+const CreateDeliveryModal = ({ createDeliveryModalOpen, closeCreateDeliveryModal, purchaseOrderId }) => {
   if (!createDeliveryModalOpen) return null;
 
   const [deliverymanRecord, setDeliverymanRecord] = useState([]);
   const [selectedUser, setSelectedUser] = useState(null);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const url = import.meta.env.VITE_API_URL;
   const [productDetails, setProductDetails] = useState([]);
-  const [quantityInputs, setQuantityInputs] = useState({}); // New state for quantities
+  const [quantityInputs, setQuantityInputs] = useState({});
+  const url = import.meta.env.VITE_API_URL;
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -25,16 +24,17 @@ const CreateDeliveryModal = ({ createDeliveryModalOpen, closeCreateDeliveryModal
         console.error('Error fetching users:', e);
       }
     };
-    fetchUsers();
 
     const fetchPurchaseOrderByID_WithRemainingBalance = async () => {
       try {
         const response = await axios.get(`${url}/api/purchase-orders-get-remaining-balance/${purchaseOrderId}`);
         setProductDetails(response.data.Remaining.products);
       } catch (e) {
-        console.error(e);
+        console.error('Error fetching purchase order details:', e);
       }
     };
+
+    fetchUsers();
     fetchPurchaseOrderByID_WithRemainingBalance();
   }, [url, purchaseOrderId]);
 
@@ -43,7 +43,6 @@ const CreateDeliveryModal = ({ createDeliveryModalOpen, closeCreateDeliveryModal
     setIsDropdownOpen(false);
   };
 
-  // Handle change in quantity input
   const handleQuantityChange = (productId, value) => {
     setQuantityInputs(prevInputs => ({
       ...prevInputs,
@@ -52,159 +51,106 @@ const CreateDeliveryModal = ({ createDeliveryModalOpen, closeCreateDeliveryModal
   };
 
   const assignEmployeeFunction = async () => {
-    // Validation logic
     if (!selectedUser) {
       toast.error('Please select a delivery man.');
-      return; // Stops here if validation fails
+      return;
     }
-  
-    // Check if any product has a quantity input greater than its remaining quantity
+
     const invalidQuantities = productDetails.filter(product => {
       const inputQuantity = quantityInputs[product.product_id] || 0;
       return inputQuantity > product.remaining_quantity;
     });
-  
+
     if (invalidQuantities.length > 0) {
       const errorMessage = invalidQuantities.map(product => 
         `Product: ${product.product_name} exceeds the remaining quantity. Remaining: ${product.remaining_quantity}, Entered: ${quantityInputs[product.product_id] || 0}`
       ).join('\n');
-  
       toast.error(`Error:\n${errorMessage}`);
-      return; // Stops here if validation fails
+      return;
     }
-  
-    const hasValidQuantity = productDetails.some(product => {
-      return (
-        product.remaining_quantity > 0 &&
-        quantityInputs[product.product_id] > 0
-      );
-    });
-  
-    if (!hasValidQuantity) {
-      toast.error('Please fill in at least one valid quantity to create a delivery.');
-      return; // Stops here if validation fails
-    }
-  
-    // Constructing the form data based on your React component's state
+
     const formData = {
-      purchase_order_id: purchaseOrderId, // Assuming `purchaseOrderId` is from the props or state
-      user_id: deliverymanRecord.find(user => user.name === selectedUser)?.id, // Assuming `selectedUser` holds the name and you need to find the corresponding ID
+      purchase_order_id: purchaseOrderId,
+      user_id: deliverymanRecord.find(user => user.name === selectedUser)?.id,
       product_details: productDetails.map(product => ({
         product_id: product.product_id,
-        quantity: quantityInputs[product.product_id] || 0, // Default to 0 if no input
+        quantity: quantityInputs[product.product_id] || 0,
       })),
-      notes: "", // Add any notes if necessary; currently left as an empty string
+      notes: ""
     };
-  
-    // Form submission
+
     try {
-      const response = await axios.post(`${url}/api/assign-employee`, formData, {
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-      console.log('Response:', response.data);
-      
-      // Show the success toast
+      const response = await axios.post(`${url}/api/assign-employee`, formData);
       toast.success('Employee assigned successfully!');
-
-      // Wait for the toast to display, then close the modal
-      setTimeout(() => {
-        // Close the modal
-        closeCreateDeliveryModal();
-
-        // Redirect to the Order page after closing the modal
-        setTimeout(() => {
-          navigate('/order'); // Replace '/order' with the actual path of your Order page
-        }, 500); // Delay the navigation slightly for smoother transition
-      }, 2000); // Wait 2 seconds before closing the modal
-
-      
+      setTimeout(() => closeCreateDeliveryModal(), 2000);
     } catch (error) {
       console.error('Error assigning employee:', error);
       toast.error('Failed to assign employee. Please try again.');
     }
   };
-  
 
   return (
     <div
       id="createDeliveryModal"
-      className="modal fixed inset-0 flex justify-center items-center z-50"
-      style={{ backgroundColor: "rgba(0, 0, 0, 0.5)" }}
+      className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50"
     >
-      <div className="bg-white p-6 rounded-lg shadow-2xl w-2/4 relative">
+      <div className="bg-white p-6 rounded-lg shadow-md w-[40%] max-h-[90vh] overflow-y-auto overflow-x-hidden relative">
         <button
           className="absolute top-2 right-2 text-gray-500 hover:text-gray-700 focus:outline-none"
           onClick={closeCreateDeliveryModal}
         >
           &times;
         </button>
-        <div className="text-Black text-center py-2 mb-4 rounded-md">
-          <h3 className="text-lg font-bold">
-            Create Delivery
-          </h3>
-        </div>
-
+        <h3 className="text-lg font-bold">
+          Create Delivery
+        </h3>
         <form>
-          <p><strong>Purchase Order ID:</strong> {String(purchaseOrderId || 'N/A')}</p>
-
+          <p><strong>Purchase Order ID:</strong> {purchaseOrderId}</p>
           <div className="mb-4">
             <label className="block text-gray-700 font-bold">Delivery Man:</label>
-            <div 
-              className="border border-gray-300 rounded-md p-2 cursor-pointer" 
-              onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-            >
+            <div className="border border-gray-300 rounded-md p-2 cursor-pointer" onClick={() => setIsDropdownOpen(!isDropdownOpen)}>
               {selectedUser || 'Select a Delivery Man'}
             </div>
-
             {isDropdownOpen && (
-              <div className="border border-gray-300 rounded-md mt-2 max-h-32 overflow-y-auto bg-white shadow-lg">
-                <ul>
-                  {deliverymanRecord.map((user, index) => (
-                    <li
-                      key={index}
-                      className="p-2 hover:bg-blue-100 cursor-pointer"
-                      onClick={() => handleSelectUser(user.name)}
-                    >
-                      {user.name}
-                    </li>
-                  ))}
-                </ul>
-              </div>
+              <ul className="border border-gray-300 rounded-md mt-2 max-h-32 overflow-y-auto bg-white shadow-lg">
+                {deliverymanRecord.map((user, index) => (
+                  <li key={index} className="p-2 hover:bg-blue-100 cursor-pointer" onClick={() => handleSelectUser(user.name)}>
+                    {user.name}
+                  </li>
+                ))}
+              </ul>
             )}
-
             {productDetails.map((product, index) => (
-              <div key={index} className='p-2'>
+              <div key={index} className="p-2">
                 <div className="productInfo">
                   <h3 className="productTitle">Product Name:</h3>
                   <h3 className="data">{product.product_name}</h3>
-                  <div className="qm-container">
-                    <img className='w-[25px] p-[5px]' src={qm} />
-                    <div className="tooltip-text">The products the customer ordered.</div>
+                  <div className="qm-container relative ">
+                    <img className='w-[25px] p-[5px]' src={qm} alt="Info" />
+                    <div className="tooltip-text">The product the customer ordered.</div>
                   </div>
                 </div>
                 <div className="productInfo">
                   <h3 className="productTitle">Total Quantity:</h3>
                   <h3 className="data">{product.ordered_quantity}</h3>
-                  <div className="qm-container">
-                    <img className='w-[25px] p-[5px]' src={qm} />
+                  <div className="qm-container relative ">
+                    <img className='w-[25px] p-[5px]' src={qm} alt="Info" />
                     <div className="tooltip-text">Total quantity of this product that the customer ordered.</div>
                   </div>
                 </div>
                 <div className="productInfo">
                   <h3 className="productTitle">Delivered:</h3>
                   <h3 className="data">{product.total_delivered_quantity}</h3>
-                  <div className="qm-container">
-                    <img className='w-[25px] p-[5px]' src={qm} />
+                  <div className="qm-container relative ">
+                    <img className='w-[25px] p-[5px]' src={qm} alt="Info" />
                     <div className="tooltip-text">Total quantity delivered or on-going delivery.</div>
                   </div>
                 </div>
                 <div className="productInfo">
                   <h3 className="productTitle">Remaining Quantity:</h3>
                   <h3 className="data">{product.remaining_quantity}</h3>
-                  <div className="qm-container">
-                    <img className='w-[25px] p-[5px]' src={qm} />
+                  <div className="qm-container relative ">
+                    <img className='w-[25px] p-[5px]' src={qm} alt="Info" />
                     <div className="tooltip-text">Quantity left to Deliver. `0` means you cannot create delivery over this product anymore.</div>
                   </div>
                 </div>
@@ -213,25 +159,25 @@ const CreateDeliveryModal = ({ createDeliveryModalOpen, closeCreateDeliveryModal
                   {product.remaining_quantity === 0 ? (
                     <div className="flex items-center">
                       <div className="text-gray-500 italic mr-2">Order Filled</div>
-                      <div className="qm-container">
-                        <img className='w-[25px] p-[5px]' src={qm} />
+                      <div className="qm-container relative z-50">
+                        <img className='w-[25px] p-[5px]' src={qm} alt="Info" />
                         <div className="tooltip-text">
                           Quantity has been fully delivered; further delivery is not allowed.
                         </div>
                       </div>
                     </div>
                   ) : (
-                    <div className="flex items-center">
+                    <div className="flex w-[30%] items-center">
                       <input
                         type="number"
-                        className="quantityInput"
+                        className="quantityInput "
                         min="1"
                         max={product.remaining_quantity}
                         value={quantityInputs[product.product_id] || ''}
                         onChange={(e) => handleQuantityChange(product.product_id, e.target.value)}
                       />
-                      <div className="qm-container ml-2">
-                        <img className='w-[25px] p-[5px]' src={qm} />
+                      <div className="qm-container relative z-50">
+                        <img className='w-[25px] p-[5px]' src={qm} alt="Info" />
                         <div className="tooltip-text">
                           Enter the quantity to deliver equal or below the Quantity of {product.remaining_quantity}.
                         </div>
@@ -239,7 +185,6 @@ const CreateDeliveryModal = ({ createDeliveryModalOpen, closeCreateDeliveryModal
                     </div>
                   )}
                 </div>
-
               </div>
             ))}
             <div className='flex flex-row-reverse'>
@@ -258,7 +203,6 @@ const CreateDeliveryModal = ({ createDeliveryModalOpen, closeCreateDeliveryModal
               >
                 Cancel
               </button>
-
             </div>
           </div>
         </form>
