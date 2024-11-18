@@ -13,6 +13,7 @@ const CreateDeliveryModal = ({ createDeliveryModalOpen, closeCreateDeliveryModal
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [productDetails, setProductDetails] = useState([]);
   const [quantityInputs, setQuantityInputs] = useState({});
+  const [isLoading, setIsLoading] = useState(false); // Loading state
   const url = import.meta.env.VITE_API_URL;
 
   useEffect(() => {
@@ -69,6 +70,8 @@ const CreateDeliveryModal = ({ createDeliveryModalOpen, closeCreateDeliveryModal
       return;
     }
 
+    setIsLoading(true); // Start loading
+
     const formData = {
       purchase_order_id: purchaseOrderId,
       user_id: deliverymanRecord.find(user => user.name === selectedUser)?.id,
@@ -82,10 +85,14 @@ const CreateDeliveryModal = ({ createDeliveryModalOpen, closeCreateDeliveryModal
     try {
       const response = await axios.post(`${url}/api/assign-employee`, formData);
       toast.success('Employee assigned successfully!');
-      setTimeout(() => closeCreateDeliveryModal(), 2000);
+      setTimeout(() => {
+        setIsLoading(false); // Stop loading
+        closeCreateDeliveryModal();
+      }, 2000);
     } catch (error) {
       console.error('Error assigning employee:', error);
       toast.error('Failed to assign employee. Please try again.');
+      setIsLoading(false); // Stop loading
     }
   };
 
@@ -188,14 +195,19 @@ const CreateDeliveryModal = ({ createDeliveryModalOpen, closeCreateDeliveryModal
               </div>
             ))}
             <div className='flex flex-row-reverse'>
-              <button 
-                className=' ml-2  bg-blue-500 duration-200 shadow-md rounded-md p-2 text-white font-bold hover:bg-white hover:text-blue-500' 
+            <button
+                className={`ml-2 duration-200 shadow-md rounded-md p-2 font-bold ${
+                  isLoading
+                    ? 'bg-gray-400 text-gray-600 cursor-not-allowed'
+                    : 'bg-blue-500 text-white hover:bg-white hover:text-blue-500'
+                }`}
+                disabled={isLoading}
                 onClick={(e) => {
-                  e.preventDefault(); // Prevents the form submission and modal close
+                  e.preventDefault();
                   assignEmployeeFunction();
                 }}
               >
-                Create delivery
+                {isLoading ? 'Processing...' : 'Create delivery'}
               </button>
               <button 
                 className='bg-red-500 duration-200 shadow-md rounded-md p-2 text-white font-bold hover:bg-white hover:text-red-500' 
