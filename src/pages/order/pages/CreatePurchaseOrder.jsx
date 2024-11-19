@@ -3,6 +3,8 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '../../../components/navbar';
 import Modal from './CreatePurchaseOrderModal'; // Ensure this import path matches where your Modal component is located
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const CreatePurchaseOrder = () => {
   const navigate = useNavigate();
@@ -91,10 +93,12 @@ const CreatePurchaseOrder = () => {
 
     try {
       await axios.post(`${url}/api/purchase-orders-delivery`, orderData);
-      alert('Order created successfully!');
-      navigate('/order');
+      toast.success('Order created successfully!');
+      setTimeout(() => {
+        navigate('/order');
+      }, 2000);
     } catch (error) {
-      alert('Error creating order. Please check your inputs.');
+      toast.error('Error creating order. Please check your inputs.');
       console.error('Error creating order:', error);
     }
   };
@@ -235,6 +239,7 @@ const CreatePurchaseOrder = () => {
 
       {/* Modal for selecting products */}
       <Modal isOpen={isModalOpen} onClose={toggleModal} addProductToList={addProductToList} />
+      <ToastContainer />
     </div>
   );
 };
