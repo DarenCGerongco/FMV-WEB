@@ -77,7 +77,7 @@ const CreatePurchaseOrderModal = ({ isOpen, onClose, addProductToList }) => {
         {isLoading ? (
           <div className="flex justify-center h-[47rem] items-center">
             <div className="spinner">
-              <span>Loading...</span>
+                <span>Loading...</span>
             </div>
           </div>
         ) : (

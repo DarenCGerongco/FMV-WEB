@@ -97,27 +97,55 @@ function Order() {
   // Render pagination controls
   const renderPaginationControls = () => {
     const { currentPage, lastPage } = paginationInfo;
+    const totalPages = Math.min(lastPage, Math.ceil(searchResults.length / paginationInfo.perPage));
+  
     return (
       <div className="flex space-x-2 mt-4">
-        <button onClick={() => handlePageChange(1)} disabled={currentPage === 1}>
+        <button
+          onClick={() => handlePageChange(1)}
+          disabled={currentPage === 1}
+          className={`font-bold px-3 py-1 rounded shadow-md ${
+            currentPage === 1 ? "bg-gray-200 cursor-not-allowed" : "bg-white hover:bg-blue-500 hover:text-white"
+          }`}
+        >
           First
         </button>
-        <button onClick={() => handlePageChange(currentPage - 1)} disabled={currentPage === 1}>
+        <button
+          onClick={() => handlePageChange(currentPage - 1)}
+          disabled={currentPage === 1}
+          className={`font-bold px-3 py-1 rounded shadow-md ${
+            currentPage === 1 ? "bg-gray-200 cursor-not-allowed" : "bg-white hover:bg-blue-500 hover:text-white"
+          }`}
+        >
           Previous
         </button>
-        {Array.from({ length: lastPage }, (_, i) => (
+        {Array.from({ length: totalPages }, (_, i) => (
           <button
             key={i + 1}
             onClick={() => handlePageChange(i + 1)}
-            className={currentPage === i + 1 ? 'bg-blue-500 text-white' : ''}
+            className={`font-bold px-3 py-1 rounded cursor-pointer duration-100 shadow-md ${
+              currentPage === i + 1 ? "bg-blue-500 text-white" : "bg-white hover:bg-blue-500 hover:text-white"
+            }`}
           >
             {i + 1}
           </button>
         ))}
-        <button onClick={() => handlePageChange(currentPage + 1)} disabled={currentPage === lastPage}>
+        <button
+          onClick={() => handlePageChange(currentPage + 1)}
+          disabled={currentPage === totalPages}
+          className={`font-bold px-3 py-1 rounded shadow-md ${
+            currentPage === totalPages ? "bg-gray-200 cursor-not-allowed" : "bg-white hover:bg-blue-500 hover:text-white"
+          }`}
+        >
           Next
         </button>
-        <button onClick={() => handlePageChange(lastPage)} disabled={currentPage === lastPage}>
+        <button
+          onClick={() => handlePageChange(totalPages)}
+          disabled={currentPage === totalPages}
+          className={`font-bold px-3 py-1 rounded shadow-md ${
+            currentPage === totalPages ? "bg-gray-200 cursor-not-allowed" : "bg-white hover:bg-blue-500 hover:text-white"
+          }`}
+        >
           Last
         </button>
       </div>
@@ -255,19 +283,31 @@ const closeViewDeliveriesModal = () => setViewDeliveriesModalOpen(false);
         }, []);
 // VIEW
 
-    const handleSearchChange = (event) => {
-      const input = event.target.value;
-      setSearchInput(input);
+const handleSearchChange = (event) => {
+  const input = event.target.value;
+  setSearchInput(input);
 
-      if (input.trim() === '') {
-        setSearchResults(purchaseOrderData); // Show all data if input is empty
-      } else {
-        const filteredResults = purchaseOrderData.filter((order) =>
-          order.customer_name.toLowerCase().includes(input.toLowerCase())
-        );
-        setSearchResults(filteredResults);
-      }
-    };
+  if (input.trim() === "") {
+    // Reset to full results if search input is empty
+    setSearchResults(purchaseOrderData);
+    setPaginationInfo((prev) => ({
+      ...prev,
+      lastPage: Math.ceil(purchaseOrderData.length / prev.perPage),
+    }));
+  } else {
+    // Filter results based on search query
+    const filteredResults = purchaseOrderData.filter((order) =>
+      order.customer_name.toLowerCase().includes(input.toLowerCase())
+    );
+    setSearchResults(filteredResults);
+
+    // Dynamically adjust pagination for search results
+    setPaginationInfo((prev) => ({
+      ...prev,
+      lastPage: Math.ceil(filteredResults.length / prev.perPage),
+    }));
+  }
+};
 
 
 return (
@@ -297,39 +337,6 @@ return (
               Create Order
             </button>
           </div>
-
-          <div id="order-container" className="space-y-4">
-            {orders.map((order) => (
-              <div
-                key={order.id}
-                className="flex items-center justify-between bg-white-200 p-4 rounded-lg shadow-md relative"
-              >
-                <div className="information flex">
-                  <div className="font-bold">{order.deliveredTo}</div>
-                  <div className="font-bold ml-5">|</div>
-                  <div className="font-bold ml-5">{order.address}</div>
-                  <div className="font-bold ml-5">|</div>
-                  <div className="font-bold ml-5">{order.date}</div>
-                </div>
-                <div className="settings">
-                  <div className="flex space-x-2">
-                    <img
-                      src="./src/assets/edit.png"
-                      alt="Edit"
-                      className="w-6 h-6 cursor-pointer"
-                      onClick={() => console.log('Edit')}
-                    />
-                    <img
-                      src="./src/assets/delete.png"
-                      alt="Delete"
-                      className="w-6 h-6 cursor-pointer"
-                      onClick={() => console.log('Delete')}
-                    />
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
         </div>
   
       {/* START SHOW PURCHASE ORDERS */}
@@ -337,7 +344,9 @@ return (
         {/* White background container */}
         <div className="bg-white p-2 rounded-lg shadow-xl">
           {/* Header */}
-          <div className="grid grid-cols-[0.5fr_1.5fr_2fr_1fr_1fr] px-4 py-2 text-gray-400 text-sm ">
+          <div 
+          className="grid grid-cols-[0.5fr_1.5fr_2fr_1fr_1fr] px-4 py-2 text-gray-400 text-sm "
+          >
             <p>
               POID
             </p>
@@ -446,7 +455,7 @@ return (
             <button
               key={i + 1}
               onClick={() => handlePageChange(i + 1)}
-              className={`font-bold px-3 py-1 rounded cursor-pointer duration-200 shadow-md ${paginationInfo.currentPage === i + 1 ? 'bg-blue-500 text-white' : 'bg-white hover:bg-blue-500 shadow-md hover:text-white'}`}
+              className={`font-bold px-3 py-1 rounded cursor-pointer duration-100 shadow-md ${paginationInfo.currentPage === i + 1 ? 'bg-blue-500 text-white' : 'bg-white hover:bg-blue-500 shadow-md hover:text-white'}`}
               >
               {i + 1}
             </button>

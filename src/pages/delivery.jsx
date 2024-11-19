@@ -1,101 +1,65 @@
-import { useEffect, useState } from 'react';
-import Navbar from '../components/navbar';
-import axios from 'axios';
-
+import { useEffect, useState } from "react";
+import Navbar from "../components/navbar";
+import axios from "axios";
 
 function Delivery() {
   const url = import.meta.env.VITE_API_URL;
 
-  const [isConfirmationModalOpen, setIsConfirmationModalOpen] = useState(false);
-  const [isOngoingModalOpen, setIsOngoingModalOpen] = useState(false);
-  const [isOrderDeliveredModalOpen, setIsOrderDeliveredModalOpen] = useState(false);
-  const [selectedDelivery, setSelectedDelivery] = useState(null);
+  // State for deliveries and filters
+  const [deliveries, setDeliveries] = useState([]);
+  const [statusFilter, setStatusFilter] = useState(""); // Status filter state
+  const [currentPage, setCurrentPage] = useState(1); // Pagination state
+  const [totalPages, setTotalPages] = useState(1); // Total pages from backend
 
-// Start Status Data 
-
-  const [onDelivery, setOnDelivery] = useState([]);
-  const [pendingDeliveries, setPendingDeliveries] = useState([]); // <-- This is the data that manager will look and confirm. 
-  const [successDelivery, setSuccessDelivery] = useState([]);
-  const [failedDelivery, setFailedDelivery] = useState([]);
-
-// End Status Data
-
-// PENDING
-  const handleOpenConfirmationModal = () => {
-    setSelectedDelivery(delivery);
-    setIsConfirmationModalOpen(true);
-  };
-// ON GOING 
-  const handleOpenOngoingDeliveryModal = (delivery) => {
-    setSelectedDelivery(delivery);
-    setIsOngoingModalOpen(true);
-  };
-
-  // const handleOpenOngoingModal = (delivery) => {
-  //   setSelectedDelivery(delivery);  // Set the clicked delivery
-  //   setIsOngoingModalOpen(true);    // Open the modal
-  // };
-
-// SUCCESS DELIVERY
-  const handleOpenOrderDeliveredModal = (delivery) => {
-    setSelectedDelivery(delivery);
-    setIsOrderDeliveredModalOpen(true);
+  // Fetch deliveries from the backend
+  const fetchDeliveries = async () => {
+    try {
+      const response = await axios.get(`${url}/api/deliveries/index`, {
+        params: {
+          status: statusFilter,
+          page: currentPage,
+        },
+      });
+      console.log("API Response:", response.data);
+      setDeliveries(response.data.deliveries || []); // Correctly access the deliveries array
+      setTotalPages(response.data.pagination?.lastPage || 1); // Adjust for nested pagination data
+    } catch (error) {
+      console.error("Error fetching deliveries:", error);
+      setDeliveries([]); // Ensure deliveries are cleared on error
+    }
   };
 
-  const handleCloseModal = () => {
-    setIsConfirmationModalOpen(false);
-    setIsOngoingModalOpen(false);
-    setIsOrderDeliveredModalOpen(false);
-    setSelectedDelivery(null);
+  const getStatusDisplayName = (status) => {
+    if(status == "OD"){
+      return "On-Delivery";
+    } else if (status == "P"){
+      return "Pending •";
+    } else if (status == "F"){
+      return "Failed";
+    } else if (status == "S"){
+      return "Successful"
+    } else{
+      return "unknown";
+    }
   };
 
-  // START FETCH DELIVERIES 
-    useEffect(() => {
-      const fetchOnDeliveryData = async () => {
-        try{
-          const response = await axios.get(`${url}/api/my-deliveries/on-delivery`);
-          setOnDelivery(response.data);
-          console.log('On-going', response.data)
-          // Object.values(response.data).forEach((order) => {
-          //   console.log('Purchase Order ID:', order.purchase_order_id)
-          // })
-        } catch (error){
-          console.log(error);
-        }
-      }
+  // Fetch deliveries when the filter or page changes
+  useEffect(() => {
+    fetchDeliveries();
+  }, [statusFilter, currentPage]);
 
-      const fetchPendingData = async () => {
-        try{
-          const response = await axios.get(`${url}/api/my-deliveries/pending`);
-          setPendingDeliveries(response.data);
-          console.log('Pending data: ', response.data);
-        }catch (error){
-          console.log(error);
-        }
-      };
+  // Handle filter change
+  const handleFilterChange = (status) => {
+    setStatusFilter(status); // Update the filter
+    setCurrentPage(1); // Reset to the first page
+  };
 
-      const fetchSuccessData = async () => {
-        try{
-          const response = await axios.get(`${url}/api/my-deliveries/successful`);
-          setSuccessDelivery(response.data);
-        }catch (error){
-          console.log(error)
-        }
-      }
-
-
-      fetchOnDeliveryData();
-      fetchPendingData();
-      // fetchSuccessData();
-      const timeInterval = setInterval(fetchPendingData, 20000);
-
-      return () => clearInterval(timeInterval);
-    }, [url]); 
-
-    
-    
-  // END FETCH DELIVERIES
-
+  // Handle page change
+  const handlePageChange = (page) => {
+    if (page > 0 && page <= totalPages) {
+      setCurrentPage(page); // Update the current page
+    }
+  };
 
   return (
     <div className="flex w-full bg-white-100">
@@ -117,309 +81,150 @@ function Delivery() {
               Search
             </button>
           </div>
-        </div>
-
-        <div className="w-4/5 mx-auto bg-white p-5 m-3 rounded-lg shadow-md">
-          {/* 1st Container - Confirmation */}
-          <h2 className="text-xs mt-10 text-green-600 font-bold ">Confirmation (Delivery.status = P)</h2>
-          <div className=" my-3 p-2 bg-gray-100 rounded-lg shadow-md">
-            <div className="text-sm font-bold grid grid-cols-6 text-gray-400 flex justify-between items-center">
-              <span className="col-span-1 text-left">Purchase Order ID</span>
-              <span className="col-span-2 text-left">Delivered to</span>
-              <span className="col-span-2 text-left">Delivery Man</span>
-              <span className="col-span-1 text-left">Date</span>
-            </div>
-              {pendingDeliveries && Object.values(pendingDeliveries).length > 0 ? (
-                Object.values(pendingDeliveries).map((pendingData, index)=> (
-                  <div 
-                    key={index}
-                    className="my-3 p-2 grid grid-cols-6 rounded-lg hover:bg-green-300 duration-300 cursor-pointer shadow-md flex bg-[#E6FCE6]"
-                    >
-                    <span className='col-span-1'>
-                      {pendingData.purchase_order_id} 
-                    </span>
-                    <span className='col-span-2 p'>
-                      {pendingData.address.street}, {pendingData.address.barangay},{pendingData.address.province}
-                    </span>
-                    <span className='col-span-2'>
-                      {pendingData.deliveryman_name}
-                    </span>
-                    <span className='col-span-1'>
-                      {pendingData.date}
-                    </span>
-                  </div>
-                ))
-              ): (
-                <h2>
-                  No Pending Deliveries
-                </h2>
-              )}
-          </div>
-
-          {/* 2nd Container - Ongoing Delivery */}
-          <h2 className="text-xs mt-10 text-green-600 font-bold">Ongoing Delivery (Delivery.status = OD)</h2>
-          <div className="mt-2 bg-gray-100 p-4 rounded-lg shadow-md">
-            <div className="text-sm grid font-bold grid-cols-6 text-gray-400 flex justify-between items-center">
-              <span className="col-span-1 text-left">Purchase Order ID</span>
-              <span className="col-span-2 text-left">Delivered to</span>
-              <span className="col-span-2 text-left">Delivery Man</span>
-              <span className="col-span-1 text-left">Date</span>
-            </div>
-            {onDelivery && Object.values(onDelivery).length > 0 ? (
-              Object.values(onDelivery).map((onDeliveryData, index) => (
-                <div
-                  key={index}
-                  className="my-3 p-2 grid grid-cols-6 rounded-lg hover:bg-green-300 duration-300 cursor-pointer shadow-md flex bg-[#E6FCE6]"
-                  onClick={() => handleOpenOngoingDeliveryModal(onDeliveryData)}
-                >
-                  <span className="col-span-1 text-left">{onDeliveryData.purchase_order_id}</span>
-                  <span className="col-span-2 text-left">{onDeliveryData.customer_name}</span>
-                  <span className="col-span-2 text-left">{onDeliveryData.deliveryman_name}</span>
-                  <span className="col-span-1 text-left">{onDeliveryData.date}</span>
-                </div>
-              ))
-            ) : (
-              <span>No On-delivery.</span>
-            )}
-              {/* <span className="w-1/6">4</span>
-              <span className="w-1/3">Iponan</span>
-              <span className="w-1/3">Edelcris Cabarrubias</span>
-              <span className="w-1/6">07/04/2024</span> */}
-          </div>
-
-          {/* 3rd Container - Delivered Order */}
-          <h2 className="text-xs mt-10 text-gray-400 font-bold">Delivered Order</h2>
-          <div className="mt-2 bg-gray-100 p-4 rounded-lg shadow-md">
-            <h3 className="text-sm text-gray-400 flex justify-between items-center">
-              <span className="w-1/6 text-left">Purchase Order ID</span>
-              <span className="w-1/3 text-left">Delivered to</span>
-              <span className="w-1/3 text-left">Delivery Man</span>
-              <span className="w-1/6 text-left">Date</span>
-            </h3>
-            <div className="bg-white p-4 rounded-lg shadow-md flex justify-between items-center">
-              <span className="w-1/6">5</span>
-              <span className="w-1/3">Barangay Talaga</span>
-              <span className="w-1/3">Mark Cabarrubias</span>
-              <span className="w-1/6">09/04/2024</span>
-              <img
-                src="./src/assets/info.png"
-                alt="Delivery Image"
-                className="w-7 h-7 rounded-full cursor-pointer"
-                onClick={() => handleOpenOrderDeliveredModal()}
-              />
-            </div>
-          </div>
-          
-          {/* Order Delivered modal */}
-          {isOrderDeliveredModalOpen && selectedDelivery && (
-            <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
-              <div className="bg-white p-6 rounded-lg shadow-lg w-1/3 max-h-screen overflow-y-auto">
-                <h2 className="text-xl font-bold mb-4">Order Delivered Details</h2>
-                <p><strong>Delivery Number:</strong> {selectedDelivery.deliveryNo}</p>
-                 <p><strong>Delivered to:</strong> {selectedDelivery.deliveredTo}</p>
-                <p><strong>Delivery Man:</strong> {selectedDelivery.deliveryMan}</p>
-                <p><strong>Date:</strong> {selectedDelivery.date}</p>
-
-                {/* ongoing delivered modal content */}
-                <div className="mt-4 p-4 bg-gray-100 rounded-lg shadow-md">
-                  <div className="flex justify-between">
-                    <span>₱1500</span>
-                    <span>Submersible Pump</span>
-                    <span>x5</span>
-                  </div>
-                </div>
-                <div className="mt-4 p-4 bg-gray-100 rounded-lg shadow-md">
-                  <div className="flex justify-between">
-                    <span>₱1500</span>
-                    <span>Submersible Pump</span>
-                    <span>x5</span>
-                  </div>
-                </div>
-                <div className="mt-4">
-                  <h3 className="text-lg font-semibold mb-2">Proof of Delivery</h3>
-                  <img
-                    src="./src/assets/darwen.png"
-                    alt="Proof of Delivery"
-                    className="w-auto h-auto rounded-lg shadow-md"
-                  />
-                </div>
-                <div className="mt-4">
-                  <h3 className="text-lg font-semibold mb-2">Note:</h3>
-                  <p>Hello Guten Morge Por que novenas achomera micasa oi?</p>
-                </div>
-
-                <button
-                  className="mt-4 bg-blue-500 text-white ml-80 px-4 py-2 rounded-md shadow-md focus:outline-none"
-                  onClick={handleCloseModal}
-                >
-                  Close
-                </button>
-              </div>
-            </div>
-          )}
-
-         {/* Confirm Delivery modal ✅✅✅✅✅ */} 
-         {isConfirmationModalOpen && selectedDelivery && (
-            <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
-              <div className="bg-white p-6 rounded-lg shadow-lg w-1/3 max-h-screen overflow-y-auto">
-                <h2 className="text-xl font-bold mb-4">Confirmation Details</h2>
-                <p><strong>Delivery Number:</strong> {selectedDelivery.deliveryNo}</p>
-                <p><strong>Delivered to:</strong> {selectedDelivery.deliveredTo}</p>
-                <p><strong>Delivery Man:</strong> {selectedDelivery.deliveryMan}</p>
-                <p><strong>Date:</strong> {selectedDelivery.date}</p>
-
-                {/* Content for confirm delivery */}
-                <div className="mt-4 p-4 bg-gray-100 rounded-lg shadow-md">
-                  <div className="flex justify-between">
-                    <span>₱1500</span>
-                    <span>Submersible Pump</span>
-                    <span>x5</span>
-                  </div>
-                </div>
-                <div className="mt-4 p-4 bg-gray-100 rounded-lg shadow-md">
-                  <div className="flex justify-between">
-                    <span>₱1500</span>
-                    <span>Submersible Pump</span>
-                    <span>x5</span>
-                  </div>      
-                </div>
-
-                <div className="mt-4">
-                  <h3 className="text-lg font-semibold mb-2">Proof of Delivery</h3>
-                  <img
-                    src="./src/assets/darwen.png" 
-                    alt="Proof of Delivery"
-                    className="w-auto h-auto rounded-lg shadow-md"
-                  />
-                </div>
-
-                <div className="mt-4">
-                  <h3 className="text-lg font-semibold mb-2">
-                    Note:
-                  </h3>
-                  <p>
-                    Hello Guten Morge Por que novenas achomera micasa oi?
-                  </p>
-                </div>
-
-                <button
-                  className="mt-4 bg-blue-500 text-white ml-80 px-4 py-2 rounded-md shadow-md focus:outline-none"
-                  onClick={handleCloseModal}
-                >
-                  Close
-                </button>
-              </div>
-            </div>
-          )}
-
-        {/* Ongoing Delivery modal */}
-        {isOngoingModalOpen && selectedDelivery && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
-            <div
-              className="bg-white p-6 rounded-lg shadow-lg w-1/3 max-h-screen overflow-y-auto"
-            >
-              <h2 className="text-xl font-bold mb-4">
-                Ongoing Delivery Details
-              </h2>
-              <p>
-                <strong>Delivery Number:</strong> {selectedDelivery.delivery_no}
-              </p>
-              <p>
-                <strong>Delivered to:</strong> {selectedDelivery.customer_name}
-              </p>
-              <p>
-                <strong>Delivery Man:</strong> {selectedDelivery.deliveryman_name}
-              </p>
-              <p>
-                <strong>Date:</strong> {new Date().toLocaleDateString()}
-              </p>
-
-              <div className="mt-4">
-                <h3 className="text-lg font-semibold mb-2">
-                  On-Delivery Product List:
-                </h3>
-                {selectedDelivery.products.map((product, productIndex) => (
-                  <div
-                    className="p-4 bg-gray-100 hover:bg-gray-300 duration-200 rounded-lg shadow-md mb-2"
-                    key={productIndex}
-                  >
-                    <div className="flex justify-between">
-                      <span>₱{product.price}</span>
-                      <span>{product.product_name}</span>
-                      <span>x{product.quantity}</span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-
-              <div className="flex justify-center  ">
-                <button
-                  className=" bg-blue-500 text-white hover:bg-white hover:text-blue-500 font-bold duration-200 px-4 py-2 rounded-md shadow-md focus:outline-none"
-                  onClick={handleCloseModal}
-                >
-                  Close
-                </button>
-              </div>
-
-            </div>
-          </div>
-        )}
-
-
-
-    {/* Order Delivered modal */}
-      {isOrderDeliveredModalOpen && selectedDelivery && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
-          <div className="bg-white p-6 rounded-lg shadow-lg w-1/3 max-h-screen overflow-y-auto">
-            <h2 className="text-xl font-bold mb-4">Order Delivered Details</h2>
-            <p><strong>Delivery Number:</strong> {selectedDelivery.deliveryNo}</p>
-            <p><strong>Delivered to:</strong> {selectedDelivery.deliveredTo}</p>
-            <p><strong>Delivery Man:</strong> {selectedDelivery.deliveryMan}</p>
-            <p><strong>Date:</strong> {selectedDelivery.date}</p>
-
-            {/* Example content */}
-            <div className="mt-4 p-4 bg-gray-100 rounded-lg shadow-md">
-              <div className="flex justify-between">
-                <span>₱1500</span>
-                <span>Submersible Pump</span>
-                <span>x5</span>
-              </div>
-            </div>
-            <div className="mt-4 p-4 bg-gray-100 rounded-lg shadow-md">
-              <div className="flex justify-between">
-                <span>₱1500</span>
-                <span>Submersible Pump</span>
-                <span>x5</span>
-              </div>
-            </div>
-
-            <div className="mt-4">
-              <h3 className="text-lg font-semibold mb-2">Proof of Delivery</h3>
-              <img
-                src="./src/assets/darwen.png"
-                alt="Proof of Delivery"
-                className="w-auto h-auto rounded-lg shadow-md"
-              />
-            </div>
-
-            <div className="mt-4">
-              <h3 className="text-lg font-semibold mb-2">Note:</h3>
-              <p>Hello Guten Morge Por que novenas achomera micasa oi?</p>
-            </div>
-
+          <div className="flex mt-4">
+            <span className="mx-1 font-bold py-1 px-3 text-blue-500 rounded">
+              Filter:
+            </span>
             <button
-              className="mt-4 bg-blue-500 text-white ml-80 px-4 py-2 rounded-md shadow-md focus:outline-none"
-              onClick={handleCloseModal}
+              className={`mx-1 font-bold py-1 px-3 ${
+                statusFilter === "" ? "bg-blue-500 text-white" : ""
+              } rounded shadow-md hover:bg-blue-500 hover:text-white duration-200`}
+              onClick={() => handleFilterChange("")}
             >
-              Close
+              All
+            </button>
+            <button
+              className={`mx-1 font-bold py-1 px-3 ${
+                statusFilter === "P" ? "bg-blue-500 text-white" : ""
+              } rounded shadow-md hover:bg-blue-500 hover:text-white duration-200`}
+              onClick={() => handleFilterChange("P")}
+            >
+              Pending
+            </button>
+            <button
+              className={`mx-1 font-bold py-1 px-3 ${
+                statusFilter === "OD" ? "bg-blue-500 text-white" : ""
+              } rounded shadow-md hover:bg-blue-500 hover:text-white duration-200`}
+              onClick={() => handleFilterChange("OD")}
+            >
+              On-Delivery
+            </button>
+            <button
+              className={`mx-1 font-bold py-1 px-3 ${
+                statusFilter === "F" ? "bg-blue-500 text-white" : ""
+              } rounded shadow-md hover:bg-blue-500 hover:text-white duration-200`}
+              onClick={() => handleFilterChange("F")}
+            >
+              Failed
+            </button>
+            <button
+              className={`mx-1 font-bold py-1 px-3 ${
+                statusFilter === "S" ? "bg-blue-500 text-white" : ""
+              } rounded shadow-md hover:bg-blue-500 hover:text-white duration-200`}
+              onClick={() => handleFilterChange("S")}
+            >
+              Successful
             </button>
           </div>
+
         </div>
-      )}
-      
+        <div className="w-4/5 mx-auto mt-2 bg-white p-3 rounded-lg drop-shadow-md">
+          <div 
+            className="grid grid-cols-6 bg-gray-200 text-sm font-bold p-1 rounded-md"
+          >
+            <div className="col-span-1">Delivery ID#</div>
+            <div className="col-span-1">Purchase Order ID#</div>
+            <div className="col-span-2">Delivery man</div>
+            <div className="col-span-1 text-center w-[80%]">Status</div>
+            <div className="col-span-1">Delivery Created (24hrs)</div>
+          </div>
+              {deliveries && deliveries.length > 0 ? (
+                deliveries.map((delivery) => (
+                  <div
+                    key={delivery.delivery_id} // Use the correct unique identifier
+                    className="hover:bg-white duration-200 grid text-sm grid-cols-6 border-b bg-blue-50 rounded my-1 border-gray-300 p-1 items-center"
+                  >
+                    <div className="col-span-1">{delivery.delivery_id}</div>
+                    <div className="col-span-1">{delivery.purchase_order.purchase_order_id}</div>
+                    <div className="col-span-2">{delivery.delivery_man.name}</div>
+                    <div
+                      className={`col-span-1 px-2 w-[80%] font-bold text-center rounded-full ${
+                        delivery.status === "OD"
+                          ? "bg-green-200 border-1 border border-green-500 text-green-500" // On-delivery (Blue)
+                          : delivery.status === "P"
+                          ? "bg-pink-200 border-1 border border-pink-500 text-pink-500" // Pending (Pink)
+                          : delivery.status === "F"
+                          ? "bg-red-500" // Failed (Red)
+                          : delivery.status === "S"
+                          ? "bg-green-500" // Successful (Green)
+                          : "bg-gray-500" // Default (Gray)
+                      }`}
+                    >
+                      {getStatusDisplayName(delivery.status)}
+                    </div>
+
+                    <div className="col-span-1">{delivery.formatted_date} Hrs</div>
+                  </div>
+                ))
+              ) : (
+                <div className="text-center p-4">No deliveries found.</div>
+              )}
+          </div>
+          <div className="flex justify-center w-full space-x-2 my-4">
+            {/* First Page Button */}
+            <button
+              onClick={() => handlePageChange(1)}
+              disabled={currentPage === 1}
+              className="font-bold px-3 py-1 bg-white hover:bg-blue-500 hover:text-white duration-200 shadow-md cursor-pointer rounded disabled:opacity-50"
+            >
+              First
+            </button>
+
+            {/* Previous Page Button */}
+            <button
+              onClick={() => handlePageChange(currentPage - 1)}
+              disabled={currentPage === 1}
+              className="font-bold px-3 py-1 bg-white hover:bg-blue-500 hover:text-white duration-200 shadow-md cursor-pointer rounded disabled:opacity-50"
+            >
+              Previous
+            </button>
+
+            {/* Page Numbers */}
+            {Array.from({ length: totalPages }, (_, i) => (
+              <button
+                key={i + 1}
+                onClick={() => handlePageChange(i + 1)}
+                className={`font-bold px-3 py-1 rounded cursor-pointer duration-100 shadow-md ${
+                  currentPage === i + 1
+                    ? "bg-blue-500 text-white"
+                    : "bg-white hover:bg-blue-500 shadow-md hover:text-white"
+                }`}
+              >
+                {i + 1}
+              </button>
+            ))}
+
+            {/* Next Page Button */}
+            <button
+              onClick={() => handlePageChange(currentPage + 1)}
+              disabled={currentPage === totalPages}
+              className="font-bold px-3 py-1 bg-white hover:bg-blue-500 hover:text-white duration-200 shadow-md cursor-pointer rounded disabled:opacity-50"
+            >
+              Next
+            </button>
+
+            {/* Last Page Button */}
+            <button
+              onClick={() => handlePageChange(totalPages)}
+              disabled={currentPage === totalPages}
+              className="font-bold px-3 py-1 bg-white hover:bg-blue-500 hover:text-white duration-200 shadow-md cursor-pointer rounded disabled:opacity-50"
+            >
+              Last
+            </button>
+          </div>
+      </div>
     </div>
-  </div>
-</div>
   );
 }
+
 export default Delivery;

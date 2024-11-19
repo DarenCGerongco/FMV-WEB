@@ -151,7 +151,7 @@ const CreatePurchaseOrder = () => {
               Available Quantity
             </span>
             <span className='col-span-1 font-bold rounded text-red-500 text-center'>
-              Bid Price
+              Price (Discounted)
             </span>
             <span className='col-span-1 font-bold rounded text-red-500 text-center'>
               Quantity
