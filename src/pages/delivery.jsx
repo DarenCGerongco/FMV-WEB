@@ -12,6 +12,8 @@ function Delivery() {
   const [totalPages, setTotalPages] = useState(1); // Total pages from backend
 
   // Fetch deliveries from the backend
+
+
   const fetchDeliveries = async () => {
     try {
       const response = await axios.get(`${url}/api/deliveries/index`, {
@@ -130,7 +132,7 @@ function Delivery() {
         </div>
         <div className="w-4/5 mx-auto mt-2 bg-white p-3 rounded-lg drop-shadow-md">
           <div 
-            className="grid grid-cols-6 bg-gray-200 text-sm font-bold p-1 rounded-md"
+            className="grid grid-cols-6 text-sm font-bold p-1 rounded-md"
           >
             <div className="col-span-1">Delivery ID#</div>
             <div className="col-span-1">Purchase Order ID#</div>
@@ -163,7 +165,7 @@ function Delivery() {
                       {getStatusDisplayName(delivery.status)}
                     </div>
 
-                    <div className="col-span-1">{delivery.formatted_date} Hrs</div>
+                    <div className="col-span-1">{delivery.formatted_date}</div>
                   </div>
                 ))
               ) : (

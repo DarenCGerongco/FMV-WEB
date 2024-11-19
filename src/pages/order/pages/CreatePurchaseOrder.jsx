@@ -107,10 +107,10 @@ const CreatePurchaseOrder = () => {
   return (
     <div className="flex flex-col w-full px-5">
       <Navbar />
-      <div className="ml-[18%]">
+      <div className="shadow-md bg-gray-200 rounded mt-[1%] ml-[18%]">
         <h3 className="text-center text-lg font-bold p-2">Create Purchase Order</h3>
       </div>
-      <div className="flex flex-col justify-center ml-[16%] mt-[4%] ">
+      <div className="flex flex-col justify-center shadow-md p-5 rounded ml-[16%] mt-[4%] ">
         <h1 className="text-xl font-bold">
           Customer's Details:
         </h1>
@@ -166,7 +166,7 @@ const CreatePurchaseOrder = () => {
           </div>
           {productsListed.length > 0 ? (
             productsListed.map((product, index) => (
-              <div key={index} className="grid grid-cols-10 border p-0.5 rounded border-gray-500">
+              <div key={index} className="grid grid-cols-10 p-0.5 rounded mt-1 border-b">
                 <span className="col-span-1">{product.product_id}</span>
                 <span className="col-span-2">{product.product_name}</span>
                 <span className="col-span-2">{product.category_name}</span>

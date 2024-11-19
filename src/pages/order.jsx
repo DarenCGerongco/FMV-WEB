@@ -315,7 +315,11 @@ return (
       <Navbar />
       <div className="flex flex-col w-full ml-72 bg-white">
         <div className="w-4/5 mx-auto bg-white p-6 m-3 rounded-lg drop-shadow-md mb-6 border">
-          <h2 className="text-1xl font-bold">MANAGEMENT SYSTEM ORDER</h2>
+          <h2 
+            className="text-1xl font-bold"
+          >
+          MANAGEMENT SYSTEM ORDER
+          </h2>
         </div>
         <div className="w-4/5 mx-auto bg-white p-3 rounded-lg drop-shadow-md">
           <div className="relative flex items-center space-x-4">
@@ -345,7 +349,7 @@ return (
         <div className="bg-white p-2 rounded-lg shadow-xl">
           {/* Header */}
           <div 
-          className="grid grid-cols-[0.5fr_1.5fr_2fr_1fr_1fr] px-4 py-2 text-gray-400 text-sm "
+          className="grid grid-cols-[0.5fr_1.5fr_2fr_1fr_1fr] font-bold px-4 py-2 text-sm "
           >
             <p>
               POID
@@ -376,11 +380,11 @@ return (
             searchResults.map((customerData, index) => (
               <div
                 key={index}
-                className="grid grid-cols-[0.5fr_1.5fr_2fr_1fr_1fr] items-center bg-white px-4 py-2 rounded-lg shadow-md mb-1 hover:bg-gray-300 duration-300 border"
+                className="grid grid-cols-[0.5fr_1.5fr_2fr_1fr_1fr] items-center bg-white px-4 py-2 text-sm rounded-lg shadow-md mb-1 hover:bg-blue-100 duration-300 border-b"
               >
                 <p className="text-1xl text-left">{customerData.purchase_order_id}</p>
                 <p className="text-1xl text-left">{customerData.customer_name}</p>
-                <div className="text-sm text-gray-700 text-left px-2">
+                <div className="text-sm text-left px-2">
                   <p>{customerData.street} {customerData.barangay} {customerData.province} {customerData.city}</p>
                 </div>
                 <p className="text-sm text-gray-700 text-left">

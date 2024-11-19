@@ -6,31 +6,27 @@ function Inventory() {
   const url = import.meta.env.VITE_API_URL;
 
   // State management
-  const productCategories = [
-    "UPVC",
-    "Pump and Motor",
-    "Control Box and Controller",
-    "PE fittings",
-    "Trmk",
-    "Fish",
-    "Techno",
-    "G.I Fittings",
-    "Brass fittings",
-    "Mechanical and STC",
-    "CMI/Gibault type coupling",
-    "ERA Blue Pressure main fittings"
-  ];
-
-    const [items, setItems] = useState([]);
   const [categories, setCategories] = useState([]);
+  const [items, setItems] = useState([]);
   const [searchInput, setSearchInput] = useState("");
+  const [selectedCategories, setSelectedCategories] = useState([]); // Store multiple selected categories
   const [pagination, setPagination] = useState({
     currentPage: 1,
     lastPage: 1,
   });
   const [loading, setLoading] = useState(false);
 
-  // Fetch products with pagination and search
+  // Fetch categories
+  const fetchCategories = async () => {
+    try {
+      const response = await axios.get(`${url}/api/categories`);
+      setCategories(response.data.data || []);
+    } catch (error) {
+      console.error("Error fetching categories:", error);
+    }
+  };
+
+  // Fetch products with multiple filters
   const fetchProducts = async (page = 1) => {
     setLoading(true);
     try {
@@ -38,9 +34,10 @@ function Inventory() {
         params: {
           page,
           search: searchInput,
+          categories: selectedCategories, // Pass multiple selected categories
         },
       });
-
+      console.log(response.data)
       setItems(response.data.products || []);
       setPagination(response.data.pagination || { currentPage: 1, lastPage: 1 });
     } catch (error) {
@@ -50,24 +47,11 @@ function Inventory() {
     }
   };
 
-  // Fetch categories
+  // Fetch categories and products on initial load
   useEffect(() => {
-    const fetchCategories = async () => {
-      try {
-        const response = await axios.get(`${url}/api/categories`);
-        setCategories(response.data.data || []);
-      } catch (error) {
-        console.error("Error fetching categories:", error);
-      }
-    };
-
     fetchCategories();
-  }, []);
-
-  // Fetch products on initial render or search/pagination changes
-  useEffect(() => {
     fetchProducts(pagination.currentPage);
-  }, [pagination.currentPage, searchInput]);
+  }, [pagination.currentPage, searchInput, selectedCategories]);
 
   // Handle search input change
   const handleSearchChange = (e) => {
@@ -75,36 +59,34 @@ function Inventory() {
     setPagination((prev) => ({ ...prev, currentPage: 1 })); // Reset to first page
   };
 
-  // Handle pagination change
-  const handlePageChange = (page) => {
-    if (page > 0 && page <= pagination.lastPage) {
-      setPagination((prev) => ({ ...prev, currentPage: page }));
-    }
+  // Handle category selection (toggle on/off)
+  const handleCategoryToggle = (category) => {
+    setSelectedCategories((prev) =>
+      prev.includes(category)
+        ? prev.filter((c) => c !== category) // Remove if already selected
+        : [...prev, category] // Add if not selected
+    );
+    setPagination((prev) => ({ ...prev, currentPage: 1 })); // Reset to first page
   };
 
-  // Add item function
-  const addItem = async (newItem) => {
-    try {
-      const response = await axios.post(`${url}/api/products`, newItem);
-      if (response.status === 201) {
-        fetchProducts(); // Refresh product list
-      }
-    } catch (error) {
-      console.error("Error adding item:", error.response?.data || error.message);
-    }
+  // Handle clearing all filters
+  const clearFilters = () => {
+    setSelectedCategories([]);
+    setPagination((prev) => ({ ...prev, currentPage: 1 })); // Reset to first page
   };
 
   return (
     <div className="flex w-full bg-white">
       <Navbar />
       <div className="flex flex-col w-full ml-72 bg-white">
-        <div className="w-4/5 mx-auto bg-white p-6 m-3 rounded-lg drop-shadow-md mb-6 border">
+        <div className="w-4/5 mx-auto bg-white p-6 m-3 rounded-lg shadow-md mb-6 border">
           <h2 className="text-1xl font-bold">INVENTORY</h2>
         </div>
-  
-        {/* Searchbar and Buttons */}
+
+        {/* Searchbar and Filters */}
         <div className="w-4/5 mx-auto bg-white p-5 m-3 rounded-lg shadow-md">
-          <div className="relative mt-4 flex items-center space-x-4">
+          <div className="relative flex items-center space-x-4">
+            <span className="text-1xl font-bold">INVENTORY</span>
             <input
               type="text"
               value={searchInput}
@@ -119,31 +101,62 @@ function Inventory() {
               Search
             </button>
           </div>
-          <div className="flex space-x-1 mt-4">
-            <span>
-              filter:
-            </span>
-            {productCategories.map((category, index) => (
+          <div className="flex flex-wrap gap-2 mt-4">
+            <span className="font-bold my-auto text-xs text-blue-500">Filter:</span>
+            <button
+              className={`px-2 text-xs py-1 rounded-md shadow-md font-bold ${
+                selectedCategories.length === 0
+                  ? "bg-white text-blue-500 hover:bg-blue-500 hover:text-white duration-200"
+                  : "bg-blue-500 text-white hover:bg-white hover:text-blue-500 duration-200"
+              }`}
+              onClick={clearFilters}
+            >
+              All Categories
+            </button>
+            {categories.map((category, index) => (
               <button
                 key={index}
-                className="text-xs px-1 font-bold bg-blue-500 text-white rounded"
-                onClick={() => console.log(category)} // Handle button click
+                className={`px-2 text-xs py-1 rounded-md shadow-md font-bold ${
+                  selectedCategories.includes(category.category_name)
+                    ? "bg-white text-blue-500 hover:bg-blue-500 hover:text-white duration-200"
+                    : "bg-blue-500 text-white hover:bg-white hover:text-blue-500 duration-200"
+                }`}
+                onClick={() => handleCategoryToggle(category.category_name)}
               >
-                {category}
+                {category.category_name}
               </button>
             ))}
           </div>
+          <div className="mt-4">
+            <span className="font-bold text-xs text-blue-500">Selected: </span>
+            {selectedCategories.length > 0 ? (
+              selectedCategories.map((category, index) => (
+                <span
+                  key={index}
+                  className="px-2 text-xs py-1 rounded-md bg-blue-500 text-white font-semibold mr-2 shadow-sm"
+                >
+                  {category}
+                </span>
+              ))
+            ) : (
+            <span 
+              className="px-2 text-xs py-1 rounded-md bg-blue-500 text-white font-semibold mr-2 shadow-sm"
+            >
+            All Categories
+            </span>
+            )}
+          </div>
         </div>
-  
+
+
         {/* Inventory List */}
-        {/* Inventory List */}
-        <div className="w-4/5 mx-auto bg-white p-5 m-3 rounded-lg drop-shadow-md">
+        <div className="w-4/5 mx-auto bg-white p-5 m-3 rounded-lg shadow-md">
           {loading ? (
             <p>Loading...</p>
           ) : (
             <>
               {/* Header */}
-              <div className="grid grid-cols-8 text-gray-700 font-bold border-b py-2">
+              <div className="grid grid-cols-8 text-sm text-gray-700 font-bold border-b py-2">
                 <div className="col-span-1">Product ID</div>
                 <div className="col-span-2">Product Name</div>
                 <div className="col-span-2">Category</div>
@@ -156,14 +169,15 @@ function Inventory() {
               {items.map((item, index) => (
                 <div
                   key={index}
-                  className="grid grid-cols-8 py-1 text-gray-700 border-b items-center"
-                >
+                  className="hover:bg-white duration-200 grid text-sm grid-cols-8 border-b bg-blue-50 rounded my-1 border-gray-300 p-1 items-center"
+                  >
+                  <div className="col-span-1">{item.product_id}</div>
                   <div className="col-span-2">{item.product_name}</div>
                   <div className="col-span-2">{item.category_name}</div>
-                  <div>{item.original_price}</div>
+                  <div>₱ {item.original_price}</div>
                   <div>{item.quantity}</div>
                   <div>
-                    <button className="bg-blue-500 text-white px-3 py-1 rounded-md">
+                    <button className="bg-blue-500 hover:bg-white hover:text-blue-500 shadow-md duration-200 font-bold text-white px-3 py-1 rounded-md">
                       Restock
                     </button>
                   </div>
@@ -172,46 +186,64 @@ function Inventory() {
             </>
           )}
         </div>
+
         {/* Pagination */}
         <div className="flex justify-center mt-4 space-x-2">
           <button
-            onClick={() => handlePageChange(1)}
+            onClick={() => setPagination((prev) => ({ ...prev, currentPage: 1 }))}
             disabled={pagination.currentPage === 1}
-            className="px-3 py-1 bg-blue-500 text-white rounded disabled:opacity-50"
+            className="px-3 py-1 hover:bg-white hover:text-blue-500 duration-200 font-bold bg-blue-500 text-white rounded disabled:opacity-50"
           >
             First
           </button>
           <button
-            onClick={() => handlePageChange(pagination.currentPage - 1)}
+            onClick={() =>
+              setPagination((prev) => ({
+                ...prev,
+                currentPage: pagination.currentPage - 1,
+              }))
+            }
             disabled={pagination.currentPage === 1}
-            className="px-3 py-1 bg-blue-500 text-white rounded disabled:opacity-50"
+            className="px-3 py-1 hover:bg-white hover:text-blue-500 duration-200 font-bold bg-blue-500 text-white rounded disabled:opacity-50"
           >
             Previous
           </button>
           {[...Array(pagination.lastPage)].map((_, i) => (
             <button
               key={i + 1}
-              onClick={() => handlePageChange(i + 1)}
+              onClick={() =>
+                setPagination((prev) => ({ ...prev, currentPage: i + 1 }))
+              }
               className={`px-3 py-1 rounded ${
                 pagination.currentPage === i + 1
-                  ? "bg-blue-500 text-white"
-                  : "bg-white text-blue-500"
+                  ? "bg-blue-500 text-white shadow-md font-bold"
+                  : "bg-white text-blue-500 shadow-md hover:bg-blue-500 hover:text-white duration-200 font-bold"
               }`}
             >
               {i + 1}
             </button>
           ))}
           <button
-            onClick={() => handlePageChange(pagination.currentPage + 1)}
+            onClick={() =>
+              setPagination((prev) => ({
+                ...prev,
+                currentPage: pagination.currentPage + 1,
+              }))
+            }
             disabled={pagination.currentPage === pagination.lastPage}
-            className="px-3 py-1 bg-blue-500 text-white rounded disabled:opacity-50"
+            className="px-3 py-1 hover:bg-white hover:text-blue-500 duration-200 font-bold bg-blue-500 text-white rounded disabled:opacity-50"
           >
             Next
           </button>
           <button
-            onClick={() => handlePageChange(pagination.lastPage)}
+            onClick={() =>
+              setPagination((prev) => ({
+                ...prev,
+                currentPage: pagination.lastPage,
+              }))
+            }
             disabled={pagination.currentPage === pagination.lastPage}
-            className="px-3 py-1 bg-blue-500 text-white rounded disabled:opacity-50"
+            className="px-3 py-1 hover:bg-white hover:text-blue-500 duration-200 font-bold bg-blue-500 text-white rounded disabled:opacity-50"
           >
             Last
           </button>
@@ -219,8 +251,6 @@ function Inventory() {
       </div>
     </div>
   );
-  
-
 }
 
 export default Inventory;
