@@ -12,6 +12,7 @@ import Order from './pages/order.jsx';
 import Navbar from './components/navbar.jsx';
 import CreatePurchaseOrder from './pages/order/pages/CreatePurchaseOrder';
 import WalkIn from './pages/order/pages/WalkIn.jsx'
+
 import { GlobalProvider } from '../GlobalContext'; // Import GlobalProvider
 
 const root = createRoot(document.getElementById('root'));

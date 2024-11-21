@@ -80,7 +80,7 @@ function Inventory() {
 
   return (
     <div className="flex w-full bg-white">
-      <Navbar />
+      <Navbar/>
       <div className="flex flex-col w-full ml-[15%] bg-white">
         <div className="w-4/5 mx-auto bg-white p-6 m-3 rounded-lg shadow-md mb-6 border">
           <h2 className="text-1xl font-bold">INVENTORY</h2>
@@ -165,7 +165,7 @@ function Inventory() {
         {/* Inventory List */}
         <div className="w-4/5 mx-auto bg-white p-5 m-3 rounded-lg shadow-md">
           {loading ? (
-            <div className="spinner text-center">Loading...</div>
+            <div className="spinner text-center"></div>
           ) : (
             <>
               {/* Header */}

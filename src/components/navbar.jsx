@@ -100,6 +100,9 @@ const Navbar = () => {
             <li className={`mb-4 flex items-center transition pl-2 md:pl-5 group ${isActive('/logs') ? 'bg-white text-black rounded' : 'hover:bg-white hover:text-black rounded'}`}>
               <Link to="/logs" className={`text-base md:text-xl ${isActive('/') ? 'text-black' : 'text-white group-hover:text-black'}`}>LOGS (wip)</Link>
             </li>
+            <li className={`mb-4 flex items-center transition pl-2 md:pl-5 group ${isActive('/sample') ? 'bg-white text-black rounded' : 'hover:bg-white hover:text-black rounded'}`}>
+              <Link to="/sample" className={`text-base md:text-xl ${isActive('/') ? 'text-black' : 'text-white group-hover:text-black'}`}>SAMPLE (wip)</Link>
+            </li>
           </ul>
         </div>
       </div>

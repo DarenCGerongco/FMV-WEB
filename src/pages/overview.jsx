@@ -9,13 +9,13 @@ import { GlobalContext } from '../../GlobalContext';  // Import GlobalContext
 ChartJS.register(ArcElement, Tooltip, Legend);
 
 function Overview() {
-  const [salesData, setSalesData] = useState([]);
   const url = import.meta.env.VITE_API_URL;
+  const navigate = useNavigate();
+  const [salesData, setSalesData] = useState([]);
   const [userNames, setUserNames] = useState([]);
   const [inventoryItems, setInventoryItems] = useState([]);
   const [orders, setOrders] = useState([]);
-  const navigate = useNavigate(); // Initialize useNavigate
-  const { id, userName } = useContext(GlobalContext);  // Retrieve id and userName
+  const { id, userName } = useContext(GlobalContext);
 
   // Debugging - log the `id` and `userName` values
   useEffect(() => {

@@ -53,43 +53,41 @@ function Sales() {
   return (
     <div className="flex">
       <Navbar />
-
-     
       <div className="w-5/6 ml-auto bg-white-100">
         <div className="w-4/5 mx-auto bg-white p-6 m-3 rounded-lg shadow-md mb-6">
           <h2 className="text-1xl font-bold">Management System Sales</h2>
         </div>
-
-
-        <div className="w-4/5 mx-auto bg-white p-5 m-3 rounded-lg shadow-xl">
-          <div className="mb-4">
-            <h2 className="text-xl font-semibold">Monthly Sales</h2>
+        <div className="w-4/5 flex mx-auto bg-white p-5 m-3 rounded-lg shadow-md">
+          <div className='m-1 w-1/3 bg-gray-100'>
+            <span>
+              span
+            </span>
           </div>
-          
-          {/* Pie chart arlene bayot */}
-          <div className="flex justify-center">
-            <div className="w-1/2">
-              <Pie data={data} />
-            </div>
+          <div className='m-1 w-1/3 bg-gray-100'>
+            <span>
+              span
+            </span>
           </div>
-
-          {/* item label*/}
-          <div className="bg-white text-sm mt-10 flex justify-between">
-            <p className="text-gray-500 ml-3 w-1/3">Item Name</p>
-            <p className="text-gray-500 w-1/3">Item Sold</p>
-            <p className="text-gray-500 mr-3 w-1/10">Item Remaining</p>
+          <div className='m-1 w-1/3 bg-gray-100'>
+            <span>
+              span
+            </span>
           </div>
-
-          {/* Box container */}
-          {salesData.map((item, index) => (
-            <div key={index} className="p-4 rounded-lg shadow-2xl mt-4">
-              <div className="flex justify-between items-center">
-                <p className="text-gray-700 w-1/3">{item.itemName}</p>
-                <p className="text-gray-700 w-1/3">{item.itemSold}</p>
-                <p className="text-gray-700 w-1/10">{item.itemRemaining}</p>
-              </div>
-            </div>
-          ))}
+          <div className='m-1 w-1/3 bg-gray-100'>
+            <span>
+              span
+            </span>
+          </div>
+          <div className='m-1 w-1/3 bg-gray-100'>
+            <span>
+              span
+            </span>
+          </div>
+          <div className='m-1 w-1/3 bg-gray-100'>
+            <span>
+              span
+            </span>
+          </div>
         </div>
       </div>
     </div>
