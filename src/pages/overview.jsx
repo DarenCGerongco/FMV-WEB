@@ -28,7 +28,7 @@ function Overview() {
     try {
       const response = await axios.get(`${url}/api/purchase-orders-delivery-latest`);
       console.log('Fetched Orders:', response.data); // Log the entire response to see its structure
-      setOrders(response.data.orders);  // Set the fetched orders correctly
+      setOrders(response.data);  // Set the fetched orders correctly
     } catch (error) {
       console.error('Error fetching order data:', error);
     }
@@ -80,7 +80,7 @@ function Overview() {
       fetchInventoryData(); // Update inventory items
       fetchOrderData(); // Update orders
       fetchSalesData(); // Update sales data
-    }, 10000); // Update every 10 seconds
+    }, 20000); // Update every 10 seconds
     
     return () => clearInterval(intervalId); // Clear interval on unmount
   }, []);
@@ -172,26 +172,68 @@ function Overview() {
         <div className="w-11/12 mx-auto flex space-x-4">
           <div className="flex flex-col space-y-4 w-1/3">
             {/* Order Container */}   
-            <div className="bg-white p-6 rounded-lg shadow-md hover:bg-gray-200 duration-300 cursor-pointer" onClick={handleOrderClick}>
-              <h3 className="text-lg font-bold mb-4">ORDER</h3>
-              {Array.isArray(orders) && orders.map((customerData, index) => (
-                <div
-                  key={index}
-                  className="bg-gray-100 p-4 rounded-lg shadow-md mt-4 group"
-                >
-                  <div className="text-gray-700 text-sm font-bold duration-200">
-                    {customerData.customer_name}
-                  </div>
-                  <div className="text-gray-700 text-xs mt-1 duration-200">
-                    {customerData.created_at}
-                  </div>
+            <div 
+              className="bg-white p-6 rounded-lg shadow-md hover:shadow-2xl hover:shadow-gray-400 duration-200 cursor-pointer" 
+              onClick={handleOrderClick}
+            >
+              <h3 className="text-lg font-bold mb-4">
+                ORDER (WIP)
+              </h3>
+              {orders.summary && (
+                <div className="flex flex-col w-full p-5 bg-white duration-100 shadow-md rounded-lg">
+                  <span className="text-black text-center font-bold">
+                    Purchase Order Total Value
+                  </span>
+                  <span className="text-black text-sm ">
+                    Initial Revenue:
+                  </span>
+                  <h1 className="text-white bg-green-500 text-center text-3xl m-1 px-2 py-1 text-left shadow-md font-bold rounded-lg inline-block">
+                    ₱{orders.summary.totalMoneyAccumulated}
+                  </h1>
+                  <span className="text-black mt-2 text-sm">
+                    Active Purchase Order:
+                  </span>
+                  <h1 className="text-white bg-red-500 text-3xl text-center m-1 px-2 py-1 text-left shadow-md font-bold rounded-lg inline-block">
+                    {orders.summary.totalPurchaseOrders}
+                  </h1>
                 </div>
-              ))}
+              )}
+              {Array.isArray(orders.orders) &&
+                orders.orders.map((customerData, index) => (
+                  <div
+                    key={index}
+                    className="p-1 w-full bg-white flex rounded-lg shadow-md my-2 group"
+                  >
+                    <div className='w-[15%] flex justify-center  '>
+                      <span className='text-xs'>
+                        # 
+                      </span>
+                      <span className='text-3xl font-bold items-center'>
+                        {customerData.purchase_order_id}
+                      </span>
+                    </div>
+                    <div className='w-[55%] flex flex-col justify-start'>
+                      <span className="text-s font-bold text-sm duration-200">
+                        {customerData.customer_name}
+                      </span>
+                      <span className="text-gray-700 text-xs duration-200">
+                        {customerData.created_at}
+                      </span>
+                    </div>
+                    <div className='w-[30%] flex justify-end items-center font-bold'>
+                      <span className='bg-green-500 px-2 text-white rounded-2xl'>
+                        + ₱{customerData.total_worth}
+                      </span>
+                    </div>
+                  </div>
+                ))}
+
             </div>
 
             {/* Delivery Container */}
-            <div className="bg-white p-6 rounded-lg hover:bg-gray-200 duration-300 shadow-md cursor-pointer"
-            onClick={handleDeliveryClick}
+            <div 
+              className="bg-white p-6 rounded-lg shadow-md hover:shadow-2xl hover:shadow-gray-400 duration-200 cursor-pointer" 
+              onClick={handleDeliveryClick}
             >
               <h3 className="text-lg font-bold mb-4">DELIVERY</h3>
               <div className="p-4 rounded-lg shadow-md mt-4 flex justify-between items-center bg-[#8EF7A8]">

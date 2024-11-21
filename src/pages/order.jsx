@@ -313,7 +313,7 @@ const handleSearchChange = (event) => {
 return (
     <div className="flex w-full bg-white">
       <Navbar />
-      <div className="flex flex-col w-full ml-72 bg-white">
+      <div className="flex flex-col w-full ml-[15%] bg-white">
         <div className="w-4/5 mx-auto bg-white p-6 m-3 rounded-lg drop-shadow-md mb-6 border">
           <h2 
             className="text-1xl font-bold"
@@ -324,7 +324,7 @@ return (
         <div className="w-4/5 mx-auto bg-white p-3 rounded-lg drop-shadow-md">
           <div className="relative flex items-center space-x-4">
             <div className="flex items-center w-full px-4 border border-gray-300 rounded-md shadow-md focus-within:border-blue-500 relative h-12">
-              <span className="text-black-500 whitespace-nowrap">ORDER</span>
+              <span className="text-black-500 font-bold whitespace-nowrap">ORDER</span>
               <div className="border-l border-gray-300 h-10 mx-2"></div>
               <input
                 type="text"
@@ -340,6 +340,11 @@ return (
             >
               Create Order
             </button>
+          </div>
+          <div>
+            <span>
+              filter:
+            </span>
           </div>
         </div>
   

@@ -15,6 +15,7 @@ function Inventory() {
     lastPage: 1,
   });
   const [loading, setLoading] = useState(false);
+  const [totalAssets, setTotalAssets] = useState(0); // State for total value of assets
 
   // Fetch categories
   const fetchCategories = async () => {
@@ -37,8 +38,13 @@ function Inventory() {
           categories: selectedCategories, // Pass multiple selected categories
         },
       });
-      console.log(response.data)
-      setItems(response.data.products || []);
+  
+      const fetchedItems = response.data.products || [];
+      setItems(fetchedItems);
+  
+      // Use the total value of assets returned by the backend
+      setTotalAssets(response.data.totalValue);
+  
       setPagination(response.data.pagination || { currentPage: 1, lastPage: 1 });
     } catch (error) {
       console.error("Error fetching products:", error);
@@ -46,6 +52,7 @@ function Inventory() {
       setLoading(false);
     }
   };
+  
 
   // Fetch categories and products on initial load
   useEffect(() => {
@@ -78,7 +85,7 @@ function Inventory() {
   return (
     <div className="flex w-full bg-white">
       <Navbar />
-      <div className="flex flex-col w-full ml-72 bg-white">
+      <div className="flex flex-col w-full ml-[15%] bg-white">
         <div className="w-4/5 mx-auto bg-white p-6 m-3 rounded-lg shadow-md mb-6 border">
           <h2 className="text-1xl font-bold">INVENTORY</h2>
         </div>
@@ -139,24 +146,32 @@ function Inventory() {
                 </span>
               ))
             ) : (
-            <span 
-              className="px-2 text-xs py-1 rounded-md bg-blue-500 text-white font-semibold mr-2 shadow-sm"
-            >
-            All Categories
-            </span>
+              <span className="px-2 text-xs py-1 rounded-md bg-blue-500 text-white font-semibold mr-2 shadow-sm">
+                All Categories
+              </span>
             )}
           </div>
         </div>
 
+        <div className="flex flex-col ml-[10%] bg-white">
+          <div className="w-[12rem] font-bold h-[10rem] text-black hover:bg-green-400 duration-200 rounded-lg p-2 bg-blue-500 flex flex-col shadow-md justify-center items-center">
+            <span className="text-sm font-bold text-white mt-2">
+              Total Value of Assets:
+            </span>
+            <span className="text-2xl font-bold text-white mt-2">
+              ₱{totalAssets}
+            </span>
+          </div>
+        </div>
 
         {/* Inventory List */}
         <div className="w-4/5 mx-auto bg-white p-5 m-3 rounded-lg shadow-md">
           {loading ? (
-            <p>Loading...</p>
+            <div className="spinner text-center">Loading...</div>
           ) : (
             <>
               {/* Header */}
-              <div className="grid grid-cols-8 text-sm text-gray-700 font-bold border-b py-2">
+              <div className="grid grid-cols-8 text-sm font-bold border-b py-2">
                 <div className="col-span-1">Product ID</div>
                 <div className="col-span-2">Product Name</div>
                 <div className="col-span-2">Category</div>
@@ -170,7 +185,7 @@ function Inventory() {
                 <div
                   key={index}
                   className="hover:bg-white duration-200 grid text-sm grid-cols-8 border-b bg-blue-50 rounded my-1 border-gray-300 p-1 items-center"
-                  >
+                >
                   <div className="col-span-1">{item.product_id}</div>
                   <div className="col-span-2">{item.product_name}</div>
                   <div className="col-span-2">{item.category_name}</div>
@@ -186,7 +201,6 @@ function Inventory() {
             </>
           )}
         </div>
-
         {/* Pagination */}
         <div className="flex justify-center mt-4 space-x-2">
           <button
@@ -248,6 +262,7 @@ function Inventory() {
             Last
           </button>
         </div>
+
       </div>
     </div>
   );
