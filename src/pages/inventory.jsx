@@ -9,13 +9,13 @@ function Inventory() {
   const [categories, setCategories] = useState([]);
   const [items, setItems] = useState([]);
   const [searchInput, setSearchInput] = useState("");
-  const [selectedCategories, setSelectedCategories] = useState([]); // Store multiple selected categories
+  const [selectedCategories, setSelectedCategories] = useState([]);
   const [pagination, setPagination] = useState({
     currentPage: 1,
     lastPage: 1,
   });
   const [loading, setLoading] = useState(false);
-  const [totalAssets, setTotalAssets] = useState(0); // State for total value of assets
+  const [totalAssets, setTotalAssets] = useState(0);
 
   // Fetch categories
   const fetchCategories = async () => {
@@ -27,7 +27,7 @@ function Inventory() {
     }
   };
 
-  // Fetch products with multiple filters
+  // Fetch products with filters
   const fetchProducts = async (page = 1) => {
     setLoading(true);
     try {
@@ -35,16 +35,13 @@ function Inventory() {
         params: {
           page,
           search: searchInput,
-          categories: selectedCategories, // Pass multiple selected categories
+          categories: selectedCategories,
         },
       });
-  
+
       const fetchedItems = response.data.products || [];
       setItems(fetchedItems);
-  
-      // Use the total value of assets returned by the backend
       setTotalAssets(response.data.totalValue);
-  
       setPagination(response.data.pagination || { currentPage: 1, lastPage: 1 });
     } catch (error) {
       console.error("Error fetching products:", error);
@@ -52,7 +49,6 @@ function Inventory() {
       setLoading(false);
     }
   };
-  
 
   // Fetch categories and products on initial load
   useEffect(() => {
@@ -63,23 +59,23 @@ function Inventory() {
   // Handle search input change
   const handleSearchChange = (e) => {
     setSearchInput(e.target.value);
-    setPagination((prev) => ({ ...prev, currentPage: 1 })); // Reset to first page
+    setPagination((prev) => ({ ...prev, currentPage: 1 }));
   };
 
-  // Handle category selection (toggle on/off)
+  // Handle category selection toggle
   const handleCategoryToggle = (category) => {
     setSelectedCategories((prev) =>
       prev.includes(category)
-        ? prev.filter((c) => c !== category) // Remove if already selected
-        : [...prev, category] // Add if not selected
+        ? prev.filter((c) => c !== category)
+        : [...prev, category]
     );
-    setPagination((prev) => ({ ...prev, currentPage: 1 })); // Reset to first page
+    setPagination((prev) => ({ ...prev, currentPage: 1 }));
   };
 
-  // Handle clearing all filters
+  // Clear filters
   const clearFilters = () => {
     setSelectedCategories([]);
-    setPagination((prev) => ({ ...prev, currentPage: 1 })); // Reset to first page
+    setPagination((prev) => ({ ...prev, currentPage: 1 }));
   };
 
   return (
@@ -109,7 +105,9 @@ function Inventory() {
             </button>
           </div>
           <div className="flex flex-wrap gap-2 mt-4">
-            <span className="font-bold my-auto text-xs text-blue-500">Filter:</span>
+            <span className="font-bold my-auto text-xs text-blue-500">
+              Filter:
+            </span>
             <button
               className={`px-2 text-xs py-1 rounded-md shadow-md font-bold ${
                 selectedCategories.length === 0
@@ -184,7 +182,11 @@ function Inventory() {
               {items.map((item, index) => (
                 <div
                   key={index}
-                  className="hover:bg-white duration-200 grid text-sm grid-cols-8 border-b bg-blue-50 rounded my-1 border-gray-300 p-1 items-center"
+                  className={` grid text-sm grid-cols-8 border-b ${
+                    item.quantity === 0
+                      ? "bg-gray-500 text-white"
+                      : "bg-blue-50"
+                  } rounded my-1 border-gray-300 p-1 items-center`}
                 >
                   <div className="col-span-1">{item.product_id}</div>
                   <div className="col-span-2">{item.product_name}</div>
@@ -201,6 +203,7 @@ function Inventory() {
             </>
           )}
         </div>
+
         {/* Pagination */}
         <div className="flex justify-center mt-4 space-x-2">
           <button
@@ -231,7 +234,7 @@ function Inventory() {
               className={`px-3 py-1 rounded ${
                 pagination.currentPage === i + 1
                   ? "bg-blue-500 text-white shadow-md font-bold"
-                  : "bg-white text-blue-500 shadow-md hover:bg-blue-500 hover:text-white duration-200 font-bold"
+                  : "bg-white hover:bg-blue-500 hover:text-white duration-200 font-bold text-blue-500"
               }`}
             >
               {i + 1}
@@ -262,7 +265,6 @@ function Inventory() {
             Last
           </button>
         </div>
-
       </div>
     </div>
   );
