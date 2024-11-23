@@ -194,16 +194,16 @@ function DeliveryMan() {
   //* End delete account
 
   return (
-    <div className="flex w-full bg-white">
+    <div className="flex w-full bg-100">
       <Navbar/>
       <div className="flex flex-col w-full bg-white">
         <div className="w-4/5 mx-auto bg-white p-6 m-3 rounded-lg shadow-md mb-6 border">
-          <h2 className="text-1xl font-bold">DELIVERY MAN</h2>
+          <h2 className="font-bold text-1xl font-bold">DELIVERY MAN</h2>
         </div>
-        <div className="w-4/5 mx-auto bg-white p-5 m-3 rounded-lg shadow-md">
+        <div className="w-4/5 mx-auto bg-white p-3 rounded-lg shadow-md">
           <div className="relative mt-4 flex items-center space-x-4">
             <div className="flex items-center w-full px-4 py-3 border border-gray-300 rounded-md focus-within:border-blue-500 relative h-12">
-              <span className="text-black-500 whitespace-nowrap">DELIVERY MAN</span>
+              <span className="font-bold text-black-500 whitespace-nowrap">DELIVERY MAN</span>
               <div className="border-l border-gray-300 h-10 mx-2"></div>
               <input
                 type="text"
@@ -220,7 +220,9 @@ function DeliveryMan() {
               +
             </button>
           </div>
+          </div>
 
+          <div className="w-4/5 mx-auto bg-white p-5 m-3 rounded-lg shadow-md">
           <div id="delivery-man-container" className="mt-4 space-y-1">
             <div className="grid grid-cols-6 gap-1 font-bold p-1">
               <div className="col-span-2">Name</div>

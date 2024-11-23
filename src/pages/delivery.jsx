@@ -88,7 +88,7 @@ function Delivery() {
         </div>
         <div className="w-4/5 mx-auto bg-white p-3 rounded-lg drop-shadow-md">
           <div className="flex items-center w-full px-4 py-3 border border-gray-300 rounded-md shadow-md focus-within:border-blue-500 relative h-12">
-            <span className="text-black-500 whitespace-nowrap">DELIVERY</span>
+            <span className="font-bold text-black-500 whitespace-nowrap">DELIVERY</span>
             <div className="border-l border-gray-300 h-10 mx-2"></div>
             <input
               type="text"

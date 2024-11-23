@@ -93,9 +93,10 @@ function Inventory() {
         </div>
 
         {/* Searchbar and Filters */}
-        <div className="w-4/5 mx-auto bg-white p-5 m-3 rounded-lg shadow-md">
-          <div className="relative flex items-center space-x-4">
-            <span className="text-1xl font-bold">INVENTORY</span>
+        <div className="w-4/5 mx-auto bg-white p-3 m-3 rounded-lg shadow-md">
+          <div className="flex items-center w-full px-4 py-3 border border-gray-300 rounded-md shadow-md focus-within:border-blue-500 relative h-12">
+            <span className="font-bold text-black-500 whitespace-nowrap">INVENTORY</span>
+            <div className="border-l border-gray-300 h-10 mx-2"></div>
             <input
               type="text"
               value={searchInput}
@@ -153,7 +154,7 @@ function Inventory() {
 
         <div className="flex flex-col ml-[10%] bg-white">
           <div className="w-[12rem] font-bold h-[10rem] text-black hover:bg-green-400 duration-200 rounded-lg p-2 bg-blue-500 flex flex-col shadow-md justify-center items-center">
-            <span className="text-sm font-bold text-white mt-2">
+            <span className="text-sm font-bold text-white mt-2 ">
               Total Value of Assets:
             </span>
             <span className="text-2xl font-bold text-white mt-2">
