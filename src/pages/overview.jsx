@@ -159,7 +159,7 @@ function Overview() {
   return (
     <div className="flex w-full bg-white">
       <Navbar />
-      <div className="flex flex-col xl:w-4/5 ml-80 bg-white">
+      <div className="flex flex-col xl:w-4/5 bg-white">
         <div className="w-11/12 mx-auto bg-white p-6 m-3 rounded-lg shadow-md mb-6 border">
           <h2 className="text-1xl font-bold">
             Management System Overviews   {/* Handle empty userName case */}

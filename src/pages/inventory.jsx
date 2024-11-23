@@ -81,7 +81,7 @@ function Inventory() {
   return (
     <div className="flex w-full bg-white">
       <Navbar/>
-      <div className="flex flex-col w-full ml-[15%] bg-white">
+      <div className="flex flex-col w-full bg-white">
         <div className="w-4/5 mx-auto bg-white p-6 m-3 rounded-lg shadow-md mb-6 border">
           <h2 className="text-1xl font-bold">INVENTORY</h2>
         </div>
@@ -184,8 +184,8 @@ function Inventory() {
                   key={index}
                   className={` grid text-sm grid-cols-8 border-b ${
                     item.quantity === 0
-                      ? "bg-gray-500 text-white"
-                      : "bg-blue-50"
+                      ? "bg-[#C6C6C6] text-white shadow-md"
+                      : "bg-white shadow-md"
                   } rounded my-1 border-gray-300 p-1 items-center`}
                 >
                   <div className="col-span-1">{item.product_id}</div>
