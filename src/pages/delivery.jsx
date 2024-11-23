@@ -10,6 +10,8 @@ function Delivery() {
   const [statusFilter, setStatusFilter] = useState(""); // Status filter state
   const [currentPage, setCurrentPage] = useState(1); // Pagination state
   const [totalPages, setTotalPages] = useState(1); // Total pages from backend
+  const [filteredDeliveries, setFilteredDeliveries] = useState([]);
+  const [searchQuery, setSearchQuery] = useState("");
 
   // Fetch deliveries from the backend
 
@@ -25,9 +27,11 @@ function Delivery() {
       console.log("API Response:", response.data);
       setDeliveries(response.data.deliveries || []); // Correctly access the deliveries array
       setTotalPages(response.data.pagination?.lastPage || 1); // Adjust for nested pagination data
+      setFilteredDeliveries(response.data.deliveries || []);
     } catch (error) {
       console.error("Error fetching deliveries:", error);
       setDeliveries([]); // Ensure deliveries are cleared on error
+      setFilteredDeliveries([]);
     }
   };
 
@@ -43,6 +47,18 @@ function Delivery() {
     } else{
       return "unknown";
     }
+  };
+
+   // Live search functionality
+   const handleSearchChange = (e) => {
+    const query = e.target.value.toLowerCase();
+    setSearchQuery(query);
+
+    // Filter deliveries based on the search query
+    const filtered = deliveries.filter((delivery) =>
+      delivery.delivery_man.name.toLowerCase().includes(query)
+    );
+    setFilteredDeliveries(filtered);
   };
 
   // Fetch deliveries when the filter or page changes
@@ -78,10 +94,9 @@ function Delivery() {
               type="text"
               className="flex-grow focus:outline-none px-4 py-2 rounded-md sm:text-sm border-gray-300 focus:ring-blue-500 focus:border-blue-500 block w-full"
               placeholder="Search for Delivery man"
+              value={searchQuery}
+              onChange={handleSearchChange} // Live search handler
             />
-            <button className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-blue-500 text-white px-4 py-2 rounded-md shadow-md focus:outline-none">
-              Search
-            </button>
           </div>
           <div className="flex mt-4">
             <span className="mx-1 font-bold py-1 px-3 text-blue-500 rounded">
@@ -140,8 +155,8 @@ function Delivery() {
             <div className="col-span-1 text-center w-[80%]">Status</div>
             <div className="col-span-1">Delivery Created (24hrs)</div>
           </div>
-              {deliveries && deliveries.length > 0 ? (
-                deliveries.map((delivery) => (
+                {filteredDeliveries && filteredDeliveries.length > 0 ? (
+                  filteredDeliveries.map((delivery) => (
                   <div
                     key={delivery.delivery_id} // Use the correct unique identifier
                     className="hover:bg-blue-50 duration-200 grid text-sm grid-cols-6 border-b shadow-md rounded my-1 border-gray-300 p-1 items-center"

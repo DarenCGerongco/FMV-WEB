@@ -9,6 +9,8 @@ function DeliveryMan() {
   const [addModalOpen, setAddModalOpen] = useState(false);
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [deliveryMen, setDeliveryMen] = useState([]);
+  const [searchQuery, setSearchQuery] = useState('');
+  
 
   const [newDeliveryMan, setNewDeliveryMan] = useState({
     usertype: '',
@@ -30,6 +32,15 @@ function DeliveryMan() {
     email: '',
     number: '', 
   });
+
+  const filteredDeliveryMen = deliveryMen.filter(man =>
+    man.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    man.number.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  const handleSearchChange = (e) => {
+    setSearchQuery(e.target.value);
+  };
 
   // Fetching delivery men on component mount
   useEffect(() => {
@@ -198,10 +209,9 @@ function DeliveryMan() {
                 type="text"
                 className="flex-grow focus:outline-none px-4 py-2 rounded-md shadow-md sm:text-sm border-gray-300 focus:ring-blue-500 focus:border-blue-500 block w-full"
                 placeholder="Search for Delivery man"
+                value={searchQuery}
+                onChange={handleSearchChange} // Update search query on input change
               />
-              <button className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-blue-500 text-white px-4 py-2 rounded-md shadow-md focus:outline-none">
-                Search
-              </button>
             </div>
             <button
               className="bg-blue-500 text-black px-4 py-2 bg-blue-500 text-white rounded-md shadow-md focus:outline-none"
@@ -219,7 +229,7 @@ function DeliveryMan() {
               <div className="col-span-1">Delete</div>
             </div>
 
-            {deliveryMen.map((deliveryMan, index) => (
+            {filteredDeliveryMen.map((deliveryMan, index) => (
               <div 
                 key={index} 
                 className="grid grid-cols-6 rounded-lg hover:bg-blue-50 duration-300 shadow-md text-left border-b border-gray-300 p-1"
@@ -439,6 +449,9 @@ function DeliveryMan() {
                 >
                   Save
                 </button>
+                {filteredDeliveryMen.length === 0 && (
+              <p className="text-gray-500 text-center mt-4">No results found</p>
+            )}
               </div>
             </div>
           </div>
