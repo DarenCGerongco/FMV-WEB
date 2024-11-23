@@ -144,7 +144,7 @@ function Delivery() {
                 deliveries.map((delivery) => (
                   <div
                     key={delivery.delivery_id} // Use the correct unique identifier
-                    className="hover:bg-blue-50 duration-200 grid text-sm grid-cols-6 border-b bg-white shadow-md rounded my-1 border-gray-300 p-1 items-center"
+                    className="hover:bg-blue-50 duration-200 grid text-sm grid-cols-6 border-b shadow-md rounded my-1 border-gray-300 p-1 items-center"
                   >
                     <div className="col-span-1">{delivery.delivery_id}</div>
                     <div className="col-span-1">{delivery.purchase_order.purchase_order_id}</div>

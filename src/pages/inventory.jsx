@@ -8,6 +8,7 @@ function Inventory() {
   // State management
   const [categories, setCategories] = useState([]);
   const [items, setItems] = useState([]);
+  const [filteredItems, setFilteredItems] = useState([]);
   const [searchInput, setSearchInput] = useState("");
   const [selectedCategories, setSelectedCategories] = useState([]);
   const [pagination, setPagination] = useState({
@@ -27,20 +28,19 @@ function Inventory() {
     }
   };
 
-  // Fetch products with filters
+  // Fetch products
   const fetchProducts = async (page = 1) => {
     setLoading(true);
     try {
       const response = await axios.get(`${url}/api/products`, {
         params: {
           page,
-          search: searchInput,
           categories: selectedCategories,
         },
       });
-
       const fetchedItems = response.data.products || [];
       setItems(fetchedItems);
+      setFilteredItems(fetchedItems); // Initialize filtered items
       setTotalAssets(response.data.totalValue);
       setPagination(response.data.pagination || { currentPage: 1, lastPage: 1 });
     } catch (error) {
@@ -50,16 +50,22 @@ function Inventory() {
     }
   };
 
-  // Fetch categories and products on initial load
+  // Fetch data on initial load
   useEffect(() => {
     fetchCategories();
     fetchProducts(pagination.currentPage);
-  }, [pagination.currentPage, searchInput, selectedCategories]);
+  }, [pagination.currentPage, selectedCategories]);
 
-  // Handle search input change
+  // Handle search input
   const handleSearchChange = (e) => {
-    setSearchInput(e.target.value);
-    setPagination((prev) => ({ ...prev, currentPage: 1 }));
+    const input = e.target.value;
+    setSearchInput(input);
+
+    // Live search functionality
+    const filtered = items.filter((item) =>
+      item.product_name.toLowerCase().includes(input.toLowerCase())
+    );
+    setFilteredItems(filtered);
   };
 
   // Handle category selection toggle
@@ -80,7 +86,7 @@ function Inventory() {
 
   return (
     <div className="flex w-full bg-white">
-      <Navbar/>
+      <Navbar />
       <div className="flex flex-col w-full bg-white">
         <div className="w-4/5 mx-auto bg-white p-6 m-3 rounded-lg shadow-md mb-6 border">
           <h2 className="text-1xl font-bold">INVENTORY</h2>
@@ -97,12 +103,6 @@ function Inventory() {
               placeholder="Search for items"
               className="flex-grow px-4 py-2 border border-gray-300 rounded-md focus:outline-none"
             />
-            <button
-              onClick={() => fetchProducts()}
-              className="text-white px-4 py-2 bg-blue-500 rounded-md"
-            >
-              Search
-            </button>
           </div>
           <div className="flex flex-wrap gap-2 mt-4">
             <span className="font-bold my-auto text-xs text-blue-500">
@@ -179,13 +179,13 @@ function Inventory() {
               </div>
 
               {/* Items */}
-              {items.map((item, index) => (
+              {filteredItems.map((item, index) => (
                 <div
                   key={index}
                   className={` grid text-sm grid-cols-8 border-b ${
                     item.quantity === 0
                       ? "bg-[#C6C6C6] text-white shadow-md"
-                      : "bg-white shadow-md"
+                      : "shadow-md"
                   } rounded my-1 border-gray-300 p-1 items-center`}
                 >
                   <div className="col-span-1">{item.product_id}</div>
@@ -233,8 +233,8 @@ function Inventory() {
               }
               className={`px-3 py-1 rounded ${
                 pagination.currentPage === i + 1
-                  ? "bg-blue-500 text-white shadow-md font-bold"
-                  : "bg-white hover:bg-blue-500 hover:text-white duration-200 font-bold text-blue-500"
+                  ? "bg-blue-500 text-white"
+                  : "bg-gray-300"
               }`}
             >
               {i + 1}
