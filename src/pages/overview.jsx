@@ -251,7 +251,7 @@ function Overview() {
             </div>
 
             {/* Delivery Man Container */}
-            <div className="bg-white p-6 rounded-lg shadow-md hover:bg-gray-200 duration-300 cursor-pointer"
+            <div className="bg-white p-6 rounded-lg shadow-md hover:shadow-2xl hover:shadow-gray-400 duration-200 cursor-pointer"
               onClick={handleDeliveryManClick}
               // style={{ maxHeight: '400px', overflowY: 'auto' }}
             >
@@ -267,7 +267,7 @@ function Overview() {
           {/* Right Column for Larger Containers */}
           <div className="flex flex-col space-y-4 w-2/3">
             {/* Sales Container */}
-            <div className="bg-white p-6 rounded-lg shadow-md hover:bg-gray-200 duration-300 cursor-pointer"
+            <div className="bg-white p-6 rounded-lg shadow-md hover:shadow-2xl hover:shadow-gray-400 duration-200 cursor-pointer"
             onClick={handleSalesClick}
             >
               <h3 className="text-lg font-bold mb-4">SALES</h3>
@@ -276,10 +276,10 @@ function Overview() {
                   <Pie data={data} options={options} />
                 </div>
               </div>
-              <div className="bg-gray-200 text-sm mt-10 flex border-b">
-                <p className="text-gray-500 w-1/3 font-bold ">Item Name</p>
-                <p className="text-gray-500 w-1/3 font-bold text-center">Item Sold</p>
-                <p className="text-gray-500 w-1/3 font-bold text-center">Item Remaining</p>
+              <div className="text-sm mt-10 flex border-b">
+                <p className="w-1/3 font-bold ">Item Name</p>
+                <p className="w-1/3 font-bold text-center">Item Sold</p>
+                <p className="w-1/3 font-bold text-center">Item Remaining</p>
               </div>
               {salesData.map((item, index) => (
                 <div key={index} className="flex justify-between items-center p-4 rounded-lg shadow-md mt-4 bg-gray-200 border-b">
@@ -291,7 +291,7 @@ function Overview() {
             </div>
 
             {/* Inventory Container */}   
-          <div className="bg-white p-5 rounded-lg shadow-md hover:bg-gray-200 duration-300 cursor-pointer"
+          <div className="bg-white p-6 rounded-lg shadow-md hover:shadow-2xl hover:shadow-gray-400 duration-200 cursor-pointer"
               onClick={handleInventoryClick}
           > 
             <h3 className="text-lg font-bold">INVENTORY</h3>
