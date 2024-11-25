@@ -162,13 +162,13 @@ const CreatePurchaseOrder = () => {
                 type="number"
                 value={productInputs[product.product_id].bidPrice}
                 onChange={(e) => handleInputChange(product.product_id, 'bidPrice', e.target.value)}
-                className="col-span-1 p-1 rounded text-center"
+                className="col-span-1 p-1 rounded text-center border m-1"
               />
               <input
                 type="text"
                 value={productInputs[product.product_id].quantity}
                 onChange={(e) => handleInputChange(product.product_id, 'quantity', e.target.value)}
-                className="col-span-1 p-1 rounded text-center"
+                className="col-span-1 p-1 rounded text-center border"
               />
               <button
                 onClick={() => removeProductFromList(product.product_id)}
