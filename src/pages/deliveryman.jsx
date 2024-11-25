@@ -49,7 +49,7 @@ function DeliveryMan() {
         const response = await axios.get(`${url}/api/users`);
         setDeliveryMen(response.data.data.filter(user => user.user_type_id === 2));
       } catch (error) {
-        console.error('An error occurred while fetching delivery men:', error);
+        console.error('An error occurred while fetching employee:', error);
       }
     };
 
@@ -137,10 +137,10 @@ function DeliveryMan() {
         setDeliveryMen([...deliveryMen, response.data.data]);
         closeAddModal();
       } else {
-        console.error('Error creating delivery man');
+        console.error('Error creating Employee');
       }
     } catch (error) {
-      console.error('An error occurred while creating a delivery man:', error.response.data.error);
+      console.error('An error occurred while creating a Employee:', error.response.data.error);
       alert('An error occurred: ' + JSON.stringify(error.response.data.error));
     }
   };
@@ -166,28 +166,28 @@ function DeliveryMan() {
         );
         closeEditModal();
       } else {
-        console.error('Error updating delivery man');
+        console.error('Error updating Employee');
       }
     } catch (error) {
-      console.error('An error occurred while updating the delivery man:', error.response.data.error);
+      console.error('An error occurred while updating the Employee:', error.response.data.error);
     }
   };
   //* End Edit Account modal Pop-out
 
   //* Start delete account
   const handleDelete = async (id) => {
-    if (window.confirm("Are you sure you want to delete this delivery man?")) {
+    if (window.confirm("Are you sure you want to delete this Employee?")) {
       try {
         const response = await axios.delete(`${url}/api/users/${id}`);
   
         if (response.status === 200) {
           setDeliveryMen(deliveryMen.filter((man) => man.id !== id));
-          console.log('Delivery man deleted successfully');
+          console.log('Employee deleted successfully');
         } else {
-          console.error('Failed to delete the delivery man');
+          console.error('Failed to delete the Employee');
         }
       } catch (error) {
-        console.error('An error occurred while deleting the delivery man:', error.response.data.error);
+        console.error('An error occurred while deleting the Employee:', error.response.data.error);
       }
     }
   };  
@@ -198,17 +198,17 @@ function DeliveryMan() {
       <Navbar/>
       <div className="flex flex-col w-full bg-white">
         <div className="w-4/5 mx-auto bg-white p-6 m-3 rounded-lg shadow-md mb-6 border">
-          <h2 className="font-bold text-1xl font-bold">DELIVERY MAN</h2>
+          <h2 className="font-bold text-1xl font-bold">EMPLOYEE</h2>
         </div>
         <div className="w-4/5 mx-auto bg-white p-3 rounded-lg shadow-md">
           <div className="relative mt-4 flex items-center space-x-4">
             <div className="flex items-center w-full px-4 py-3 border border-gray-300 rounded-md focus-within:border-blue-500 relative h-12">
-              <span className="font-bold text-black-500 whitespace-nowrap">DELIVERY MAN</span>
+              <span className="font-bold text-black-500 whitespace-nowrap">EMPLOYEE</span>
               <div className="border-l border-gray-300 h-10 mx-2"></div>
               <input
                 type="text"
                 className="flex-grow focus:outline-none px-4 py-2 rounded-md sm:text-sm border-gray-300 focus:ring-blue-500 focus:border-blue-500 block w-full"
-                placeholder="Search for Delivery man"
+                placeholder="Search for Employee"
                 value={searchQuery}
                 onChange={handleSearchChange} // Update search query on input change
               />
@@ -265,7 +265,7 @@ function DeliveryMan() {
             className="modal fixed top-0 left-0 w-full h-full bg-gray-800 bg-opacity-75 flex justify-center items-center"
           >
             <div className="bg-white p-6 rounded-lg shadow-2xl w-1/4">
-              <h3 className="text-lg font-bold mb-4">Add Delivery Man</h3>
+              <h3 className="text-lg font-bold mb-4">Add Employee</h3>
               <div className="mb-4">
                 <label htmlFor="usertype" className="block text-gray-700">Usertype:</label>
                 <select
@@ -371,7 +371,7 @@ function DeliveryMan() {
             className="modal fixed top-0 left-0 w-full h-full bg-gray-800 bg-opacity-75 flex justify-center items-center"
           >
             <div className="bg-white p-6 rounded-lg shadow-2xl w-1/4">
-              <h3 className="text-lg font-bold mb-4">Edit Delivery Man</h3>
+              <h3 className="text-lg font-bold mb-4">Edit Employee</h3>
               <div className="mb-4">
                 <label htmlFor="editName" className="block text-gray-700">Name:</label>
                 <input

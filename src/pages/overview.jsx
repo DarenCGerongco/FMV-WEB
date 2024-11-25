@@ -255,7 +255,7 @@ function Overview() {
               onClick={handleDeliveryManClick}
               // style={{ maxHeight: '400px', overflowY: 'auto' }}
             >
-              <h3 className="text-lg font-bold mb-4">DELIVERY MAN ACCOUNT</h3>
+              <h3 className="text-lg font-bold mb-4">EMPLOYEE ACCOUNT</h3>
               {userNames.map((name, index) => (
                 <div key={index} className="bg-gray-200 p-4 rounded-lg shadow-md mt-4">
                   <p className="text-gray-700 text-sm whitespace-nowrap">{name}</p>
