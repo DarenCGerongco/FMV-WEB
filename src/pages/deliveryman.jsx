@@ -207,7 +207,7 @@ function DeliveryMan() {
               <div className="border-l border-gray-300 h-10 mx-2"></div>
               <input
                 type="text"
-                className="flex-grow focus:outline-none px-4 py-2 rounded-md shadow-md sm:text-sm border-gray-300 focus:ring-blue-500 focus:border-blue-500 block w-full"
+                className="flex-grow focus:outline-none px-4 py-2 rounded-md sm:text-sm border-gray-300 focus:ring-blue-500 focus:border-blue-500 block w-full"
                 placeholder="Search for Delivery man"
                 value={searchQuery}
                 onChange={handleSearchChange} // Update search query on input change
