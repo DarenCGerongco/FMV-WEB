@@ -1,21 +1,22 @@
 import { useEffect, useState } from "react";
 import Navbar from "../components/navbar";
 import axios from "axios";
+import ViewDeliveryModal from "./delivery/modal/ViewDeliveryModal"; // Import the modal component
 
 function Delivery() {
   const url = import.meta.env.VITE_API_URL;
 
-  // State for deliveries and filters
+  // State for deliveries, filters, and pagination
   const [deliveries, setDeliveries] = useState([]);
-  const [statusFilter, setStatusFilter] = useState(""); // Status filter state
-  const [currentPage, setCurrentPage] = useState(1); // Pagination state
-  const [totalPages, setTotalPages] = useState(1); // Total pages from backend
+  const [statusFilter, setStatusFilter] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
   const [filteredDeliveries, setFilteredDeliveries] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
+  const [selectedDeliveryId, setSelectedDeliveryId] = useState(null); // Selected delivery ID for modal
+  const [showModal, setShowModal] = useState(false); // Toggle modal visibility
 
   // Fetch deliveries from the backend
-
-
   const fetchDeliveries = async () => {
     try {
       const response = await axios.get(`${url}/api/deliveries/index`, {
@@ -24,33 +25,42 @@ function Delivery() {
           page: currentPage,
         },
       });
-      console.log("API Response:", response.data);
-      setDeliveries(response.data.deliveries || []); // Correctly access the deliveries array
-      setTotalPages(response.data.pagination?.lastPage || 1); // Adjust for nested pagination data
+      setDeliveries(response.data.deliveries || []);
+      setTotalPages(response.data.pagination?.lastPage || 1);
       setFilteredDeliveries(response.data.deliveries || []);
     } catch (error) {
       console.error("Error fetching deliveries:", error);
-      setDeliveries([]); // Ensure deliveries are cleared on error
+      setDeliveries([]);
       setFilteredDeliveries([]);
     }
   };
 
-  const getStatusDisplayName = (status) => {
-    if(status == "OD"){
-      return "On-Delivery";
-    } else if (status == "P"){
-      return "Pending •";
-    } else if (status == "F"){
-      return "Failed";
-    } else if (status == "S"){
-      return "Successful"
-    } else{
-      return "unknown";
+  // Fetch deliveries when the filter or page changes
+  useEffect(() => {
+    fetchDeliveries();
+  }, [statusFilter, currentPage]);
+
+  // Handle filter changes
+  const handleFilterChange = (status) => {
+    setStatusFilter(status);
+    setCurrentPage(1); // Reset to the first page
+  };
+
+  // Handle page change
+  const handlePageChange = (page) => {
+    if (page > 0 && page <= totalPages) {
+      setCurrentPage(page);
     }
   };
 
-   // Live search functionality
-   const handleSearchChange = (e) => {
+  // Handle clicking on a delivery row
+  const handleDeliveryClick = (deliveryId) => {
+    setSelectedDeliveryId(deliveryId); // Set the selected delivery ID
+    setShowModal(true); // Show the modal
+  };
+
+  // Handle live search
+  const handleSearchChange = (e) => {
     const query = e.target.value.toLowerCase();
     setSearchQuery(query);
 
@@ -61,22 +71,15 @@ function Delivery() {
     setFilteredDeliveries(filtered);
   };
 
-  // Fetch deliveries when the filter or page changes
-  useEffect(() => {
-    fetchDeliveries();
-  }, [statusFilter, currentPage]);
-
-  // Handle filter change
-  const handleFilterChange = (status) => {
-    setStatusFilter(status); // Update the filter
-    setCurrentPage(1); // Reset to the first page
-  };
-
-  // Handle page change
-  const handlePageChange = (page) => {
-    if (page > 0 && page <= totalPages) {
-      setCurrentPage(page); // Update the current page
-    }
+  // Map delivery statuses to display names
+  const getStatusDisplayName = (status) => {
+    const statuses = {
+      OD: "On-Delivery",
+      P: "Pending",
+      F: "Failed",
+      S: "Successful",
+    };
+    return statuses[status] || "Unknown";
   };
 
   return (
@@ -87,8 +90,10 @@ function Delivery() {
           <h2 className="text-1xl font-bold">MANAGEMENT SYSTEM DELIVERY</h2>
         </div>
         <div className="w-4/5 mx-auto bg-white p-3 rounded-lg drop-shadow-md">
-          <div className="flex items-center w-full px-4 py-3 border border-gray-300 rounded-md shadow-md focus-within:border-blue-500 relative h-12">
-            <span className="font-bold text-black-500 whitespace-nowrap">DELIVERY</span>
+          <div className="flex items-center w-full px-4 py-3 border border-gray-300 rounded-md shadow-md relative h-12">
+            <span className="font-bold text-black-500 whitespace-nowrap">
+              DELIVERY
+            </span>
             <div className="border-l border-gray-300 h-10 mx-2"></div>
             <input
               type="text"
@@ -143,109 +148,101 @@ function Delivery() {
               Successful
             </button>
           </div>
-
         </div>
         <div className="w-4/5 mx-auto mt-2 bg-white p-3 rounded-lg drop-shadow-md">
-          <div 
-            className="grid grid-cols-7 text-sm font-bold p-1 rounded-md"
-          >
+          <div className="grid grid-cols-6 text-sm font-bold p-1 rounded-md">
             <div className="col-span-1">Delivery ID#</div>
             <div className="col-span-1">Purchase Order ID#</div>
             <div className="col-span-2">Delivery man</div>
             <div className="col-span-1 text-center w-[80%]">Status</div>
             <div className="col-span-1">Delivery Created (24hrs)</div>
           </div>
-                {filteredDeliveries && filteredDeliveries.length > 0 ? (
-                  filteredDeliveries.map((delivery) => (
-                  <div
-                    key={delivery.delivery_id} // Use the correct unique identifier
-                    className="hover:bg-blue-50 duration-200 grid text-sm grid-cols-7 border-b shadow-md rounded my-1 border-gray-300 p-1 items-center"
-                  >
-                    <div className="col-span-1">{delivery.delivery_id}</div>
-                    <div className="col-span-1">{delivery.purchase_order.purchase_order_id}</div>
-                    <div className="col-span-2">{delivery.delivery_man.name}</div>
-                    <div
-                      className={`col-span-1 px-2 w-[80%] font-bold text-center rounded-full ${
-                        delivery.status === "OD"
-                          ? "bg-green-200 border-1 border border-green-500 text-green-500" // On-delivery (Blue)
-                          : delivery.status === "P"
-                          ? "bg-pink-200 border-1 border border-pink-500 text-pink-500" // Pending (Pink)
-                          : delivery.status === "F"
-                          ? "bg-red-500" // Failed (Red)
-                          : delivery.status === "S"
-                          ? "bg-green-500" // Successful (Green)
-                          : "bg-gray-500" // Default (Gray)
-                      }`}
-                    >
-                      {getStatusDisplayName(delivery.status)}
-                    </div>
-                    <div className="col-span-1">{delivery.formatted_date}</div>
-                    <div className="flex justify-center ">
-                      <span 
-                        className="cursor-pointer duration-200 bg-blue-500 px-3 rounded-lg text-white font-bold hover:bg-white hover:text-blue-500"
-                      >
-                        View
-                      </span>
-                    </div>
-                  </div>
-                ))
-              ) : (
-                <div className="text-center p-4">No deliveries found.</div>
-              )}
-          </div>
-          <div className="flex justify-center w-full space-x-2 my-4">
-            {/* First Page Button */}
-            <button
-              onClick={() => handlePageChange(1)}
-              disabled={currentPage === 1}
-              className="font-bold px-3 py-1 bg-white hover:bg-blue-500 hover:text-white duration-200 shadow-md cursor-pointer rounded disabled:opacity-50"
-            >
-              First
-            </button>
-
-            {/* Previous Page Button */}
-            <button
-              onClick={() => handlePageChange(currentPage - 1)}
-              disabled={currentPage === 1}
-              className="font-bold px-3 py-1 bg-white hover:bg-blue-500 hover:text-white duration-200 shadow-md cursor-pointer rounded disabled:opacity-50"
-            >
-              Previous
-            </button>
-
-            {/* Page Numbers */}
-            {Array.from({ length: totalPages }, (_, i) => (
-              <button
-                key={i + 1}
-                onClick={() => handlePageChange(i + 1)}
-                className={`font-bold px-3 py-1 rounded cursor-pointer duration-100 shadow-md ${
-                  currentPage === i + 1
-                    ? "bg-blue-500 text-white"
-                    : "bg-white hover:bg-blue-500 shadow-md hover:text-white"
-                }`}
+          {filteredDeliveries && filteredDeliveries.length > 0 ? (
+            filteredDeliveries.map((delivery) => (
+              <div
+                key={delivery.delivery_id}
+                className="hover:bg-blue-50 duration-200 grid text-sm grid-cols-6 border-b shadow-md rounded my-1 border-gray-300 p-1 items-center cursor-pointer"
+                onClick={() => handleDeliveryClick(delivery.delivery_id)} // Open modal
               >
-                {i + 1}
-              </button>
-            ))}
-
-            {/* Next Page Button */}
+                <div className="col-span-1">{delivery.delivery_id}</div>
+                <div className="col-span-1">
+                  {delivery.purchase_order.purchase_order_id}
+                </div>
+                <div className="col-span-2">{delivery.delivery_man.name}</div>
+                <div
+                  className={`col-span-1 px-2 w-[80%] font-bold text-center rounded-full ${
+                    delivery.status === "OD"
+                      ? "bg-green-200 border border-green-500 text-green-500"
+                      : delivery.status === "P"
+                      ? "bg-pink-200 border border-pink-500 text-pink-500"
+                      : delivery.status === "F"
+                      ? "bg-red-500"
+                      : delivery.status === "S"
+                      ? "bg-green-500"
+                      : "bg-gray-500"
+                  }`}
+                >
+                  {getStatusDisplayName(delivery.status)}
+                </div>
+                <div className="col-span-1">{delivery.formatted_date}</div>
+              </div>
+            ))
+          ) : (
+            <div className="text-center p-4">No deliveries found.</div>
+          )}
+        </div>
+        <div className="flex justify-center w-full space-x-2 my-4">
+          <button
+            onClick={() => handlePageChange(1)}
+            disabled={currentPage === 1}
+            className="font-bold px-3 py-1 bg-white hover:bg-blue-500 hover:text-white duration-200 shadow-md cursor-pointer rounded disabled:opacity-50"
+          >
+            First
+          </button>
+          <button
+            onClick={() => handlePageChange(currentPage - 1)}
+            disabled={currentPage === 1}
+            className="font-bold px-3 py-1 bg-white hover:bg-blue-500 hover:text-white duration-200 shadow-md cursor-pointer rounded disabled:opacity-50"
+          >
+            Previous
+          </button>
+          {Array.from({ length: totalPages }, (_, i) => (
             <button
-              onClick={() => handlePageChange(currentPage + 1)}
-              disabled={currentPage === totalPages}
-              className="font-bold px-3 py-1 bg-white hover:bg-blue-500 hover:text-white duration-200 shadow-md cursor-pointer rounded disabled:opacity-50"
+              key={i + 1}
+              onClick={() => handlePageChange(i + 1)}
+              className={`font-bold px-3 py-1 rounded cursor-pointer duration-100 shadow-md ${
+                currentPage === i + 1
+                  ? "bg-blue-500 text-white"
+                  : "bg-white hover:bg-blue-500 shadow-md hover:text-white"
+              }`}
             >
-              Next
+              {i + 1}
             </button>
-
-            {/* Last Page Button */}
-            <button
-              onClick={() => handlePageChange(totalPages)}
-              disabled={currentPage === totalPages}
-              className="font-bold px-3 py-1 bg-white hover:bg-blue-500 hover:text-white duration-200 shadow-md cursor-pointer rounded disabled:opacity-50"
-            >
-              Last
-            </button>
-          </div>
+          ))}
+          <button
+            onClick={() => handlePageChange(currentPage + 1)}
+            disabled={currentPage === totalPages}
+            className="font-bold px-3 py-1 bg-white hover:bg-blue-500 hover:text-white duration-200 shadow-md cursor-pointer rounded disabled:opacity-50"
+          >
+            Next
+          </button>
+          <button
+            onClick={() => handlePageChange(totalPages)}
+            disabled={currentPage === totalPages}
+            className="font-bold px-3 py-1 bg-white hover:bg-blue-500 hover:text-white duration-200 shadow-md cursor-pointer rounded disabled:opacity-50"
+          >
+            Last
+          </button>
+        </div>
       </div>
+
+      {/* Modal Component */}
+      {showModal && (
+        <ViewDeliveryModal
+          deliveryId={selectedDeliveryId} // Pass the selected delivery ID
+          onClose={() => setShowModal(false)} // Close the modal
+        />
+      )}
     </div>
   );
 }
