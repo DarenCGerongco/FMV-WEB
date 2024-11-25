@@ -147,7 +147,7 @@ function Delivery() {
         </div>
         <div className="w-4/5 mx-auto mt-2 bg-white p-3 rounded-lg drop-shadow-md">
           <div 
-            className="grid grid-cols-6 text-sm font-bold p-1 rounded-md"
+            className="grid grid-cols-7 text-sm font-bold p-1 rounded-md"
           >
             <div className="col-span-1">Delivery ID#</div>
             <div className="col-span-1">Purchase Order ID#</div>
@@ -159,7 +159,7 @@ function Delivery() {
                   filteredDeliveries.map((delivery) => (
                   <div
                     key={delivery.delivery_id} // Use the correct unique identifier
-                    className="hover:bg-blue-50 duration-200 grid text-sm grid-cols-6 border-b shadow-md rounded my-1 border-gray-300 p-1 items-center"
+                    className="hover:bg-blue-50 duration-200 grid text-sm grid-cols-7 border-b shadow-md rounded my-1 border-gray-300 p-1 items-center"
                   >
                     <div className="col-span-1">{delivery.delivery_id}</div>
                     <div className="col-span-1">{delivery.purchase_order.purchase_order_id}</div>
@@ -179,8 +179,14 @@ function Delivery() {
                     >
                       {getStatusDisplayName(delivery.status)}
                     </div>
-
                     <div className="col-span-1">{delivery.formatted_date}</div>
+                    <div className="flex justify-center ">
+                      <span 
+                        className="cursor-pointer duration-200 bg-blue-500 px-3 rounded-lg text-white font-bold hover:bg-white hover:text-blue-500"
+                      >
+                        View
+                      </span>
+                    </div>
                   </div>
                 ))
               ) : (

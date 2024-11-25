@@ -105,24 +105,27 @@ const CreatePurchaseOrder = () => {
 
 
   return (
-    <div className="flex flex-col w-full px-5">
-      <Navbar />
-      <div className="shadow-md bg-gray-200 rounded mt-[1%] ml-[18%]">
-        <h3 className="text-center text-lg font-bold p-2">Create Purchase Order</h3>
+<div className="flex w-full">
+  <Navbar />
+    <div className="flex flex-col items-center w-full">
+      <div className="shadow-md bg-gray-200 rounded p-2">
+        <h3 className="text-center text-lg font-bold">Create Purchase Order</h3>
       </div>
-      <div className="flex flex-col justify-center shadow-md p-5 rounded ml-[16%] mt-[4%] ">
-        <h1 className="text-xl font-bold">
-          Customer's Details:
-        </h1>
-        <div className="flex w-full px-2 justify-between">
+      <div 
+        className="flex flex-col  w-full justify-center shadow-md p-5 rounded mt-5"
+      >
+        <h1 className="text-xl font-bold">Customer's Details:</h1>
+        <div className="grid grid-cols-2 gap-4">
           {['customer_name', 'street', 'barangay', 'city', 'province', 'zipcode'].map((field, index) => (
-            <div key={index} className="flex flex-col mt-2">
-              <div className="flex ">
-                <label className="w-auto text-sm font-bold">
-                  {field.split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')}:
-                </label>
-                <h1 className='text-red-500'>*</h1>
-              </div>
+            <div key={index}>
+              <label className="block text-sm font-bold">
+                {field
+                  .split('_')
+                  .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+                  .join(' ')}
+                :
+                <span className="text-red-500">*</span>
+              </label>
               <input
                 className="w-full p-2 text-sm rounded-lg border-gray-300 border"
                 type="text"
@@ -134,113 +137,76 @@ const CreatePurchaseOrder = () => {
             </div>
           ))}
         </div>
-        <div className="flex w-full flex-col p-2 mt-2">
-          <h1 className="text-xl font-bold">
-            Product Listed:
-          </h1>
-          <div className='grid grid-cols-10 bg-gray-300 px-2 rounded'>
-            <span className='col-span-1 font-bold'>
-              ID
-            </span>
-            <span className='col-span-2 font-bold'>
-              Product Name
-            </span>
-            <span className='col-span-2 font-bold'>
-              Category
-            </span>
-            <span className='col-span-1 font-bold'>
-              Original Price
-            </span>
-            <span className='col-span-1 font-bold'>
-              Available Quantity
-            </span>
-            <span className='col-span-1 font-bold rounded text-red-500 text-center'>
-              Price (Discounted)
-            </span>
-            <span className='col-span-1 font-bold rounded text-red-500 text-center'>
-              Quantity
-            </span>
-            <span className='col-span-1 font-bold rounded text-red-500 text-center'>
-              Option
-            </span>
-          </div>
-          {productsListed.length > 0 ? (
-            productsListed.map((product, index) => (
-              <div key={index} className="grid grid-cols-10 p-0.5 rounded mt-1 border-b">
-                <span className="col-span-1">{product.product_id}</span>
-                <span className="col-span-2">{product.product_name}</span>
-                <span className="col-span-2">{product.category_name}</span>
-                <span className="col-span-1">₱ {product.original_price}</span>
-                <span className="col-span-1 text-red-600">{product.quantity}</span>
-                <input 
-                  type="number" 
-                  value={productInputs[product.product_id].bidPrice}
-                  onChange={(e) => {
-                    // Update only if the input is empty or a valid number
-                    const value = e.target.value;
-                    if (value === '' || /^\d+$/.test(value)) {
-                      handleInputChange(product.product_id, 'bidPrice', value);
-                    }
-                  }}
-                  className="col-span-1 bg-gray-100 font-bold text-blue-500 rounded text-center mx-1"
-                  placeholder="Php"
-                />
-                <input 
-                  type="text" 
-                  value={productInputs[product.product_id].quantity}
-                  onChange={(e) => {
-                    // Update only if the input is empty or a valid number
-                    const value = e.target.value;
-                    if (value === '' || /^\d+$/.test(value)) {
-                      handleInputChange(product.product_id, 'quantity', value);
-                    }
-                  }}
-                  className="col-span-1 bg-gray-100 text-blue-500 font-bold rounded text-center mx-1"
-                  placeholder='Quantity'
-                />
-                <button 
-                  className="col-span-1 text-red-600 hover:text-red-100 duration-100"
-                  onClick={() => removeProductFromList(product.product_id)}
-                >
-                  Remove
-                </button>
-              </div>
-            ))
-          ) : (
-            <div className="text-center border rounded my-0.5">No products added yet.</div>
-          )}
-        </div>
       </div>
-
-      <div className="flex flex-col w-full p-2">
-        <div className="flex justify-end mb-2">
-          <button
-            className="w-64 bg-blue-500 text-white p-2 font-bold hover:bg-white hover:text-blue-500 duration-200 rounded-md shadow-md"
-            onClick={toggleModal}
-          >
-            Select Product
-          </button>
+      <div className="mt-5 shadow-md p-5 w-full rounded">
+        <h1 className="text-xl font-bold">Product Listed:</h1>
+        <div className="grid grid-cols-10 bg-gray-300 p-2 rounded">
+          <span className="col-span-1 font-bold">ID</span>
+          <span className="col-span-2 font-bold">Product Name</span>
+          <span className="col-span-2 font-bold">Category</span>
+          <span className="col-span-1 font-bold">Original Price</span>
+          <span className="col-span-1 font-bold">Available Quantity</span>
+          <span className="col-span-1 font-bold text-red-500 text-center">Price (Discounted)</span>
+          <span className="col-span-1 font-bold text-red-500 text-center">Quantity</span>
+          <span className="col-span-1 font-bold text-red-500 text-center">Option</span>
         </div>
-        <div className='flex justify-end'>
-          <button
-            className="w-28 mr-8 bg-red-500 text-white p-2 font-bold hover:bg-white hover:text-red-500 duration-200 rounded-md shadow-md"
-            onClick={() => window.history.back()}
-          >
-            Cancel
-          </button>
-          <button
-            className="w-28 bg-blue-500 text-white p-2 font-bold hover:bg-white hover:text-blue-500 duration-200 rounded-md shadow-md"
-            onClick={createOrder}
-          >
-            Submit
-          </button>
-        </div>
+        {productsListed.length > 0 ? (
+          productsListed.map((product, index) => (
+            <div key={index} className="grid grid-cols-10 items-center p-2 border-b">
+              <span className="col-span-1">{product.product_id}</span>
+              <span className="col-span-2">{product.product_name}</span>
+              <span className="col-span-2">{product.category_name}</span>
+              <span className="col-span-1">₱ {product.original_price}</span>
+              <span className="col-span-1 text-red-600">{product.quantity}</span>
+              <input
+                type="number"
+                value={productInputs[product.product_id].bidPrice}
+                onChange={(e) => handleInputChange(product.product_id, 'bidPrice', e.target.value)}
+                className="col-span-1 p-1 rounded text-center"
+              />
+              <input
+                type="text"
+                value={productInputs[product.product_id].quantity}
+                onChange={(e) => handleInputChange(product.product_id, 'quantity', e.target.value)}
+                className="col-span-1 p-1 rounded text-center"
+              />
+              <button
+                onClick={() => removeProductFromList(product.product_id)}
+                className="col-span-1 text-red-600 hover:text-red-400"
+              >
+                Remove
+              </button>
+            </div>
+          ))
+        ) : (
+          <p className="text-center mt-2">No products added yet.</p>
+        )}
       </div>
-
-      {/* Modal for selecting products */}
+      <div className="flex justify-end mt-5">
+        <button
+          className="mr-4 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-400"
+          onClick={toggleModal}
+        >
+          Select Product
+        </button>
+        <button
+          className="mr-4 bg-red-500 text-white px-4 py-2 rounded hover:bg-red-400"
+          onClick={() => window.history.back()}
+        >
+          Cancel
+        </button>
+        <button
+          className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-400"
+          onClick={createOrder}
+        >
+          Submit
+        </button>
+      </div>
       <Modal isOpen={isModalOpen} onClose={toggleModal} addProductToList={addProductToList} />
       <ToastContainer />
     </div>
+</div>
+
   );
 };
 

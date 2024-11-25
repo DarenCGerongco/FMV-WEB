@@ -214,7 +214,7 @@ function DeliveryMan() {
               />
             </div>
             <button
-              className="bg-blue-500 text-black px-4 py-2 bg-blue-500 text-white rounded-md shadow-md focus:outline-none"
+              className=" px-4 py-2 bg-blue-500 text-white rounded-md shadow-md focus:outline-none"
               onClick={openAddModal}
             >
               +
