@@ -94,7 +94,8 @@ function Inventory() {
 
         {/* Searchbar and Filters */}
         <div className="w-4/5 mx-auto bg-white p-3 m-3 rounded-lg shadow-md">
-          <div className="flex items-center w-full px-4 py-3 border border-gray-300 rounded-md shadow-md focus-within:border-blue-500 relative h-12">
+        <div className="flex flex-row">
+          <div className="flex flex-row items-center w-full px-4 py-3 mr-1 border border-gray-300 rounded-md shadow-md focus-within:border-blue-500 relative h-12">
             <span className="font-bold text-black-500 whitespace-nowrap">INVENTORY</span>
             <div className="border-l border-gray-300 h-10 mx-2"></div>
             <input
@@ -105,6 +106,13 @@ function Inventory() {
               className="flex-grow focus:outline-none px-4 py-2 rounded-md sm:text-sm border-gray-300 focus:ring-blue-500 focus:border-blue-500 block w-full"
             />
           </div>
+          <div className="flex bg-blue-500 text-white w-[10rem] duration-200 justify-center hover:text-blue-500 hover:bg-white items-center font-bold shadow-md rounded">
+            <h1 className="text-center text-md">
+              Add Product
+            </h1>
+          </div>
+        </div>
+
           <div className="flex flex-wrap gap-2 mt-4">
             <span className="font-bold my-auto text-xs text-blue-500">
               Filter:

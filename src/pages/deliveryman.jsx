@@ -47,7 +47,7 @@ function DeliveryMan() {
     const fetchDeliveryMen = async () => {
       try {
         const response = await axios.get(`${url}/api/users`);
-        setDeliveryMen(response.data.data.filter(user => user.user_type_id === 2));
+        setDeliveryMen(response.data.data);
       } catch (error) {
         console.error('An error occurred while fetching employee:', error);
       }
@@ -303,7 +303,7 @@ function DeliveryMan() {
                 />
               </div>
               <div className="mb-4">
-                <label htmlFor="email" className="block text-gray-700">Email:</label>
+                <label htmlFor="email" className="block text-gray-700">Email(optional):</label>
                 <input
                   type="email"
                   id="email"

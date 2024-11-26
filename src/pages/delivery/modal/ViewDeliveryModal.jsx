@@ -7,17 +7,18 @@ const ViewDeliveryModal = ({ deliveryId, onClose }) => {
   const [loading, setLoading] = useState(true);
 
   // Function to fetch delivery details
-  const fetchDeliveryDetails = async () => {
-    try {
-      const response = await axios.get(`${url}/api/deliveries/${deliveryId}/report`);
-      setDeliveryDetails(response.data);
-      console.log(response.data); // Debugging log
-    } catch (error) {
-      console.error("Error fetching delivery details:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
+const fetchDeliveryDetails = async () => {
+  setLoading(true);
+  try {
+    const response = await axios.get(`${url}/api/deliveries/${deliveryId}/report`);
+    setDeliveryDetails(response.data);
+    console.log("Fetched Delivery Details:", response.data);
+  } catch (error) {
+    console.error("Error fetching delivery details:", error);
+  } finally {
+    setLoading(false);
+  }
+};
 
   // Fetch data on component mount
   useEffect(() => {
@@ -71,12 +72,14 @@ const ViewDeliveryModal = ({ deliveryId, onClose }) => {
         <div>
           <p><strong>Delivery ID:</strong> {deliveryDetails.delivery.delivery_id}</p>
           <p><strong>Purchase Order ID:</strong> {deliveryDetails.delivery.purchase_order_id}</p>
-          <p><strong>Delivered By:</strong> {deliveryDetails.user.name || 'N/A'}</p>
+          <p><strong>Employee Assigned:</strong> {deliveryDetails.user.name || 'N/A'}</p>
           <p><strong>Status:</strong> {deliveryDetails.delivery.status}</p>
           <p><strong>Created:</strong> {deliveryDetails.delivery.created_at}</p>
           <p><strong>Notes:</strong> {deliveryDetails.delivery.notes || 'No comment'}</p>
         </div>
-
+        <h1 className="font-bold">
+          Image:
+        </h1>
         {/* Display Images */}
         {deliveryDetails.images && deliveryDetails.images.length > 0 ? (
           <div className="mt-4">
@@ -97,33 +100,32 @@ const ViewDeliveryModal = ({ deliveryId, onClose }) => {
             </div>
           </div>
         ) : (
-          <p className="mt-4 text-gray-600">No images uploaded for this delivery.</p>
+          <p className="mt-4 text-gray-600">Image Pending for Employee's Delivery Report.</p>
         )}
 
         {/* Display Products */}
         {deliveryDetails.products && deliveryDetails.products.length > 0 ? (
-          <div className="mt-4">
+          <div className="mt-4 ">
             <h3 className="text-lg font-bold">Product List</h3>
-            <table className="table-auto w-full mt-2 border-collapse border border-gray-300">
+            <table className="table-auto w-full  mt-2 border-collapse border border-gray-300">
               <thead>
                 <tr>
-                  <th className="border px-4 py-2">Product ID</th>
-                  <th className="border px-4 py-2">Product Name</th>
-                  <th className="border px-4 py-2">Quantity Delivered</th>
-                  <th className="border px-4 py-2">No. of Damages</th>
-                  <th className="border px-4 py-2">Intact Quantity</th>
-                  <th className="border px-4 py-2">Reported At</th>
+                  <th className="border px-4 py-2 text-sm">Product ID</th>
+                  <th className="border px-4 py-2 text-sm">Product Name</th>
+                  <th className="border px-4 py-2 text-sm">Quantity Delivered</th>
+                  <th className="border px-4 py-2 text-sm">No. of Damages</th>
+                  <th className="border px-4 py-2 text-sm">Intact Quantity</th>
                 </tr>
               </thead>
               <tbody>
                 {deliveryDetails.products.map((product, index) => (
                   <tr key={index}>
-                    <td className="border px-4 py-2">{product.product_id}</td>
-                    <td className="border px-4 py-2">{product.product_name}</td>
-                    <td className="border px-4 py-2">{product.quantity_delivered}</td>
-                    <td className="border px-4 py-2">{product.no_of_damages}</td>
-                    <td className="border px-4 py-2">{product.intact_quantity}</td>
-                    <td className="border px-4 py-2">{product.reported_at || 'N/A'}</td>
+                    <td className="border px-2 py-2 text-xs text-center">{product.product_id}</td>
+                    <td className="border px-1 py-1 text-xs">{product.product_name}</td>
+                    <td className="border px-4 py-2 text-xs text-center text-red-500 font-bold">{product.quantity_delivered}</td>
+                    <td className="border px-4 py-2 text-xs text-center">{product.no_of_damages || '-'}</td>
+                    <td className="border px-4 py-2 text-xs text-center">{product.intact_quantity || '-'}</td>
+
                   </tr>
                 ))}
               </tbody>

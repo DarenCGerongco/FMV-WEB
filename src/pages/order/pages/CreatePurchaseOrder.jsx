@@ -56,14 +56,19 @@ const CreatePurchaseOrder = () => {
   }, []);
 
   const handleInputChange = (productId, field, value) => {
-    setProductInputs(prev => ({
-      ...prev,
-      [productId]: {
-        ...prev[productId],
-        [field]: value
-      }
-    }));
+    setProductInputs(prev => {
+      const updatedInputs = {
+        ...prev,
+        [productId]: {
+          ...prev[productId],
+          [field]: value === '' ? prev[productId].original_price : value, // Set to original_price if empty
+        }
+      };
+      return updatedInputs;
+    });
   };
+  
+  
 
   const createOrder = async () => {
     const admin_id = localStorage.getItem('userID');
@@ -71,7 +76,7 @@ const CreatePurchaseOrder = () => {
       alert('User ID is missing.');
       return;
     }
-
+  
     const orderData = {
       user_id: admin_id,
       sale_type_id: 1,
@@ -86,11 +91,11 @@ const CreatePurchaseOrder = () => {
       },
       product_details: productsListed.map(product => ({
         product_id: product.product_id,
-        price: productInputs[product.product_id].bidPrice,
+        price: productInputs[product.product_id].bidPrice || product.original_price,  // Use bidPrice or original_price
         quantity: productInputs[product.product_id].quantity
       })),
     };
-
+  
     try {
       await axios.post(`${url}/api/purchase-orders-delivery`, orderData);
       toast.success('Order created successfully!');
@@ -102,6 +107,7 @@ const CreatePurchaseOrder = () => {
       console.error('Error creating order:', error);
     }
   };
+  
 
 
   return (
@@ -160,7 +166,7 @@ const CreatePurchaseOrder = () => {
               <span className="col-span-1 text-red-600">{product.quantity}</span>
               <input
                 type="number"
-                value={productInputs[product.product_id].bidPrice}
+                value={productInputs[product.product_id]?.bidPrice || ''} // Leave input empty if bidPrice is not set
                 onChange={(e) => handleInputChange(product.product_id, 'bidPrice', e.target.value)}
                 className="col-span-1 p-1 rounded text-center border m-1"
               />

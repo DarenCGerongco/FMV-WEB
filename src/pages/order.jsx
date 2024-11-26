@@ -6,7 +6,7 @@ import { useNavigate } from 'react-router-dom';
 
 import CreateDeliveryModal from './order/modals/createdeliverymodal';
 import ViewDeliveriesModal from './order/modals/viewdeliveriesmodal';
-import ItemsOrderedModal from './order/modals/itemsorderedmodal';
+import ItemsOrderedModal from './order/modals/viewitemsorderedmodal';
 
 function Order() {
   const navigate = useNavigate(); // Initialize navigate

@@ -18,26 +18,34 @@ const CreateDeliveryModal = ({ createDeliveryModalOpen, closeCreateDeliveryModal
 
   useEffect(() => {
     const fetchUsers = async () => {
-      try {
-        const response = await axios.get(`${url}/api/users`);
-        setDeliverymanRecord(response.data.data);
-      } catch (e) {
-        console.error('Error fetching users:', e);
-      }
+       try {
+          const response = await axios.get(`${url}/api/users`);
+          console.log('Users Response:', response.data);
+          setDeliverymanRecord(response.data.data);
+       } catch (e) {
+          console.error('Error fetching users:', e);
+       }
     };
-
+ 
     const fetchPurchaseOrderByID_WithRemainingBalance = async () => {
-      try {
-        const response = await axios.get(`${url}/api/purchase-orders-get-remaining-balance/${purchaseOrderId}`);
-        setProductDetails(response.data.Remaining.products);
-      } catch (e) {
-        console.error('Error fetching purchase order details:', e);
-      }
+       try {
+          const response = await axios.get(`${url}/api/purchase-orders-get-remaining-balance/${purchaseOrderId}`);
+          console.log('Purchase Order Response:', response.data);
+          setProductDetails(response.data.Products.map(product => ({
+             ...product,
+             total_delivered_quantity: product.delivered_quantity,
+             remaining_quantity: product.ordered_quantity - product.delivered_quantity
+          })));
+       } catch (e) {
+          console.error('Error fetching purchase order details:', e);
+       }
     };
-
+ 
     fetchUsers();
     fetchPurchaseOrderByID_WithRemainingBalance();
-  }, [url, purchaseOrderId]);
+ }, [url, purchaseOrderId]);
+ 
+  
 
   const handleSelectUser = (userName) => {
     setSelectedUser(userName);
@@ -53,48 +61,58 @@ const CreateDeliveryModal = ({ createDeliveryModalOpen, closeCreateDeliveryModal
 
   const assignEmployeeFunction = async () => {
     if (!selectedUser) {
-      toast.error('Please select a delivery man.');
-      return;
+        toast.error('Please select a delivery man.');
+        return;
     }
 
-    const invalidQuantities = productDetails.filter(product => {
-      const inputQuantity = quantityInputs[product.product_id] || 0;
-      return inputQuantity > product.remaining_quantity;
+    // Filter out product details where no quantity is set or quantity is zero
+    const validProductDetails = productDetails.filter(product => {
+        const quantity = quantityInputs[product.product_id];
+        return quantity > 0; // Ensure quantity is greater than zero
+    });
+
+    // Check for invalid quantities entered by the user
+    const invalidQuantities = validProductDetails.filter(product => {
+        const inputQuantity = quantityInputs[product.product_id];
+        return inputQuantity > product.remaining_quantity;
     });
 
     if (invalidQuantities.length > 0) {
-      const errorMessage = invalidQuantities.map(product => 
-        `Product: ${product.product_name} exceeds the remaining quantity. Remaining: ${product.remaining_quantity}, Entered: ${quantityInputs[product.product_id] || 0}`
-      ).join('\n');
-      toast.error(`Error:\n${errorMessage}`);
-      return;
+        const errorMessage = invalidQuantities.map(product =>
+            `Product: ${product.product_name} exceeds the remaining quantity. Remaining: ${product.remaining_quantity}, Entered: ${quantityInputs[product.product_id]}`
+        ).join('\n');
+        toast.error(`Error:\n${errorMessage}`);
+        return;
     }
 
-    setIsLoading(true); // Start loading
+    setIsLoading(true); // Start loading indicator
 
+    // Prepare the form data to send to the backend
     const formData = {
-      purchase_order_id: purchaseOrderId,
-      user_id: deliverymanRecord.find(user => user.name === selectedUser)?.id,
-      product_details: productDetails.map(product => ({
-        product_id: product.product_id,
-        quantity: quantityInputs[product.product_id] || 0,
-      })),
-      notes: ""
+        purchase_order_id: purchaseOrderId,
+        user_id: deliverymanRecord.find(user => user.name === selectedUser)?.id,
+        product_details: validProductDetails.map(product => ({
+            product_id: product.product_id,
+            quantity: quantityInputs[product.product_id] || 0,
+        })),
+        notes: ""
     };
 
+    // Send the POST request to the backend API
     try {
-      const response = await axios.post(`${url}/api/assign-employee`, formData);
-      toast.success('Employee assigned successfully!');
-      setTimeout(() => {
-        setIsLoading(false); // Stop loading
-        closeCreateDeliveryModal();
-      }, 2000);
+        const response = await axios.post(`${url}/api/assign-employee`, formData);
+        toast.success('Employee assigned successfully!');
+        setTimeout(() => {
+            setIsLoading(false); // Stop loading indicator
+            closeCreateDeliveryModal(); // Close the modal on success
+        }, 2000);
     } catch (error) {
-      console.error('Error assigning employee:', error);
-      toast.error('Failed to assign employee. Please try again.');
-      setIsLoading(false); // Stop loading
+        console.error('Error assigning employee:', error);
+        toast.error('Failed to assign employee. Please try again.');
+        setIsLoading(false); // Stop loading indicator if there is an error
     }
-  };
+};
+
 
   return (
     <div
@@ -127,12 +145,13 @@ const CreateDeliveryModal = ({ createDeliveryModalOpen, closeCreateDeliveryModal
                 ))}
               </ul>
             )}
-            {productDetails.map((product, index) => (
+            {
+            productDetails.map((product, index) => (
               <div key={index} className="p-2">
                 <div className="productInfo">
                   <h3 className="productTitle">Product Name:</h3>
                   <h3 className="data">{product.product_name}</h3>
-                  <div className="qm-container relative ">
+                  <div className="qm-container relative">
                     <img className='w-[25px] p-[5px]' src={qm} alt="Info" />
                     <div className="tooltip-text">The product the customer ordered.</div>
                   </div>
@@ -140,7 +159,7 @@ const CreateDeliveryModal = ({ createDeliveryModalOpen, closeCreateDeliveryModal
                 <div className="productInfo">
                   <h3 className="productTitle">Total Quantity:</h3>
                   <h3 className="data">{product.ordered_quantity}</h3>
-                  <div className="qm-container relative ">
+                  <div className="qm-container relative">
                     <img className='w-[25px] p-[5px]' src={qm} alt="Info" />
                     <div className="tooltip-text">Total quantity of this product that the customer ordered.</div>
                   </div>
@@ -148,7 +167,7 @@ const CreateDeliveryModal = ({ createDeliveryModalOpen, closeCreateDeliveryModal
                 <div className="productInfo">
                   <h3 className="productTitle">Delivered:</h3>
                   <h3 className="data">{product.total_delivered_quantity}</h3>
-                  <div className="qm-container relative ">
+                  <div className="qm-container relative">
                     <img className='w-[25px] p-[5px]' src={qm} alt="Info" />
                     <div className="tooltip-text">Total quantity delivered or on-going delivery.</div>
                   </div>
@@ -156,7 +175,7 @@ const CreateDeliveryModal = ({ createDeliveryModalOpen, closeCreateDeliveryModal
                 <div className="productInfo">
                   <h3 className="productTitle">Remaining Quantity:</h3>
                   <h3 className="data">{product.remaining_quantity}</h3>
-                  <div className="qm-container relative ">
+                  <div className="qm-container relative">
                     <img className='w-[25px] p-[5px]' src={qm} alt="Info" />
                     <div className="tooltip-text">Quantity left to Deliver. `0` means you cannot create delivery over this product anymore.</div>
                   </div>
@@ -177,7 +196,7 @@ const CreateDeliveryModal = ({ createDeliveryModalOpen, closeCreateDeliveryModal
                     <div className="flex w-[30%] items-center">
                       <input
                         type="number"
-                        className="quantityInput "
+                        className="quantityInput"
                         min="1"
                         max={product.remaining_quantity}
                         value={quantityInputs[product.product_id] || ''}
@@ -193,7 +212,8 @@ const CreateDeliveryModal = ({ createDeliveryModalOpen, closeCreateDeliveryModal
                   )}
                 </div>
               </div>
-            ))}
+            ))
+          }
             <div className='flex flex-row-reverse'>
             <button
                 className={`ml-2 duration-200 shadow-md rounded-md p-2 font-bold ${
