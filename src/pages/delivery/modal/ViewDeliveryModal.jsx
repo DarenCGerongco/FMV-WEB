@@ -77,9 +77,6 @@ const fetchDeliveryDetails = async () => {
           <p><strong>Created:</strong> {deliveryDetails.delivery.created_at}</p>
           <p><strong>Notes:</strong> {deliveryDetails.delivery.notes || 'No comment'}</p>
         </div>
-        <h1 className="font-bold">
-          Image:
-        </h1>
         {/* Display Images */}
         {deliveryDetails.images && deliveryDetails.images.length > 0 ? (
           <div className="mt-4">
@@ -135,12 +132,28 @@ const fetchDeliveryDetails = async () => {
           <p className="mt-4 text-gray-600">No products reported for this delivery.</p>
         )}
 
-        <button
-          onClick={onClose}
-          className="mt-4 px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
-        >
-          Close
-        </button>
+        <div className="flex justify-around item-center w-full  p-3 ">
+          <div className="w-1/2">
+            <button
+              onClick={onClose}
+              className=" bg-red-500 p-2 text-white font-bold rounded hover:bg-white hover:text-red-500 shadow-md duration-200"
+            >
+              Close
+            </button>
+          </div>
+          <div className="flex justify-end items-center w-1/2">
+            <button
+              className="duration-200 bg-red-500 rounded shadow-md hover:bg-white hover:text-red-500 text-white p-2 font-bold mr-2"
+            >
+              Create Return
+            </button>
+            <button
+              className="duration-200 hover:bg-white hover:text-blue-500 bg-blue-500 rounded text-white p-2 font-bold shadow-md"
+            >
+              Accept
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   );

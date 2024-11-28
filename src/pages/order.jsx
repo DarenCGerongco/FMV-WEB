@@ -335,16 +335,27 @@ return (
               />
             </div>
             <button
-              className="bg-blue-500 w-[15%] shadow-md font-bold text-black px-4 py-2 bg-blue-500 hover:bg-white hover:text-blue-500 duration-300 hover:text text-white rounded-md focus:outline-none"
+              className="w-[15%] shadow-md font-bold  px-4 py-2 bg-blue-500 hover:bg-white hover:text-blue-500 duration-300 hover:text text-white rounded-md focus:outline-none"
               onClick={createDeliveryPage}
             >
               Create Order
             </button>
           </div>
-          <div>
-            <span>
+          <div className='flex '>
+            <span className='mr-2'>
               filter:
             </span>
+            <div className="flex w-[15rem] justify-between">
+            <button>
+              Text
+            </button>
+            <button>
+              Text
+            </button>
+            <button>
+              Text
+            </button>
+            </div>
           </div>
         </div>
   

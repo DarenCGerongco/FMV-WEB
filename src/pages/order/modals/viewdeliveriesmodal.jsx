@@ -40,7 +40,6 @@ const ViewDeliveriesModal = ({ onClose, viewDeliveriesModalOpen, purchaseOrderId
         <div className="bg-blue-500 text-white text-center py-2 mb-4 rounded-md">
           <h3 className="text-lg font-bold">View Deliveries</h3>
         </div>
-
         {/* Customer Info */}
         <div className="mb-6">
           <h4 className="font-bold">
@@ -66,10 +65,23 @@ const ViewDeliveriesModal = ({ onClose, viewDeliveriesModalOpen, purchaseOrderId
           deliveryData.deliveries.map((delivery, index) => (
             <div key={index} className="mb-6">
               <div className="flex justify-between items-center">
-                <h4 className="font-bold">Delivery no:{delivery.delivery_no}</h4>
+                <h4 className="font-bold">Delivery no: {delivery.delivery_no}</h4>
               </div>
-              <p className="text-sm text-gray-500">Delivery man: <span className="font-bold">{delivery.delivery_man_name}</span></p>
-              <p className="text-sm text-gray-500">Delivery Status: {delivery.delivery_status}</p>
+              <p className="text-sm text-gray-500">
+                Delivery ID: <span className="font-bold">{delivery.delivery_id}</span>
+              </p>
+              <p className="text-sm text-gray-500">
+                Delivery man: <span className="font-bold">{delivery.delivery_man_name}</span>
+              </p>
+              <p className="text-sm text-gray-500">
+                Delivery Status: {delivery.delivery_status}
+              </p>
+              <p className="text-sm text-gray-500">
+                Delivery Date: {delivery.delivery_created}
+              </p>
+              <p className="text-sm text-gray-500">
+                Delivery Updated: {delivery.delivery_updated}
+              </p>
 
               {/* Products for each delivery */}
               <div className="mt-4">
