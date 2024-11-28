@@ -227,8 +227,7 @@ function DeliveryMan() {
             <div className="grid grid-cols-6 gap-1 font-bold p-1">
               <div className="col-span-2">Name</div>
               <div className="col-span-2">Number</div>
-              <div className="col-span-1">Edit</div>
-              <div className="col-span-1">Delete</div>
+              <div className="col-span-2 text-right">Options</div>
             </div>
 
             {filteredDeliveryMen.map((deliveryMan, index) => (
@@ -238,15 +237,13 @@ function DeliveryMan() {
                 >
                 <div className="col-span-2">{deliveryMan.name}</div>
                 <div className="col-span-2">{deliveryMan.number}</div>
-                <div className="col-span-1">
+                <div className="col-span-2 flex justify-end items-center space-x-5">
                   <img
                     src="./src/assets/edit.png"
                     alt="Edit"
                     className="w-5 h-5 cursor-pointer"
                     onClick={() => openEditModal(deliveryMan.name)}
                   />
-                </div>
-                <div className="col-span-1">
                   <img
                     src="./src/assets/delete.png"
                     alt="Delete"
