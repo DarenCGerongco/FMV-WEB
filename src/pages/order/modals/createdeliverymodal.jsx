@@ -184,7 +184,7 @@ const CreateDeliveryModal = ({ createDeliveryModalOpen, closeCreateDeliveryModal
                   <h3 className="productTitle">Quantity to Deliver:*</h3>
                   {product.remaining_quantity === 0 ? (
                     <div className="flex items-center">
-                      <div className="text-gray-500 italic mr-2">Order Filled</div>
+                      <div className="text-gray-500 italic mr-2">Nothing to Deliver</div>
                       <div className="qm-container relative z-50">
                         <img className='w-[25px] p-[5px]' src={qm} alt="Info" />
                         <div className="tooltip-text">
@@ -214,6 +214,11 @@ const CreateDeliveryModal = ({ createDeliveryModalOpen, closeCreateDeliveryModal
               </div>
             ))
           }
+          {/* <div>
+            <h1>
+              Return Data:
+            </h1>
+          </div> */}
             <div className='flex flex-row-reverse'>
             <button
                 className={`ml-2 duration-200 shadow-md rounded-md p-2 font-bold ${
