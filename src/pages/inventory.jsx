@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import Navbar from "../components/navbar";
 import axios from "axios";
 import AddProductModal from "./inventory/modal/AddProductModal";
+import RestockModal from "./inventory/modal/RestockModal";
 
 function Inventory() {
   const url = import.meta.env.VITE_API_URL;
@@ -19,6 +20,8 @@ function Inventory() {
   const [loading, setLoading] = useState(false);
   const [totalAssets, setTotalAssets] = useState(0);
   const [showAddProductModal, setShowAddProductModal] = useState(false);
+  const [showRestockModal, setShowRestockModal] = useState(false);
+  const [restockProduct, setRestockProduct] = useState(null);
 
   // Fetch categories
   const fetchCategories = async () => {
@@ -86,6 +89,15 @@ function Inventory() {
     setPagination((prev) => ({ ...prev, currentPage: 1 }));
   };
 
+  // Handle Restock button click
+  const handleRestockClick = (product) => {
+    setRestockProduct({
+      id: product.product_id,
+      name: product.product_name,
+    });
+    setShowRestockModal(true);
+  };
+
   return (
     <div className="flex w-full bg-white">
       <Navbar />
@@ -98,7 +110,9 @@ function Inventory() {
         <div className="w-4/5 mx-auto bg-white p-3 m-3 rounded-lg shadow-md">
           <div className="flex flex-row">
             <div className="flex flex-row items-center w-full px-4 py-3 mr-1 border border-gray-300 rounded-md shadow-md focus-within:border-blue-500 relative h-12">
-              <span className="font-bold text-black-500 whitespace-nowrap">INVENTORY</span>
+              <span className="font-bold text-black-500 whitespace-nowrap">
+                INVENTORY
+              </span>
               <div className="border-l border-gray-300 h-10 mx-2"></div>
               <input
                 type="text"
@@ -206,7 +220,10 @@ function Inventory() {
                   <div>₱ {item.original_price}</div>
                   <div>{item.quantity}</div>
                   <div>
-                    <button className="bg-blue-500 hover:bg-white hover:text-blue-500 shadow-md duration-200 font-bold text-white px-3 py-1 rounded-md">
+                    <button
+                      className="bg-blue-500 hover:bg-white hover:text-blue-500 shadow-md duration-200 font-bold text-white px-3 py-1 rounded-md"
+                      onClick={() => handleRestockClick(item)}
+                    >
                       Restock
                     </button>
                   </div>
@@ -223,6 +240,17 @@ function Inventory() {
             fetchProducts={() => fetchProducts(pagination.currentPage)}
           />
         )}
+
+        {/* Restock Modal */}
+        {showRestockModal && restockProduct && (
+          <RestockModal
+            productId={restockProduct.id}
+            productName={restockProduct.name}
+            onClose={() => setShowRestockModal(false)}
+            onRestockSuccess={() => fetchProducts(pagination.currentPage)}
+          />
+        )}
+
 
         {/* Pagination */}
         <div className="flex justify-center mt-4 space-x-2">

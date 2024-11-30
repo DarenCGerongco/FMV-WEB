@@ -82,6 +82,15 @@ function Delivery() {
     return statuses[status] || "Unknown";
   };
 
+  const getReturnStatusDisplay = (return_status) => {
+    const statuses = {
+      NR: "No Returns",
+      P: "Pending",
+      S: "Success",
+    }
+    return statuses[return_status] || "Unknown";
+  }
+
   return (
     <div className="flex w-full bg-white-100">
       <Navbar />
@@ -150,18 +159,19 @@ function Delivery() {
           </div>
         </div>
         <div className="w-4/5 mx-auto mt-2 bg-white p-3 rounded-lg drop-shadow-md">
-          <div className="grid grid-cols-6 text-sm font-bold p-1 rounded-md">
+          <div className="grid grid-cols-7 text-sm font-bold p-1 rounded-md">
             <div className="col-span-1">Delivery ID#</div>
             <div className="col-span-1">Purchase Order ID#</div>
             <div className="col-span-2">Delivery man</div>
-            <div className="col-span-1 text-center w-[80%]">Status</div>
+            <div className="col-span-1 text-center w-[80%]">Delivery Status</div>
+            <div className="col-span-1 text-center w-[80%]">Return Status</div>
             <div className="col-span-1">Delivery Created (24hrs)</div>
           </div>
           {filteredDeliveries && filteredDeliveries.length > 0 ? (
             filteredDeliveries.map((delivery) => (
               <div
                 key={delivery.delivery_id}
-                className="hover:bg-blue-50 duration-200 grid text-sm grid-cols-6 border-b shadow-md rounded my-1 border-gray-300 p-1 items-center cursor-pointer"
+                className="hover:bg-blue-50 duration-200 grid text-sm grid-cols-7 border-b shadow-md rounded my-1 border-gray-300 p-1 items-center cursor-pointer"
                 onClick={() => handleDeliveryClick(delivery.delivery_id)} // Open modal
               >
                 <div className="col-span-1">{delivery.delivery_id}</div>
@@ -183,6 +193,19 @@ function Delivery() {
                   }`}
                 >
                   {getStatusDisplayName(delivery.status)}
+                </div>
+                <div
+                  className={`col-span-1 px-2 w-[80%] font-bold text-center rounded-full ${
+                    delivery.return_status === "NR"
+                      ? "border border-green-400 text-green-500" // Gray for NR (No Return)
+                      : delivery.return_status === "P"
+                      ? "bg-red-200 border border-red-500 text-red-500" // Red for Pending
+                      : delivery.return_status === "S"
+                      ? "bg-green-200 border border-green-500 text-green-500" // Green for Success
+                      : "bg-gray-200 border border-gray-400 text-gray-500" // Default in case
+                  }`}
+                >
+                  {getReturnStatusDisplay(delivery.return_status)}
                 </div>
                 <div className="col-span-1">{delivery.formatted_date}</div>
               </div>

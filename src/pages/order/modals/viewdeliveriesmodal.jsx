@@ -36,26 +36,32 @@ const ViewDeliveriesModal = ({ onClose, viewDeliveriesModalOpen, purchaseOrderId
       id="viewDeliveriesModal"
       className="modal fixed top-0 left-0 w-full h-full flex justify-center items-center bg-black bg-opacity-50"
     >
-      <div className="bg-white p-6 rounded-lg shadow-2xl w-3/5 max-h-[90vh] overflow-y-auto">
+      <div className="bg-white p-6 rounded-lg shadow-2xl w-[60%] z-9999 max-h-[90vh] overflow-y-auto">
         <div className="bg-blue-500 text-white text-center py-2 mb-4 rounded-md">
           <h3 className="text-lg font-bold">View Deliveries</h3>
         </div>
         {/* Customer Info */}
-        <div className="mb-6">
-          <h4 className="font-bold">
+        <div className="mb-6 shadow-lg border-b-4-slate-950 rounded-lg bg-blue-100 px-2">
+          <p className="font-bold text-black">
+            Purchase Order ID #: {deliveryData.purchase_order_id}
+          </p>
+          <p className="font-bold text-black">
             Customer: {deliveryData.customer_name}
-          </h4>
-          <p className="text-gray-500">
+          </p>
+          <p className="font-bold text-black">
+            Status: {deliveryData.status}
+          </p>
+          <p className="text-black font-bold">
             Ordered Created by: {deliveryData.admin_name}
           </p>
-          <p className="text-gray-500">
+          <p className="text-black font-bold">
             Address: {deliveryData.address?.street || 'N/A'}, 
             {deliveryData.address?.barangay || 'N/A'}, 
             {deliveryData.address?.city || 'N/A'}, 
             {deliveryData.address?.province || 'N/A'}, 
             {deliveryData.address?.zip_code || 'N/A'}
           </p>
-          <p className="text-gray-500">
+          <p className="text-black">
             Order Date: {formatDate(deliveryData.created_at)}
           </p>
         </div>
@@ -63,12 +69,12 @@ const ViewDeliveriesModal = ({ onClose, viewDeliveriesModalOpen, purchaseOrderId
         {/* Delivery Data */}
         {deliveryData.deliveries.length > 0 ? (
           deliveryData.deliveries.map((delivery, index) => (
-            <div key={index} className="mb-6">
+            <div key={index} className="mb-6 bg-white p-2 rounded-xl border-b-1 hover:bg-slate-100 shadow-md">
               <div className="flex justify-between items-center">
                 <h4 className="font-bold">Delivery no: {delivery.delivery_no}</h4>
               </div>
               <p className="text-sm text-gray-500">
-                Delivery ID: <span className="font-bold">{delivery.delivery_id}</span>
+                Delivery ID #: <span className="font-bold">{delivery.delivery_id}</span>
               </p>
               <p className="text-sm text-gray-500">
                 Delivery man: <span className="font-bold">{delivery.delivery_man_name}</span>
@@ -77,23 +83,72 @@ const ViewDeliveriesModal = ({ onClose, viewDeliveriesModalOpen, purchaseOrderId
                 Delivery Status: {delivery.delivery_status}
               </p>
               <p className="text-sm text-gray-500">
-                Delivery Date: {delivery.delivery_created}
+                Delivery Date: {formatDate(delivery.delivery_created)}
               </p>
               <p className="text-sm text-gray-500">
-                Delivery Updated: {delivery.delivery_updated}
+                Delivery Updated: {formatDate(delivery.delivery_updated)}
               </p>
 
               {/* Products for each delivery */}
               <div className="mt-4">
-                {delivery.products.map((product, productIndex) => (
-                  <div key={productIndex} className="border border-gray-300 rounded-md p-4 mb-2">
-                    <div className="flex justify-around">
-                      <p>₱{product.price}</p>
-                      <p>{product.product_name}</p>
-                      <p>x{product.quantity}</p>
+                <div className="grid grid-cols-5 py-1 px-1">
+                  <p className="grid-span-1 font-bold pl-4 text-sm">
+                    Price
+                  </p>
+                  <p className="grid-span-1 font-bold pl-4 text-sm">
+                    Product Name
+                  </p>
+                  <p className="grid-span-1 font-bold pl-4 text-sm">
+                    Delivered Quantity
+                  </p>
+                  <p className="grid-span-1 font-bold pl-4 text-sm">
+                    Damages
+                  </p>
+                  <p className="grid-span-1 font-bold pl-4 text-sm">
+                    Returns
+                  </p>
+                </div>
+                {delivery.products.map((product, productIndex) => {
+                  // Calculate total returned quantity
+                  const totalReturned = product.returns.reduce((sum, ret) => sum + ret.quantity, 0);
+                  const allDamagesReturned = totalReturned === product.no_of_damages;
+
+                  return (
+                    <div key={productIndex} className="grid grid-cols-5 bg-gray-200 shadow-md border-b-1 rounded-md py-1 px-1 mb-2">
+                      <p className="grid-span-1 font-bold pl-4 text-sm">
+                        ₱{product.price}
+                      </p>
+                      <p className="grid-span-1 font-bold pl-4 text-sm">
+                        {product.product_name}
+                      </p>
+                      <p className="grid-span-1 font-bold pl-4 text-sm">
+                        x{product.quantity}
+                      </p>
+                      <p className="grid-span-1 font-bold pl-4 text-sm">
+                        {product.no_of_damages}
+                      </p>
+                      <div className="grid-span-1 text-sm text-gray-700">
+                        {product.no_of_damages > 0 ? (
+                          totalReturned === 0 ? (
+                            <p
+                              className='text-red-500 font-bold'
+                            >Awaiting for return</p>
+                          ) : (
+                            <p
+                              className='text-green-500 font-bold'
+                            >{allDamagesReturned ? "Returned" : "Awaiting for return"}</p>
+                          )
+                        ) : (
+                          <p
+                            className='font-medium italic'
+                          >
+                            No Returns
+                          </p>
+                        )}
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </div>
           ))

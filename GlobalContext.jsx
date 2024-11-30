@@ -1,3 +1,4 @@
+// GlobalContext.jsx
 import { createContext, useState, useEffect } from 'react';
 import axios from 'axios';  // Assuming axios is used for making API calls
 
@@ -10,16 +11,27 @@ export const GlobalProvider = ({ children }) => {
 
   // On initial load, retrieve the userID from localStorage (if available)
   useEffect(() => {
-    const storedID = localStorage.getItem('userID');
-    if (storedID) {
-      setID(storedID);
+    try {
+      const storedID = localStorage.getItem('userID');
+      if (storedID) {
+        setID(storedID);
+      } else {
+        console.warn("User ID not found in localStorage after refresh");
+      }
+    } catch (error) {
+      console.error("Failed to access localStorage:", error);
+      // Handle missing local storage gracefully, e.g., by redirecting to login
     }
   }, []);
 
   // Whenever the ID is updated, store it in localStorage and fetch the user's name
   useEffect(() => {
     if (id) {
-      localStorage.setItem('userID', id);
+      try {
+        localStorage.setItem('userID', id);
+      } catch (error) {
+        console.error("Failed to set userID in localStorage:", error);
+      }
 
       // Fetch user's name using the `GET` method after retrieving the userID
       const fetchUserName = async () => {
@@ -27,10 +39,9 @@ export const GlobalProvider = ({ children }) => {
           console.log(`Fetching user name for ID: ${id}`); // Debugging
           const response = await axios.get(`${url}/api/users/${id}`);
           console.log('API Response from GlobalContext.jsx:', response.data.name);  // Log the response
-          console.log('Welcome,', response.data.name)
           setUserName(response.data.name);
         } catch (error) {
-          console.error('This is from Global JSCN: Error fetching user name:', error);
+          console.error('Error fetching user name:', error);
         }
       };
 

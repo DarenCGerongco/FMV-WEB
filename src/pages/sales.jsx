@@ -57,10 +57,16 @@ function Sales() {
         <div className="w-4/5 mx-auto bg-white p-6 m-3 rounded-lg shadow-md mb-6">
           <h2 className="text-1xl font-bold">Management System Sales</h2>
         </div>
+        <div className="w-4/5 mx-auto bg-white p-6 m-3 rounded-lg shadow-md mb-6">
+          <span>
+            Monthly Reports for this Year
+          </span>
+        </div>
         <div className="w-4/5 flex mx-auto bg-white p-5 m-3 rounded-lg shadow-md">
+
           <div className='m-1 w-1/3 bg-gray-100'>
             <span>
-              span
+              January
             </span>
           </div>
           <div className='m-1 w-1/3 bg-gray-100'>
