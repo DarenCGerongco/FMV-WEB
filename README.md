@@ -15,6 +15,7 @@ Currently, two official plugins are available:
 - `npm install vite @vitejs/plugin-react --save-dev`
 - `npm install vite-plugin-node-polyfills --save-dev`
 - `npm i react-toastify`
+- `npm install react-icons`
 
 
 # To run the Code:
