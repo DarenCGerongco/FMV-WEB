@@ -97,7 +97,7 @@ const Navbar = () => {
             <img
             src={overviewImage}
             alt="Overview Icon"
-            className="w-6 h-6 mr-2"
+            className={`w-6 h-6 mr-2 transition group-hover:invert-0 ${isActive('/overview') ? 'invert-0' : 'invert'}`}
             />
               <Link to="/overview" className={`text-base md:text-xl ${isActive('/overview') ? 'text-black' : 'text-white group-hover:text-black'}`}>OVERVIEW</Link>
             </li>
@@ -106,7 +106,7 @@ const Navbar = () => {
             <img
             src={orderImage}
             alt="Order Icon"
-            className="w-6 h-6 mr-2"
+            className={`w-6 h-6 mr-2 transition group-hover:invert-0 ${isActive('/order') ? 'invert-0' : 'invert'}`}
             />
               <Link to="/order" className={`text-base md:text-xl ${isActive('/order') ? 'text-black' : 'text-white group-hover:text-black'}`}>ORDER</Link>
             </li>
@@ -115,7 +115,7 @@ const Navbar = () => {
             <img
             src={deliveryImage}
             alt="Delivery Icon"
-            className="w-6 h-6 mr-2"
+            className={`w-6 h-6 mr-2 transition group-hover:invert-0 ${isActive('/delivery') ? 'invert-0' : 'invert'}`}
             />
               <Link to="/delivery" className={`text-base md:text-xl ${isActive('/delivery') ? 'text-black' : 'text-white group-hover:text-black'}`}>DELIVERY</Link>
             </li>
@@ -124,7 +124,7 @@ const Navbar = () => {
             <img
             src={salesImage}
             alt="Sales Icon"
-            className="w-6 h-6 mr-2"
+            className={`w-6 h-6 mr-2 transition group-hover:invert-0 ${isActive('/sales') ? 'invert-0' : 'invert'}`}
             />
               <Link to="/sales" className={`text-base md:text-xl ${isActive('/sales') ? 'text-black' : 'text-white group-hover:text-black'}`}>SALES</Link>
             </li>
@@ -133,7 +133,7 @@ const Navbar = () => {
             <img
             src={inventoryImage}
             alt="Inventory Icon"
-            className="w-6 h-6 mr-2"
+            className={`w-6 h-6 mr-2 transition group-hover:invert-0 ${isActive('/inventory') ? 'invert-0' : 'invert'}`}
             />
               <Link to="/inventory" className={`text-base md:text-xl ${isActive('/inventory') ? 'text-black' : 'text-white group-hover:text-black'}`}>INVENTORY</Link>
             </li>
@@ -142,7 +142,7 @@ const Navbar = () => {
             <img
             src={employeeImage}
             alt="Employee Icon"
-            className="w-6 h-6 mr-2"
+            className={`w-6 h-6 mr-2 transition group-hover:invert-0 ${isActive('/deliveryman') ? 'invert-0' : 'invert'}`}
             />
               <Link to="/deliveryman" className={`text-base md:text-xl ${isActive('/deliveryman') ? 'text-black' : 'text-white group-hover:text-black'}`}>EMPLOYEE</Link>
             </li>
@@ -151,7 +151,7 @@ const Navbar = () => {
             <img
             src={settingsImage}
             alt="Settings Icon"
-            className="w-6 h-6 mr-2"
+            className={`w-6 h-6 mr-2 transition group-hover:invert-0 ${isActive('/settings') ? 'invert-0' : 'invert'}`}
             />
               <Link to="/settings" className={`text-base md:text-xl ${isActive('/settings') ? 'text-black' : 'text-white group-hover:text-black'}`}>SETTINGS (wip)</Link>
             </li>
@@ -171,7 +171,7 @@ const Navbar = () => {
         <img
             src={logoutImage}
             alt="Settings Icon"
-            className="w-6 h-6 mr-2"
+            className={`w-6 h-6 mr-2 transition group-hover:invert-0 ${isActive('') ? 'invert-0' : 'invert'}`}
             />
           <button onClick={openModal} className="text-base md:text-xl text-white group-hover:text-black">LOGOUT</button>
         </li>
