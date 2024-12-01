@@ -114,7 +114,7 @@ function Delivery() {
           </div>
           <div className="flex mt-4">
             <span className="mx-1 font-bold py-1 px-3 text-blue-500 rounded">
-              Filter:
+              Delivery Status:
             </span>
             <button
               className={`mx-1 font-bold py-1 px-3 ${
