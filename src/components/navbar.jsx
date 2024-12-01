@@ -2,6 +2,15 @@ import { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import companyImage from './../assets/Logo.png';
+import dashboardImage from './../assets/dashboard.png'; // Add dashboard image
+import overviewImage from './../assets/overview.png'; // Add overview image
+import orderImage from './../assets/order.png'; // Add order image
+import deliveryImage from './../assets/delivery.png'; // Add delviery image
+import salesImage from './../assets/sales.png'; // Add sales image
+import inventoryImage from './../assets/inventory.png'; // Add inventory image
+import employeeImage from './../assets/employee.png'; // Add employee image
+import settingsImage from './../assets/settings.png'; // Add settings image
+import logoutImage from './../assets/logout.png'; // Add logout image
 
 const Navbar = () => {
   const url = import.meta.env.VITE_API_URL;
@@ -75,32 +84,82 @@ const Navbar = () => {
           />
         </div>
         <div className="mt-8 w-full">
-          <h2 className="text-white text-xl md:text-2xl mb-5 md:ml-0 ml-2 text-center md:text-left">DASHBOARD</h2>
+          <h2 className="text-white text-xl md:text-2xl mb-5 md:ml-0 ml-2 flex items-center text-center md:text-left">
+            <img
+              src={dashboardImage}
+              alt="Dashboard Icon"
+              className="w-6 h-6 mr-2"
+            />
+            DASHBOARD
+          </h2>
           <ul>
             <li className={`mb-4 flex items-center transition pl-2 md:pl-5 group ${isActive('/overview') ? 'bg-white text-black rounded' : 'hover:bg-white hover:text-black rounded'}`}>
+            <img
+            src={overviewImage}
+            alt="Overview Icon"
+            className="w-6 h-6 mr-2"
+            />
               <Link to="/overview" className={`text-base md:text-xl ${isActive('/overview') ? 'text-black' : 'text-white group-hover:text-black'}`}>OVERVIEW</Link>
             </li>
+
             <li className={`mb-4 flex items-center transition pl-2 md:pl-5 group ${isActive('/order') ? 'bg-white text-black rounded' : 'hover:bg-white hover:text-black rounded'}`}>
+            <img
+            src={orderImage}
+            alt="Order Icon"
+            className="w-6 h-6 mr-2"
+            />
               <Link to="/order" className={`text-base md:text-xl ${isActive('/order') ? 'text-black' : 'text-white group-hover:text-black'}`}>ORDER</Link>
             </li>
+
             <li className={`mb-4 flex items-center transition pl-2 md:pl-5 group ${isActive('/delivery') ? 'bg-white text-black rounded' : 'hover:bg-white hover:text-black rounded'}`}>
+            <img
+            src={deliveryImage}
+            alt="Delivery Icon"
+            className="w-6 h-6 mr-2"
+            />
               <Link to="/delivery" className={`text-base md:text-xl ${isActive('/delivery') ? 'text-black' : 'text-white group-hover:text-black'}`}>DELIVERY</Link>
             </li>
+
             <li className={`mb-4 flex items-center transition pl-2 md:pl-5 group ${isActive('/sales') ? 'bg-white text-black rounded' : 'hover:bg-white hover:text-black rounded'}`}>
+            <img
+            src={salesImage}
+            alt="Sales Icon"
+            className="w-6 h-6 mr-2"
+            />
               <Link to="/sales" className={`text-base md:text-xl ${isActive('/sales') ? 'text-black' : 'text-white group-hover:text-black'}`}>SALES</Link>
             </li>
+
             <li className={`mb-4 flex items-center transition pl-2 md:pl-5 group ${isActive('/inventory') ? 'bg-white text-black rounded' : 'hover:bg-white hover:text-black rounded'}`}>
+            <img
+            src={inventoryImage}
+            alt="Inventory Icon"
+            className="w-6 h-6 mr-2"
+            />
               <Link to="/inventory" className={`text-base md:text-xl ${isActive('/inventory') ? 'text-black' : 'text-white group-hover:text-black'}`}>INVENTORY</Link>
             </li>
+
             <li className={`mb-4 flex items-center transition pl-2 md:pl-5 group ${isActive('/deliveryman') ? 'bg-white text-black rounded' : 'hover:bg-white hover:text-black rounded'}`}>
+            <img
+            src={employeeImage}
+            alt="Employee Icon"
+            className="w-6 h-6 mr-2"
+            />
               <Link to="/deliveryman" className={`text-base md:text-xl ${isActive('/deliveryman') ? 'text-black' : 'text-white group-hover:text-black'}`}>EMPLOYEE</Link>
             </li>
+
             <li className={`mb-4 flex items-center transition pl-2 md:pl-5 group ${isActive('/settings') ? 'bg-white text-black rounded' : 'hover:bg-white hover:text-black rounded'}`}>
+            <img
+            src={settingsImage}
+            alt="Settings Icon"
+            className="w-6 h-6 mr-2"
+            />
               <Link to="/settings" className={`text-base md:text-xl ${isActive('/settings') ? 'text-black' : 'text-white group-hover:text-black'}`}>SETTINGS (wip)</Link>
             </li>
+
             <li className={`mb-4 flex items-center transition pl-2 md:pl-5 group ${isActive('/logs') ? 'bg-white text-black rounded' : 'hover:bg-white hover:text-black rounded'}`}>
               <Link to="/logs" className={`text-base md:text-xl ${isActive('/') ? 'text-black' : 'text-white group-hover:text-black'}`}>LOGS (wip)</Link>
             </li>
+
             <li className={`mb-4 flex items-center transition pl-2 md:pl-5 group ${isActive('/sample') ? 'bg-white text-black rounded' : 'hover:bg-white hover:text-black rounded'}`}>
               <Link to="/sample" className={`text-base md:text-xl ${isActive('/') ? 'text-black' : 'text-white group-hover:text-black'}`}>SAMPLE (wip)</Link>
             </li>
@@ -109,6 +168,11 @@ const Navbar = () => {
       </div>
       <div className="w-full">
         <li className="mb-4 flex items-center transition duration-300 group hover:bg-white hover:text-black rounded pl-2 md:pl-5">
+        <img
+            src={logoutImage}
+            alt="Settings Icon"
+            className="w-6 h-6 mr-2"
+            />
           <button onClick={openModal} className="text-base md:text-xl text-white group-hover:text-black">LOGOUT</button>
         </li>
       </div>
