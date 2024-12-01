@@ -88,7 +88,7 @@ const Navbar = () => {
             <img
               src={dashboardImage}
               alt="Dashboard Icon"
-              className="w-6 h-6 mr-2"
+              className={`w-6 h-6 mr-2 transition group-hover:invert-0 ${isActive('') ? 'invert-0' : 'invert'}`}
             />
             DASHBOARD
           </h2>
