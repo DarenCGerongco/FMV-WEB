@@ -198,7 +198,7 @@ function DeliveryMan() {
       <Navbar/>
       <div className="flex flex-col w-full bg-white">
         <div className="w-4/5 mx-auto bg-white p-6 m-3 rounded-lg shadow-md mb-6 border">
-          <h2 className="font-bold text-1xl font-bold">EMPLOYEE</h2>
+          <h2 className="font-bold text-1xl">EMPLOYEE</h2>
         </div>
         <div className="w-4/5 mx-auto bg-white p-3 rounded-lg shadow-md">
           <div className="relative mt-4 flex items-center space-x-4">
