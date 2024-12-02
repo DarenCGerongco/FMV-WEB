@@ -7,6 +7,7 @@ import { useNavigate } from 'react-router-dom';
 import CreateDeliveryModal from './order/modals/createdeliverymodal';
 import ViewDeliveriesModal from './order/modals/viewdeliveriesmodal';
 import ItemsOrderedModal from './order/modals/viewitemsorderedmodal';
+import Walkin from '../components/walkin';
 
 function Order() {
   const navigate = useNavigate(); // Initialize navigate
@@ -171,7 +172,8 @@ function Order() {
 
   return (
     <div className="flex w-full bg-white">
-      <Navbar />
+      <Navbar/>
+      <Walkin/>
       <div className="flex flex-col w-full bg-white">
         <div className="w-4/5 mx-auto bg-white p-6 m-3 rounded-lg drop-shadow-md mb-6 border">
           <h2 className="text-1xl font-bold">MANAGEMENT SYSTEM ORDER</h2>

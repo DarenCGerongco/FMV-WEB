@@ -3,6 +3,7 @@ import Navbar from "../components/navbar";
 import axios from "axios";
 import AddProductModal from "./inventory/modal/AddProductModal";
 import RestockModal from "./inventory/modal/RestockModal";
+import Walkin from '../components/walkin';
 
 function Inventory() {
   const url = import.meta.env.VITE_API_URL;
@@ -100,7 +101,8 @@ function Inventory() {
 
   return (
     <div className="flex w-full bg-white">
-      <Navbar />
+      <Navbar/>
+      <Walkin/>
       <div className="flex flex-col w-full bg-white">
         <div className="w-4/5 mx-auto bg-white p-6 m-3 rounded-lg shadow-md mb-6 border">
           <h2 className="text-1xl font-bold">MANAGEMENT SYSTEM INVENTORY</h2>

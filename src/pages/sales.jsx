@@ -11,6 +11,7 @@ import {
   Legend,
 } from "chart.js";
 import axios from "axios";
+import Walkin from '../components/walkin';
 
 // Register required Chart.js components
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
@@ -22,6 +23,17 @@ function Sales() {
 
   const monthlyRecordsUrl = `${import.meta.env.VITE_API_URL}/api/Insights/Monthly-Records`;
   const monthlyDataUrl = `${import.meta.env.VITE_API_URL}/api/Insights/Monthly-Data`;
+
+  // Create a dynamic list of years starting from 2023 up to the current year
+  const getYears = () => {
+    const startYear = 2023;
+    const currentYear = new Date().getFullYear();
+    let years = [];
+    for (let i = startYear; i <= currentYear; i++) {
+      years.push(i);
+    }
+    return years;
+  };
 
   // Fetch data for bar graph
   const fetchMonthlyRecords = async () => {
@@ -39,6 +51,7 @@ function Sales() {
           {
             label: "Total Revenue (Php)",
             backgroundColor: "#4caf50",
+            borderRadius: 10, // Rounded corners for the bars
             data: data.map((item) =>
               parseFloat(item.total_revenue?.replace(/,/g, "") || 0)
             ),
@@ -46,6 +59,7 @@ function Sales() {
           {
             label: "Total Damages (Php)",
             backgroundColor: "#f44336",
+            borderRadius: 10, // Rounded corners for the bars
             data: data.map((item) =>
               parseFloat(item.total_damages?.replace(/,/g, "") || 0)
             ),
@@ -83,7 +97,9 @@ function Sales() {
 
   return (
     <div className="flex w-full">
-      <Navbar />
+      <Navbar/>
+      <Walkin/>
+
       <div className="w-full bg-white-100">
         <div className="w-4/5 mx-auto bg-white p-6 m-3 rounded-lg shadow-md mb-6 border">
           <h2 className="text-1xl font-bold">MANAGEMENT SYSTEM SALES</h2>
@@ -94,11 +110,11 @@ function Sales() {
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-lg font-bold">Monthly Records</h3>
             <select
-              className="border p-2 rounded"
+              className="border rounded"
               value={year}
               onChange={(e) => setYear(parseInt(e.target.value))}
             >
-              {[2023, 2024, 2025].map((y) => (
+              {getYears().map((y) => (
                 <option key={y} value={y}>
                   {y}
                 </option>

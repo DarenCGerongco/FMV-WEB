@@ -6,6 +6,7 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom'; // Import useNavigate
 import { GlobalContext } from '../../GlobalContext';  // Import GlobalContext
 import catLoadingGif from './../assets/overview/catJumping.gif'; // Import your GIF file
+import Walkin from '../components/walkin';
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
@@ -74,19 +75,33 @@ function Overview() {
 
     setTimeout(() => {
       setLoading(false); // Set loading to false after 2 seconds
-    }, 2000); // Show spinner for 2 seconds
+    }, 500); // Show spinner for 2 seconds
   }, []);
 
   const fetchUserNames = async () => {
     try {
-      const response = await fetch(`${url}/api/users`);
-      const data = await response.json();
-      const userNames = data.data.map(user => user.name);
-      setUserNames(userNames);
+      // Update the endpoint to fetch only the needed users
+      const response = await axios.get(`${url}/api/users-limited`);
+      const data = response.data;
+  
+      // Log the data to see what is being returned
+      console.log("Fetched user data:", data);
+  
+      // Check if data.data is an array before calling map
+      if (data.success && Array.isArray(data.data)) {
+        const userNames = data.data.map(user => user.name);
+        setUserNames(userNames);
+      } else {
+        console.error('Expected an array for user data, but got:', data.data);
+        setUserNames([]); // Ensure it's always an array even on error or unexpected response
+      }
     } catch (error) {
       console.error('Error fetching user names:', error);
     }
   };
+  
+  
+  
 
   // Data for the pie chart
   const data = {
@@ -151,7 +166,7 @@ function Overview() {
   return (
     <div className="flex w-full bg-white">
       <Navbar />
-      
+      <Walkin/>
       <div className="flex flex-col xl:w-4/5 bg-white">
         <div className="w-11/12 mx-auto bg-white p-6 m-3 rounded-lg shadow-md mb-6 border">
           <h2 className="text-1xl font-bold">
@@ -254,17 +269,19 @@ function Overview() {
               </div>
             </div>
 
-            {/* Delivery Man Container */}
             <div className="bg-white p-6 rounded-lg shadow-md hover:shadow-2xl hover:shadow-gray-400 duration-200 cursor-pointer"
               onClick={handleDeliveryManClick}
-              // style={{ maxHeight: '400px', overflowY: 'auto' }}
             >
               <h3 className="text-lg font-bold mb-4">EMPLOYEE ACCOUNT</h3>
-              {userNames.map((name, index) => (
-                <div key={index} className="bg-gray-200 p-4 rounded-lg shadow-md mt-4">
-                  <p className="text-gray-700 text-sm whitespace-nowrap">{name}</p>
-                </div>
-              ))}
+              {userNames.length > 0 ? (
+                userNames.map((name, index) => (
+                  <div key={index} className="bg-gray-200 p-4 rounded-lg shadow-md mt-4">
+                    <p className="text-gray-700 text-sm whitespace-nowrap">{name}</p>
+                  </div>
+                ))
+              ) : (
+                <div className="text-gray-500">No users available</div>
+              )}
             </div>
           </div>
 
