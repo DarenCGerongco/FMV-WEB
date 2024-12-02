@@ -114,13 +114,14 @@ const CreatePurchaseOrder = () => {
 <div className="flex w-full">
   <Navbar />
     <div className="flex flex-col items-center w-full">
-      <div className="shadow-md bg-gray-200 rounded p-2">
-        <h3 className="text-center text-lg font-bold">Create Purchase Order</h3>
+      <div className="w-11/12 mx-auto bg-white p-6 m-3 rounded-lg drop-shadow-md mb-6 border">
+        <h3 className="text-1xl font-bold">CREATE PURCHASE ORDER</h3>
       </div>
       <div 
-        className="flex flex-col  w-full justify-center shadow-md p-5 rounded mt-5"
+        className="w-11/12 mx-auto bg-white p-6 m-3 rounded-lg drop-shadow-md mb-6 border"
       >
         <h1 className="text-xl font-bold">Customer's Details:</h1>
+        <hr className="h-px my-8 bg-gray-500 border-0 shadow-md"></hr>
         <div className="grid grid-cols-2 gap-4">
           {['customer_name', 'street', 'barangay', 'city', 'province', 'zipcode'].map((field, index) => (
             <div key={index}>
@@ -133,7 +134,7 @@ const CreatePurchaseOrder = () => {
                 <span className="text-red-500">*</span>
               </label>
               <input
-                className="w-full p-2 text-sm rounded-lg border-gray-300 border"
+                className="w-full p-2 text-sm rounded-lg border shadow-lg"
                 type="text"
                 id={field}
                 name={field}
@@ -143,8 +144,7 @@ const CreatePurchaseOrder = () => {
             </div>
           ))}
         </div>
-      </div>
-      <div className="mt-5 shadow-md p-5 w-full rounded">
+        <hr className="h-px my-8 bg-gray-500 border-0 shadow-md"></hr>
         <h1 className="text-xl font-bold">Product Listed:</h1>
         <div className="grid grid-cols-10 bg-gray-300 p-2 rounded">
           <span className="col-span-1 font-bold">ID</span>
@@ -152,8 +152,8 @@ const CreatePurchaseOrder = () => {
           <span className="col-span-2 font-bold">Category</span>
           <span className="col-span-1 font-bold">Original Price</span>
           <span className="col-span-1 font-bold">Available Quantity</span>
-          <span className="col-span-1 font-bold text-red-500 text-center">Price (Discounted)</span>
-          <span className="col-span-1 font-bold text-red-500 text-center">Quantity</span>
+          <span className="col-span-1 font-bold text-red-500 text-center">Reduced Price</span>
+          <span className="col-span-1 font-bold text-red-500 text-center">Units to buy</span>
           <span className="col-span-1 font-bold text-red-500 text-center">Option</span>
         </div>
         {productsListed.length > 0 ? (
@@ -185,10 +185,10 @@ const CreatePurchaseOrder = () => {
             </div>
           ))
         ) : (
-          <p className="text-center mt-2">No products added yet.</p>
+          <p className="text-center mt-6">No products added yet.</p>
         )}
-      </div>
-      <div className="flex justify-end mt-5">
+        <hr className="h-px my-2 bg-gray-500 border-0 shadow-md"></hr>
+      <div className="flex justify-end mt-5 items-end">
         <button
           className="mr-4 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-400"
           onClick={toggleModal}
@@ -208,8 +208,9 @@ const CreatePurchaseOrder = () => {
           Submit
         </button>
       </div>
-      <Modal isOpen={isModalOpen} onClose={toggleModal} addProductToList={addProductToList} />
       <ToastContainer />
+      </div>
+      <Modal isOpen={isModalOpen} onClose={toggleModal} addProductToList={addProductToList} />
     </div>
 </div>
 
