@@ -3,7 +3,7 @@ import Navbar from '../components/navbar';
 import axios from 'axios';
 
 
-function DeliveryMan() {
+function Employee() {
   const url = import.meta.env.VITE_API_URL;
 
   const [addModalOpen, setAddModalOpen] = useState(false);
@@ -462,4 +462,4 @@ function DeliveryMan() {
   );
 }
 
-export default DeliveryMan;
+export default Employee;

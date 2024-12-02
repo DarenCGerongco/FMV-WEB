@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '../../../components/navbar';
-import Modal from './CreatePurchaseOrderModal'; // Ensure this import path matches where your Modal component is located
+import Modal from './CreatePurchaseOrderDelivery_Modal'; // Ensure this import path matches where your Modal component is located
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 

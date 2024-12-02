@@ -5,6 +5,7 @@ import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom'; // Import useNavigate
 import { GlobalContext } from '../../GlobalContext';  // Import GlobalContext
+import catLoadingGif from './../assets/overview/catJumping.gif'; // Import your GIF file
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
@@ -15,6 +16,7 @@ function Overview() {
   const [userNames, setUserNames] = useState([]);
   const [inventoryItems, setInventoryItems] = useState([]);
   const [orders, setOrders] = useState([]);
+  const [loading, setLoading] = useState(true); // Loading state
   const { id, userName } = useContext(GlobalContext);
 
   // Debugging - log the `id` and `userName` values
@@ -33,8 +35,6 @@ function Overview() {
       console.error('Error fetching order data:', error);
     }
   };
-
-
 
   // Fetch inventory data
   const fetchInventoryData = async () => {
@@ -55,9 +55,6 @@ function Overview() {
     }
   };
 
-
-  // console.log("This is from Overview: " + userName);
-
   // Fetch sales data
   const fetchSalesData = () => {
     const salesdata = [
@@ -74,15 +71,10 @@ function Overview() {
     fetchInventoryData(); // Fetch initial inventory data
     fetchOrderData();  // Fetch initial order data
     fetchSalesData(); // Fetch initial sales data
-    
-    const intervalId = setInterval(() => {
-      fetchUserNames(); // Update user names
-      fetchInventoryData(); // Update inventory items
-      fetchOrderData(); // Update orders
-      fetchSalesData(); // Update sales data
-    }, 20000); // Update every 10 seconds
-    
-    return () => clearInterval(intervalId); // Clear interval on unmount
+
+    setTimeout(() => {
+      setLoading(false); // Set loading to false after 2 seconds
+    }, 2000); // Show spinner for 2 seconds
   }, []);
 
   const fetchUserNames = async () => {
@@ -141,7 +133,7 @@ function Overview() {
     navigate('/inventory'); // Redirect to inventory page
   };
   const handleDeliveryManClick = () => {
-    navigate('/deliveryman'); // Redirect to deliveryman page
+    navigate('/employee'); // Redirect to deliveryman page
   };
 
   const handleOrderClick = () => {
@@ -159,6 +151,7 @@ function Overview() {
   return (
     <div className="flex w-full bg-white">
       <Navbar />
+      
       <div className="flex flex-col xl:w-4/5 bg-white">
         <div className="w-11/12 mx-auto bg-white p-6 m-3 rounded-lg shadow-md mb-6 border">
           <h2 className="text-1xl font-bold">
@@ -168,8 +161,13 @@ function Overview() {
             Welcome, {userName || "Unknown User"}
           </h2>
         </div>
-
         <div className="w-11/12 mx-auto flex space-x-4">
+          {loading ? (
+            <div className="flex items-center justify-center w-full h-[768px]">
+              <img src={catLoadingGif} alt="" />
+            </div>
+          ): (
+            <>
           <div className="flex flex-col space-y-4 w-1/3">
             {/* Order Container */}   
             <div 
@@ -318,6 +316,8 @@ function Overview() {
             )}
           </div>
           </div>
+          </>
+          )}
         </div>
       </div>
     </div>

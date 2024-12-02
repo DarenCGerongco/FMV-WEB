@@ -37,14 +37,14 @@ function Sales() {
         labels: data.map((item) => item.month || "Unknown"),
         datasets: [
           {
-            label: "Total Revenue",
+            label: "Total Revenue (Php)",
             backgroundColor: "#4caf50",
             data: data.map((item) =>
               parseFloat(item.total_revenue?.replace(/,/g, "") || 0)
             ),
           },
           {
-            label: "Total Damages",
+            label: "Total Damages (Php)",
             backgroundColor: "#f44336",
             data: data.map((item) =>
               parseFloat(item.total_damages?.replace(/,/g, "") || 0)
@@ -112,34 +112,33 @@ function Sales() {
                 responsive: true,
                 plugins: {
                   legend: { position: "top" },
-                  title: { display: true, text: `Revenue and Damages for ${year}` },
+                  title: { display: true, text: `Revenue and Damages (Php) for ${year}` },
                 },
               }}
             />
           )}
+          {/* Monthly Data Section */}
+          {monthlyData && (
+            <div className="w-full mx-auto bg-white rounded-lg grid grid-cols-3 gap-4">
+              <div className="flex flex-col items-center p-4 border rounded">
+                <span className="font-bold mb-2">Current Month's Revenue:</span>
+                <span>Php {monthlyData.CurrentPurchaseOrderRevenue || "0.00"}</span>
+                <span className="font-bold mt-4">Current Month's Damages:</span>
+                <span>Php {monthlyData.CurrentMonthDamages || "0.00"}</span>
+              </div>
+              <div className="flex flex-col items-center p-4 border rounded">
+                <span className="font-bold mb-2">Previous Month's Revenue:</span>
+                <span>Php {monthlyData.PreviousMonthRevenue || "0.00"}</span>
+                <span className="font-bold mt-4">Previous Month's Damages:</span>
+                <span>Php {monthlyData.PreviousMonthDamages || "0.00"}</span>
+              </div>
+              <div className="flex flex-col items-center p-4 border rounded">
+                <span className="font-bold mb-2">Contribution Percentage:</span>
+                <span>{monthlyData.ContributionPercentage || "0.00"}%</span>
+              </div>
+            </div>
+          )}
         </div>
-
-        {/* Monthly Data Section */}
-        {monthlyData && (
-          <div className="w-4/5 mx-auto bg-white p-3 rounded-lg drop-shadow-md grid grid-cols-3 gap-4">
-            <div className="flex flex-col items-center p-4 border rounded">
-              <span className="font-bold mb-2">Current Month's Revenue:</span>
-              <span>Php {monthlyData.CurrentPurchaseOrderRevenue || "0.00"}</span>
-              <span className="font-bold mt-4">Current Month's Damages:</span>
-              <span>Php {monthlyData.CurrentMonthDamages || "0.00"}</span>
-            </div>
-            <div className="flex flex-col items-center p-4 border rounded">
-              <span className="font-bold mb-2">Previous Month's Revenue:</span>
-              <span>Php {monthlyData.PreviousMonthRevenue || "0.00"}</span>
-              <span className="font-bold mt-4">Previous Month's Damages:</span>
-              <span>Php {monthlyData.PreviousMonthDamages || "0.00"}</span>
-            </div>
-            <div className="flex flex-col items-center p-4 border rounded">
-              <span className="font-bold mb-2">Contribution Percentage:</span>
-              <span>{monthlyData.ContributionPercentage || "0.00"}%</span>
-            </div>
-          </div>
-        )}
       </div>
     </div>
   );

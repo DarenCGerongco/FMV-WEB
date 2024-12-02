@@ -138,13 +138,13 @@ const Navbar = () => {
               <Link to="/inventory" className={`text-base md:text-xl ${isActive('/inventory') ? 'text-black' : 'text-white group-hover:text-black'}`}>INVENTORY</Link>
             </li>
 
-            <li className={`mb-4 flex items-center transition pl-2 md:pl-5 group ${isActive('/deliveryman') ? 'bg-white text-black rounded' : 'hover:bg-white hover:text-black rounded'}`}>
+            <li className={`mb-4 flex items-center transition pl-2 md:pl-5 group ${isActive('/employee') ? 'bg-white text-black rounded' : 'hover:bg-white hover:text-black rounded'}`}>
             <img
             src={employeeImage}
             alt="Employee Icon"
-            className={`w-6 h-6 mr-2 transition group-hover:invert-0 ${isActive('/deliveryman') ? 'invert-0' : 'invert'}`}
+            className={`w-6 h-6 mr-2 transition group-hover:invert-0 ${isActive('/employee') ? 'invert-0' : 'invert'}`}
             />
-              <Link to="/deliveryman" className={`text-base md:text-xl ${isActive('/deliveryman') ? 'text-black' : 'text-white group-hover:text-black'}`}>EMPLOYEE</Link>
+              <Link to="/employee" className={`text-base md:text-xl ${isActive('/employee') ? 'text-black' : 'text-white group-hover:text-black'}`}>EMPLOYEE</Link>
             </li>
 
             <li className={`mb-4 flex items-center transition pl-2 md:pl-5 group ${isActive('/settings') ? 'bg-white text-black rounded' : 'hover:bg-white hover:text-black rounded'}`}>
@@ -160,9 +160,6 @@ const Navbar = () => {
               <Link to="/logs" className={`text-base md:text-xl ${isActive('/') ? 'text-black' : 'text-white group-hover:text-black'}`}>LOGS (wip)</Link>
             </li>
 
-            <li className={`mb-4 flex items-center transition pl-2 md:pl-5 group ${isActive('/sample') ? 'bg-white text-black rounded' : 'hover:bg-white hover:text-black rounded'}`}>
-              <Link to="/sample" className={`text-base md:text-xl ${isActive('/') ? 'text-black' : 'text-white group-hover:text-black'}`}>SAMPLE (wip)</Link>
-            </li>
           </ul>
         </div>
       </div>
