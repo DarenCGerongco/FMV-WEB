@@ -208,10 +208,11 @@ const CreatePurchaseOrder = () => {
           Submit
         </button>
       </div>
-      <ToastContainer />
+      
       </div>
       <Modal isOpen={isModalOpen} onClose={toggleModal} addProductToList={addProductToList} />
     </div>
+    <ToastContainer />
 </div>
 
   );
