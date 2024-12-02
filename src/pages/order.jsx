@@ -187,7 +187,7 @@ function Order() {
             </button>
           </div>
           <div className="flex mt-2">
-            <span className="mr-2">Filter:</span>
+            <span className="mx-1 font-bold py-1 px-3 text-blue-500 rounded">Filter:</span>
             <div className="flex w-[18rem] justify-evenly">
               <button 
                 className='bg-blue-500 px-1 font-bold shadow-md text-white rounded hover:bg-white hover:text-blue-500 duration-100'
