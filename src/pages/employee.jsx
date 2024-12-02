@@ -235,11 +235,11 @@ function Employee() {
             {filteredDeliveryMen.map((deliveryMan, index) => (
               <div 
                 key={index} 
-                className="grid grid-cols-6 rounded-lg hover:bg-blue-50 duration-300 shadow-md text-left border-b border-gray-300 p-1"
+                className="grid grid-cols-6 rounded-lg hover:bg-blue-50 duration-300 shadow-md border-b border-gray-300 p-3"
                 >
                 <div className="col-span-2">{deliveryMan.name}</div>
                 <div className="col-span-2">{deliveryMan.number}</div>
-                <div className="col-span-2 flex justify-end items-center space-x-5">
+                <div className="col-span-2 flex justify-end items-center space-x-2">
                   <img
                     src="./src/assets/edit.png"
                     alt="Edit"
