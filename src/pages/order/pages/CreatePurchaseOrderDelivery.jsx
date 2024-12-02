@@ -19,6 +19,7 @@ const CreatePurchaseOrder = () => {
   const [productsListed, setProductsListed] = useState([]);
   const [productInputs, setProductInputs] = useState({});
   const [isModalOpen, setIsModalOpen] = useState(false); // Initialize the isModalOpen state here
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const url = import.meta.env.VITE_API_URL;
 
   const toggleModal = useCallback(() => {
@@ -67,8 +68,6 @@ const CreatePurchaseOrder = () => {
       return updatedInputs;
     });
   };
-  
-  
 
   const createOrder = async () => {
     const admin_id = localStorage.getItem('userID');
@@ -96,22 +95,26 @@ const CreatePurchaseOrder = () => {
       })),
     };
   
+    setIsSubmitting(true);
+
     try {
       await axios.post(`${url}/api/purchase-orders-delivery`, orderData);
-      toast.success('Order created successfully!');
-      setTimeout(() => {
-        navigate('/order');
-      }, 2000);
+      toast.success("Order created successfully!", {
+        onClose: () => {
+          setIsSubmitting(false); // Reset loading state after notification ends
+          navigate("/order");
+        },
+      });
     } catch (error) {
-      toast.error('Error creating order. Please check your inputs.');
-      console.error('Error creating order:', error);
+      toast.error("Error creating order. Please check your inputs.", {
+        onClose: () => setIsSubmitting(false), // Reset loading state after notification ends
+      });
+      console.error("Error creating order:", error);
     }
   };
   
-
-
-  return (
-<div className="flex w-full">
+ return (
+  <div className="flex w-full">
   <Navbar />
     <div className="flex flex-col items-center w-full">
       <div className="w-11/12 mx-auto bg-white p-6 m-3 rounded-lg drop-shadow-md mb-6 border">
@@ -202,19 +205,22 @@ const CreatePurchaseOrder = () => {
           Cancel
         </button>
         <button
-          className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-400"
+          className={`${
+            isSubmitting
+              ? "bg-gray-400 cursor-not-allowed"
+              : "bg-green-500 hover:bg-green-400"
+          } text-white px-4 py-2 rounded`}
           onClick={createOrder}
+          disabled={isSubmitting} // Disable button while submitting
         >
-          Submit
+          {isSubmitting ? "Loading..." : "Submit"}
         </button>
-      </div>
-      
+      </div> 
       </div>
       <Modal isOpen={isModalOpen} onClose={toggleModal} addProductToList={addProductToList} />
     </div>
     <ToastContainer />
-</div>
-
+  </div>
   );
 };
 
