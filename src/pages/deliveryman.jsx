@@ -202,15 +202,17 @@ function DeliveryMan() {
         </div>
         <div className="w-4/5 mx-auto bg-white p-3 rounded-lg shadow-md">
           <div className="relative mt-4 flex items-center space-x-4">
-            <div className="flex items-center w-full px-4 py-3 border border-gray-300 rounded-md focus-within:border-blue-500 relative h-12">
-              <span className="font-bold text-black-500 whitespace-nowrap">EMPLOYEE</span>
+            <div className="flex flex-row items-center w-full px-4 py-3 mr-1 border border-gray-300 rounded-md shadow-md focus-within:border-blue-500 relative h-12">
+              <span className="font-bold text-black-500 whitespace-nowrap">
+                EMPLOYEE
+              </span>
               <div className="border-l border-gray-300 h-10 mx-2"></div>
               <input
                 type="text"
-                className="flex-grow focus:outline-none px-4 py-2 rounded-md sm:text-sm border-gray-300 focus:ring-blue-500 focus:border-blue-500 block w-full"
-                placeholder="Search for Employee"
                 value={searchQuery}
-                onChange={handleSearchChange} // Update search query on input change
+                onChange={handleSearchChange}
+                placeholder="Search for Employee"
+                className="flex-grow focus:outline-none px-4 py-2 rounded-md sm:text-sm border-gray-300 focus:ring-blue-500 focus:border-blue-500 block w-full"
               />
             </div>
             <button
