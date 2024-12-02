@@ -164,7 +164,7 @@ function Overview() {
         <div className="w-11/12 mx-auto flex space-x-4">
           {loading ? (
             <div className="flex items-center justify-center w-full h-[768px]">
-              <img src={catLoadingGif} alt="" />
+              <img className='OverView-spinner ' src={catLoadingGif} alt="" />
             </div>
           ): (
             <>
