@@ -176,7 +176,7 @@ function Inventory() {
             )}
           </div>
         </div>
-
+{/* 
         <div className="flex flex-col ml-[10%] bg-white">
           <div className="w-[12rem] font-bold h-[10rem] text-black hover:bg-green-400 duration-200 rounded-lg p-2 bg-blue-500 flex flex-col shadow-md justify-center items-center">
             <span className="text-sm font-bold text-white mt-2 ">
@@ -186,7 +186,7 @@ function Inventory() {
               ₱{totalAssets}
             </span>
           </div>
-        </div>
+        </div> */}
 
         {/* Inventory List */}
         <div className="w-4/5 mx-auto bg-white p-5 m-3 rounded-lg shadow-md">
