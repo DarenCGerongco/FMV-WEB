@@ -103,7 +103,7 @@ function Inventory() {
       <Navbar />
       <div className="flex flex-col w-full bg-white">
         <div className="w-4/5 mx-auto bg-white p-6 m-3 rounded-lg shadow-md mb-6 border">
-          <h2 className="text-1xl font-bold">INVENTORY</h2>
+          <h2 className="text-1xl font-bold">MANAGEMENT SYSTEM INVENTORY</h2>
         </div>
 
         {/* Searchbar and Filters */}

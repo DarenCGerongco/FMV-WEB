@@ -85,8 +85,8 @@ function Sales() {
     <div className="flex w-full">
       <Navbar />
       <div className="w-full bg-white-100">
-        <div className="w-4/5 mx-auto bg-white p-6 m-3 rounded-lg drop-shadow-md mb-6 border">
-          <h2 className="text-xl font-bold">Management System Sales</h2>
+        <div className="w-4/5 mx-auto bg-white p-6 m-3 rounded-lg shadow-md mb-6 border">
+          <h2 className="text-1xl font-bold">MANAGEMENT SYSTEM SALES</h2>
         </div>
 
         {/* Bar Graph Section */}
