@@ -29,6 +29,7 @@ function Order() {
   const [searchResults, setSearchResults] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [paginationInfo, setPaginationInfo] = useState({});
+  const [statusFilter, setStatusFilter] = useState("");
 
   const [purchaseOrderDetails, setPurchaseOrderDetails] = useState({
     customer_name: '',
@@ -38,6 +39,15 @@ function Order() {
     province: '',
     zipcode: ''
   });
+
+  const handleFilterChange = (status) => {
+    setStatusFilter(status);
+    if (status === "") {
+      setSearchResults(purchaseOrderData);
+    } else {
+      setSearchResults(purchaseOrderData.filter((order) => order.status === status));
+    }
+  };
 
   // Ensure userID is set
   useEffect(() => {
@@ -186,25 +196,42 @@ function Order() {
               Create Order
             </button>
           </div>
-          <div className="flex mt-2">
+          <div className="flex mt-4">
             <span className="mx-1 font-bold py-1 px-3 text-blue-500 rounded">Filter:</span>
-            <div className="flex w-[18rem] justify-evenly">
-              <button 
-                className='bg-blue-500 px-1 font-bold shadow-md text-white rounded hover:bg-white hover:text-blue-500 duration-100'
-                onClick={() => setSearchResults(purchaseOrderData)}>All</button>
-              <button 
-                className='bg-blue-500 px-1 font-bold shadow-md text-white rounded hover:bg-white hover:text-blue-500 duration-100'
-                onClick={() => setSearchResults(purchaseOrderData.filter(order => order.status === 'Pending'))}>Pending</button>
-              <button 
-                className='bg-blue-500 px-1 font-bold shadow-md text-white rounded hover:bg-white hover:text-blue-500 duration-100'
-                onClick={() => setSearchResults(purchaseOrderData.filter(order => order.status === 'Failed'))}>Failed</button>
-              <button 
-                className='bg-blue-500 px-1 font-bold shadow-md text-white rounded hover:bg-white hover:text-blue-500 duration-100'
-                onClick={() => setSearchResults(purchaseOrderData.filter(order => order.status === 'Success'))}>Success</button>
-            </div>
+            <button
+              className={`mx-1 font-bold py-1 px-3 ${
+                statusFilter === "" ? "bg-blue-500 text-white" : "bg-white text-black"
+              } rounded shadow-md hover:bg-blue-500 hover:text-white duration-200`}
+              onClick={() => handleFilterChange("")}
+            >
+              All
+            </button>
+            <button
+              className={`mx-1 font-bold py-1 px-3 ${
+                statusFilter === "Pending" ? "bg-blue-500 text-white" : "bg-white text-black"
+              } rounded shadow-md hover:bg-blue-500 hover:text-white duration-200`}
+              onClick={() => handleFilterChange("Pending")}
+            >
+              Pending
+            </button>
+            <button
+              className={`mx-1 font-bold py-1 px-3 ${
+                statusFilter === "Failed" ? "bg-blue-500 text-white" : "bg-white text-black"
+              } rounded shadow-md hover:bg-blue-500 hover:text-white duration-200`}
+              onClick={() => handleFilterChange("Failed")}
+            >
+              Failed
+            </button>
+            <button
+              className={`mx-1 font-bold py-1 px-3 ${
+                statusFilter === "Success" ? "bg-blue-500 text-white" : "bg-white text-black"
+              } rounded shadow-md hover:bg-blue-500 hover:text-white duration-200`}
+              onClick={() => handleFilterChange("Success")}
+            >
+              Success
+            </button>
           </div>
         </div>
-
         <div className="w-4/5 mx-auto mt-6">
           <div className="bg-white rounded-lg shadow-xl">
             <div className="grid grid-cols-11 font-bold px-2 text-sm py-3 border-b border-gray-300">
