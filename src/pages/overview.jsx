@@ -168,7 +168,7 @@ function Overview() {
       <Navbar />
       <Walkin/>
       <div className="flex flex-col xl:w-4/5 bg-white">
-        <div className="w-11/12 mx-auto bg-white p-6 m-3 rounded-lg shadow-md mb-6 border">
+        <div className="w-11/12 mx-auto bg-white p-6 m-3 rounded-3xl shadow-md mb-6 border">
           <h2 className="text-1xl font-bold">
             Management System Overviews   {/* Handle empty userName case */}
           </h2>
@@ -186,32 +186,32 @@ function Overview() {
           <div className="flex flex-col space-y-4 w-1/3">
             {/* Order Container */}   
             <div 
-              className="bg-white p-6 rounded-lg shadow-md hover:shadow-2xl hover:shadow-gray-400 duration-200 cursor-pointer" 
+              className="bg-white p-6 rounded-3xl shadow-md hover:shadow-2xl hover:shadow-gray-400 duration-200 cursor-pointer" 
               onClick={handleOrderClick}
             >
               <h3 className="text-lg font-bold mb-4">
                 ORDER (WIP)
               </h3>
               {orders.summary && (
-                <div className="flex flex-col w-full p-5 bg-white duration-100 shadow-md rounded-lg">
+                <div className="flex flex-col w-full p-5 bg-white duration-100 rounded-lg">
                   <span className="text-black text-center font-bold">
                     Purchase Order Total Value
                   </span>
                   <span className="text-black text-sm ">
                     Initial Revenue:
                   </span>
-                  <h1 className="text-white bg-green-500 text-center text-3xl m-1 px-2 py-1 text-left shadow-md font-bold rounded-lg inline-block">
+                  <h1 className="text-black text-center text-3xl m-1 px-2 py-1 text-left shadow-lg rounded-2xl inline-block">
                     ₱{orders.summary.totalMoneyAccumulated}
                   </h1>
                   <span className="text-black mt-2 text-sm">
                     Total Purchase Order Created:
                   </span>
-                  <h1 className="text-white bg-red-500 text-3xl text-center m-1 px-2 py-1 text-left shadow-md font-bold rounded-lg inline-block">
+                  <h1 className="text-black text-3xl text-center m-1 px-2 py-1 text-left shadow-lg rounded-2xl inline-block">
                     {orders.summary.totalPurchaseOrders}
                   </h1>
                 </div>
               )}
-              <div className="flex flex-col w-full p-5 mt-3 bg-white duration-100 shadow-md rounded-lg">
+              <div className="flex flex-col w-full p-5 mt-3 bg-white duration-100 rounded-lg">
               <span>
                 Pending Purchase Order
               </span>
@@ -251,7 +251,7 @@ function Overview() {
 
             {/* Delivery Container */}
             <div 
-              className="bg-white p-6 rounded-lg shadow-md hover:shadow-2xl hover:shadow-gray-400 duration-200 cursor-pointer" 
+              className="bg-white p-6 rounded-3xl shadow-md hover:shadow-2xl hover:shadow-gray-400 duration-200 cursor-pointer" 
               onClick={handleDeliveryClick}
             >
               <h3 className="text-lg font-bold mb-4">DELIVERY</h3>
@@ -269,7 +269,7 @@ function Overview() {
               </div>
             </div>
 
-            <div className="bg-white p-6 rounded-lg shadow-md hover:shadow-2xl hover:shadow-gray-400 duration-200 cursor-pointer"
+            <div className="bg-white p-6 rounded-3xl shadow-md hover:shadow-2xl hover:shadow-gray-400 duration-200 cursor-pointer"
               onClick={handleDeliveryManClick}
             >
               <h3 className="text-lg font-bold mb-4">EMPLOYEE ACCOUNT</h3>
@@ -288,7 +288,7 @@ function Overview() {
           {/* Right Column for Larger Containers */}
           <div className="flex flex-col space-y-4 w-2/3">
             {/* Sales Container */}
-            <div className="bg-white p-6 rounded-lg shadow-md hover:shadow-2xl hover:shadow-gray-400 duration-200 cursor-pointer"
+            <div className="bg-white p-6 rounded-3xl shadow-md hover:shadow-2xl hover:shadow-gray-400 duration-200 cursor-pointer"
             onClick={handleSalesClick}
             >
               <h3 className="text-lg font-bold mb-4">SALES</h3>
@@ -312,18 +312,24 @@ function Overview() {
             </div>
 
             {/* Inventory Container */}   
-          <div className="bg-white p-6 rounded-lg shadow-md hover:shadow-2xl hover:shadow-gray-400 duration-200 cursor-pointer"
-              onClick={handleInventoryClick}
-          > 
+          <div
+            className="bg-white p-6 rounded-3xl shadow-md hover:shadow-2xl hover:shadow-gray-400 duration-200 cursor-pointer"
+            onClick={handleInventoryClick}
+          >
             <h3 className="text-lg font-bold">INVENTORY</h3>
-            <div className="bg-white text-sm flex border-b">
-            </div>
+            <div className="bg-white text-sm flex"></div>
             {inventoryItems.length > 0 ? (
               inventoryItems.map((item, index) => (
-                <div key={index} className="bg-gray-200 p-4 rounded-lg shadow-md mt-4 flex justify-between items-center border-b">
-                  <div className="flex-1">{item.product_name}</div>
-                  <div className="flex-1 text-center">{item.category_name}</div>
-                  <div className="flex-1 text-right">{item.quantity}</div>
+                <div key={index} className="mt-4">
+                  <div className="bg-gray-200 p-4 rounded-lg shadow-md flex justify-between items-center">
+                    <div className="flex-1">
+                      <span className="font-bold">{index + 1}. </span>
+                      {item.product_name}
+                    </div>
+                    <div className="flex-1 text-center">{item.category_name}</div>
+                    <div className="flex-1">₱ {item.original_price}</div>
+                    <div className="flex-1 text-right">{item.quantity}x</div>
+                  </div>
                 </div>
               ))
             ) : (
@@ -332,6 +338,7 @@ function Overview() {
               </div>
             )}
           </div>
+
           </div>
           </>
           )}
