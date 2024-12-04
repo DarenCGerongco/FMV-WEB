@@ -192,23 +192,24 @@ const CreatePurchaseOrder = () => {
         )}
         <hr className="h-px my-2 bg-gray-500 border-0 shadow-md"></hr>
       <div className="flex justify-end mt-5 items-end">
-        <button
-          className="mr-4 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-400"
-          onClick={toggleModal}
-        >
-          Select Product
-        </button>
-        <button
-          className="mr-4 bg-red-500 text-white px-4 py-2 rounded hover:bg-red-400"
+      <button
+          className="mr-4 text-blue-500 px-4 py-2 hover:text-red-700 underline"
           onClick={() => window.history.back()}
         >
           Cancel
+        </button>
+
+        <button
+          className="mr-4 bg-transparent hover:bg-blue-500 text-blue-700 hover:text-white px-4 py-2 border border-blue-500 hover:border-transparent rounded"
+          onClick={toggleModal}
+        >
+          Select
         </button>
         <button
           className={`${
             isSubmitting
               ? "bg-gray-400 cursor-not-allowed"
-              : "bg-green-500 hover:bg-green-400"
+              : "bg-[#2465EB] hover:bg-green-400"
           } text-white px-4 py-2 rounded`}
           onClick={createOrder}
           disabled={isSubmitting} // Disable button while submitting
