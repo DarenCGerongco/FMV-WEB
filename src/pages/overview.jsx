@@ -1,12 +1,12 @@
 import { useState, useEffect, useContext } from 'react';
 import Navbar from '../components/navbar';
-import { Pie } from 'react-chartjs-2';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom'; // Import useNavigate
 import { GlobalContext } from '../../GlobalContext';  // Import GlobalContext
 import catLoadingGif from './../assets/overview/catJumping.gif'; // Import your GIF file
 import Walkin from '../components/walkin';
+import { Bar } from 'react-chartjs-2'; // Import Bar from react-chartjs-2
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
@@ -19,12 +19,59 @@ function Overview() {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true); // Loading state
   const { id, userName } = useContext(GlobalContext);
+  const [year, setYear] = useState(new Date().getFullYear());
+  const [chartData, setChartData] = useState(null);
+  const [availableYears, setAvailableYears] = useState([]);
+  const monthlyRecordsUrl = `${import.meta.env.VITE_API_URL}/api/Insights/Monthly-Records`;
+
+  const getYears = () => {
+    return availableYears.length > 0 ? availableYears : [2023, new Date().getFullYear()];
+  };
 
   // Debugging - log the `id` and `userName` values
   useEffect(() => {
     console.log("Global Context ID:", id);
     console.log("Global Context userName:", userName);
   }, [id, userName]);
+
+  const fetchMonthlyRecords = async () => {
+    try {
+      const response = await axios.get(monthlyRecordsUrl, {
+        params: { year },
+      });
+
+      const data = response.data.data || [];
+      setAvailableYears(response.data.available_years || []);
+
+      setChartData({
+        labels: data.map((item) => item.month || "Unknown"),
+        datasets: [
+          {
+            label: "Total Revenue (Php)",
+            backgroundColor: "#4caf50",
+            borderRadius: 10,
+            data: data.map((item) =>
+              parseFloat(item.total_revenue?.replace(/,/g, "") || 0)
+            ),
+          },
+          {
+            label: "Total Damages (Php)",
+            backgroundColor: "#f44336",
+            borderRadius: 10,
+            data: data.map((item) =>
+              parseFloat(item.total_damages?.replace(/,/g, "") || 0)
+            ),
+          },
+        ],
+      });
+    } catch (error) {
+      console.error("Failed to fetch monthly records:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchMonthlyRecords();
+  }, [year]);
 
   // Fetch order data
   const fetchOrderData = async () => {
@@ -56,23 +103,11 @@ function Overview() {
     }
   };
 
-  // Fetch sales data
-  const fetchSalesData = () => {
-    const salesdata = [
-      { itemName: 'Arlene', itemSold: 'x15', itemRemaining: 'x10' },
-      { itemName: 'Kirk Khien', itemSold: 'x10', itemRemaining: 'x5' },
-      { itemName: 'Steven Ambatablow', itemSold: 'x20', itemRemaining: 'x15' },
-      { itemName: 'Oiled Men', itemSold: 'x30', itemRemaining: 'x20' },
-    ];
-    setSalesData(salesdata); 
-  };
 
   useEffect(() => {
     fetchUserNames(); // Fetch initial user names
     fetchInventoryData(); // Fetch initial inventory data
     fetchOrderData();  // Fetch initial order data
-    fetchSalesData(); // Fetch initial sales data
-
     setTimeout(() => {
       setLoading(false); // Set loading to false after 2 seconds
     }, 500); // Show spinner for 2 seconds
@@ -98,33 +133,6 @@ function Overview() {
     } catch (error) {
       console.error('Error fetching user names:', error);
     }
-  };
-  
-  
-  
-
-  // Data for the pie chart
-  const data = {
-    labels: ['Arlene', 'Kirk Khien', 'Steven Ambatablow', 'Oiled Men'],
-    datasets: [
-      {
-        label: 'Sales Data',
-        data: [300, 50, 100, 150],
-        backgroundColor: [
-          'rgba(255, 99, 132, 0.8)',
-          'rgba(54, 162, 235, 0.8)',
-          'rgba(255, 206, 86, 0.8)',
-          'rgba(75, 192, 192, 0.8)',
-        ],
-        borderColor: [
-          'rgba(255, 99, 132, 1)',
-          'rgba(54, 162, 235, 1)',
-          'rgba(255, 206, 86, 1)',
-          'rgba(75, 192, 192, 1)',
-        ],
-        borderWidth: 1,
-      },
-    ],
   };
 
   const options = {
@@ -287,30 +295,24 @@ function Overview() {
 
           {/* Right Column for Larger Containers */}
           <div className="flex flex-col space-y-4 w-2/3">
+          
+          
             {/* Sales Container */}
-            <div className="bg-white p-6 rounded-3xl shadow-md hover:shadow-2xl hover:shadow-gray-400 duration-200 cursor-pointer"
-            onClick={handleSalesClick}
-            >
+            <div className="bg-white p-6 rounded-3xl shadow-md hover:shadow-2xl hover:shadow-gray-400 duration-200 cursor-pointer" onClick={handleSalesClick}>
               <h3 className="text-lg font-bold mb-4">SALES</h3>
-              <div className="flex justify-center items-center h-80">
-                <div className="w-full h-full max-w-xs">
-                  <Pie data={data} options={options} />
-                </div>
+              <div className="w-full h-full">
+                <Bar
+                  data={chartData}
+                  options={{
+                    responsive: true,
+                    plugins: {
+                      legend: { position: "top" },
+                      title: { display: true, text: `Revenue and Damages (Php) for ${year}` },
+                    },
+                  }}
+                />
               </div>
-              <div className="text-sm mt-10 flex border-b">
-                <p className="w-1/3 font-bold ">Item Name</p>
-                <p className="w-1/3 font-bold text-center">Item Sold</p>
-                <p className="w-1/3 font-bold text-center">Item Remaining</p>
-              </div>
-              {salesData.map((item, index) => (
-                <div key={index} className="flex justify-between items-center p-4 rounded-lg shadow-md mt-4 bg-gray-200 border-b">
-                  <p className="text-gray-700 w-1/3">{item.itemName}</p>
-                  <p className="text-gray-700 w-1/3 text-center">{item.itemSold}</p>
-                  <p className="text-gray-700 w-1/3 text-center">{item.itemRemaining}</p>
-                </div>
-              ))}
             </div>
-
             {/* Inventory Container */}   
             <div
               className="bg-white p-6 rounded-3xl shadow-md hover:shadow-2xl hover:shadow-gray-400 duration-200 cursor-pointer"
