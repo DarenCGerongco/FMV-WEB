@@ -90,46 +90,46 @@ const Navbar = () => {
               alt="Dashboard Icon"
               className={`w-6 h-6 mr-2 transition group-hover:invert-0 ${isActive('') ? 'invert-0' : 'invert'}`}
             />
-            DASHBOARD
+              DASHBOARD
           </h2>
           <ul>
-            <li className={`mb-4 flex items-center transition pl-2 md:pl-5 group ${isActive('/overview') ? 'bg-white text-black rounded' : 'hover:bg-white hover:text-black rounded'}`}>
-            <img
-            src={overviewImage}
-            alt="Overview Icon"
-            className={`w-6 h-6 mr-2 transition group-hover:invert-0 ${isActive('/overview') ? 'invert-0' : 'invert'}`}
-            />
+            <li className={`my-3 flex items-center transition pl-2 md:pl-5 group ${isActive('/overview') ? 'bg-white text-black rounded' : 'hover:bg-white hover:text-black rounded'}`}>
+              <img
+                src={overviewImage}
+                alt="Overview Icon"
+                className={`w-6 h-6 mr-2 transition group-hover:invert-0 ${isActive('/overview') ? 'invert-0' : 'invert'}`}
+              />
               <Link to="/overview" className={`text-base md:text-xl ${isActive('/overview') ? 'text-black' : 'text-white group-hover:text-black'}`}>OVERVIEW</Link>
             </li>
-
-            <li className={`mb-4 flex items-center transition pl-2 md:pl-5 group ${isActive('/order') ? 'bg-white text-black rounded' : 'hover:bg-white hover:text-black rounded'}`}>
-            <img
-            src={orderImage}
-            alt="Order Icon"
-            className={`w-6 h-6 mr-2 transition group-hover:invert-0 ${isActive('/order') ? 'invert-0' : 'invert'}`}
-            />
-              <Link to="/order" className={`text-base md:text-xl ${isActive('/order') ? 'text-black' : 'text-white group-hover:text-black'}`}>ORDER</Link>
+              <div className="h-[0.5px] w-full bg-white"></div>
+            <li className={`my-3 flex items-center transition pl-2 md:pl-5 group ${isActive('/order') ? 'bg-white text-black rounded' : 'hover:bg-white hover:text-black rounded'}`}>
+              <img
+                src={orderImage}
+                alt="Order Icon"
+                className={`w-6 h-6 mr-2 transition group-hover:invert-0 ${isActive('/order') ? 'invert-0' : 'invert'}`}
+              />
+                <Link to="/order" className={`text-base md:text-xl ${isActive('/order') ? 'text-black' : 'text-white group-hover:text-black'}`}>ORDER</Link>
             </li>
-
-            <li className={`mb-4 flex items-center transition pl-2 md:pl-5 group ${isActive('/delivery') ? 'bg-white text-black rounded' : 'hover:bg-white hover:text-black rounded'}`}>
-            <img
-            src={deliveryImage}
-            alt="Delivery Icon"
-            className={`w-6 h-6 mr-2 transition group-hover:invert-0 ${isActive('/delivery') ? 'invert-0' : 'invert'}`}
-            />
+            <li className={`my-3 flex items-center transition pl-2 md:pl-5 group ${isActive('/delivery') ? 'bg-white text-black rounded' : 'hover:bg-white hover:text-black rounded'}`}>
+              <img
+                src={deliveryImage}
+                alt="Delivery Icon"
+                className={`w-6 h-6 mr-2 transition group-hover:invert-0 ${isActive('/delivery') ? 'invert-0' : 'invert'}`}
+              />
               <Link to="/delivery" className={`text-base md:text-xl ${isActive('/delivery') ? 'text-black' : 'text-white group-hover:text-black'}`}>DELIVERY</Link>
             </li>
+            <div className="h-[0.5px] w-full bg-white"></div>
 
-            <li className={`mb-4 flex items-center transition pl-2 md:pl-5 group ${isActive('/sales') ? 'bg-white text-black rounded' : 'hover:bg-white hover:text-black rounded'}`}>
-            <img
-            src={salesImage}
-            alt="Sales Icon"
-            className={`w-6 h-6 mr-2 transition group-hover:invert-0 ${isActive('/sales') ? 'invert-0' : 'invert'}`}
-            />
+            <li className={`my-3 flex items-center transition pl-2 md:pl-5 group ${isActive('/sales') ? 'bg-white text-black rounded' : 'hover:bg-white hover:text-black rounded'}`}>
+              <img
+                src={salesImage}
+                alt="Sales Icon"
+                className={`w-6 h-6 mr-2 transition group-hover:invert-0 ${isActive('/sales') ? 'invert-0' : 'invert'}`}
+              />
               <Link to="/sales" className={`text-base md:text-xl ${isActive('/sales') ? 'text-black' : 'text-white group-hover:text-black'}`}>SALES</Link>
             </li>
 
-            <li className={`mb-4 flex items-center transition pl-2 md:pl-5 group ${isActive('/inventory') ? 'bg-white text-black rounded' : 'hover:bg-white hover:text-black rounded'}`}>
+            <li className={`my-3 flex items-center transition pl-2 md:pl-5 group ${isActive('/inventory') ? 'bg-white text-black rounded' : 'hover:bg-white hover:text-black rounded'}`}>
             <img
             src={inventoryImage}
             alt="Inventory Icon"
@@ -138,7 +138,7 @@ const Navbar = () => {
               <Link to="/inventory" className={`text-base md:text-xl ${isActive('/inventory') ? 'text-black' : 'text-white group-hover:text-black'}`}>INVENTORY</Link>
             </li>
 
-            <li className={`mb-4 flex items-center transition pl-2 md:pl-5 group ${isActive('/employee') ? 'bg-white text-black rounded' : 'hover:bg-white hover:text-black rounded'}`}>
+            <li className={`my-3 flex items-center transition pl-2 md:pl-5 group ${isActive('/employee') ? 'bg-white text-black rounded' : 'hover:bg-white hover:text-black rounded'}`}>
             <img
             src={employeeImage}
             alt="Employee Icon"
@@ -146,25 +146,26 @@ const Navbar = () => {
             />
               <Link to="/employee" className={`text-base md:text-xl ${isActive('/employee') ? 'text-black' : 'text-white group-hover:text-black'}`}>EMPLOYEE</Link>
             </li>
+            <div className="h-[0.5px] w-full bg-white"></div>
 
-            <li className={`mb-4 flex items-center transition pl-2 md:pl-5 group ${isActive('/settings') ? 'bg-white text-black rounded' : 'hover:bg-white hover:text-black rounded'}`}>
-            <img
-            src={settingsImage}
-            alt="Settings Icon"
-            className={`w-6 h-6 mr-2 transition group-hover:invert-0 ${isActive('/settings') ? 'invert-0' : 'invert'}`}
-            />
+            <li className={`my-3 flex items-center transition pl-2 md:pl-5 group ${isActive('/settings') ? 'bg-white text-black rounded' : 'hover:bg-white hover:text-black rounded'}`}>
+              <img
+                src={settingsImage}
+                alt="Settings Icon"
+                className={`w-6 h-6 mr-2 transition group-hover:invert-0 ${isActive('/settings') ? 'invert-0' : 'invert'}`}
+              />
               <Link to="/settings" className={`text-base md:text-xl ${isActive('/settings') ? 'text-black' : 'text-white group-hover:text-black'}`}>SETTINGS (wip)</Link>
             </li>
 
-            <li className={`mb-4 flex items-center transition pl-2 md:pl-5 group ${isActive('/logs') ? 'bg-white text-black rounded' : 'hover:bg-white hover:text-black rounded'}`}>
+            {/* <li className={`my-3 flex items-center transition pl-2 md:pl-5 group ${isActive('/logs') ? 'bg-white text-black rounded' : 'hover:bg-white hover:text-black rounded'}`}>
               <Link to="/logs" className={`text-base md:text-xl ${isActive('/') ? 'text-black' : 'text-white group-hover:text-black'}`}>LOGS (wip)</Link>
-            </li>
+            </li> */}
 
           </ul>
         </div>
       </div>
       <div className="w-full">
-        <li className="mb-4 flex items-center transition duration-300 group hover:bg-white hover:text-black rounded pl-2 md:pl-5">
+        <li className="my-3 flex items-center transition duration-300 group hover:bg-white hover:text-black rounded pl-2 md:pl-5">
         <img
             src={logoutImage}
             alt="Settings Icon"

@@ -5,8 +5,9 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom'; // Import useNavigate
 import { GlobalContext } from '../../GlobalContext';  // Import GlobalContext
 import catLoadingGif from './../assets/overview/catJumping.gif'; // Import your GIF file
-import Walkin from '../components/walkin';
 import { Bar } from 'react-chartjs-2'; // Import Bar from react-chartjs-2
+
+import Walkin from '../components/walkin';
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 

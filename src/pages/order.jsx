@@ -280,7 +280,7 @@ function Order() {
                       className="bg-blue-500 p-1 hover:bg-white hover:text-blue-500 font-bold duration-300 text-white rounded-md w-[75px]"
                       onClick={() => toggleDropDown(customerData.purchase_order_id)}
                     >
-                      View
+                      More
                     </button>
 
                     {openDropDowns[customerData.purchase_order_id] && (
@@ -290,7 +290,7 @@ function Order() {
                       >
                         <ul className="py-1">
                           <li
-                            className="px-4 p-1 hover:bg-gray-200 duration-300 cursor-pointer"
+                            className="px-4 p-1 hover:bg-blue-500 hover:text-white font-bold duration-300 cursor-pointer"
                             onClick={() => {
                               openItemsOrderedModal(customerData.purchase_order_id);
                               setOpenDropDowns({ ...openDropDowns, [customerData.purchase_order_id]: false });
@@ -299,13 +299,30 @@ function Order() {
                             View Items Ordered
                           </li>
                           <li
-                            className="px-4 p-1 hover:bg-gray-200 duration-300 cursor-pointer"
+                            className="px-4 p-1 hover:bg-blue-500 hover:text-white font-bold duration-300 cursor-pointer"
                             onClick={() => {
                               openViewDeliveriesModal(customerData.purchase_order_id);
                               setOpenDropDowns({ ...openDropDowns, [customerData.purchase_order_id]: false });
                             }}
                           >
                             View Deliveries
+                          </li>
+                          <li
+                            className="px-4 p-1 bg-white text-red-500 font-bold hover:bg-red-500 hover:text-white duration-300 cursor-pointer"
+                            onClick={() => {
+                              
+                            }}
+                          >
+                            Edit
+                          </li>
+                          <li
+                            className="px-4 p-1 bg-white text-red-500 font-bold hover:bg-red-500 hover:text-white duration-300 cursor-pointer"
+                            onClick={() => {
+                              openViewDeliveriesModal(customerData.purchase_order_id);
+                              setOpenDropDowns({ ...openDropDowns, [customerData.purchase_order_id]: false });
+                            }}
+                          >
+                            Cancel Order
                           </li>
                         </ul>
                       </div>
