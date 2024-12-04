@@ -312,33 +312,47 @@ function Overview() {
             </div>
 
             {/* Inventory Container */}   
-          <div
-            className="bg-white p-6 rounded-3xl shadow-md hover:shadow-2xl hover:shadow-gray-400 duration-200 cursor-pointer"
-            onClick={handleInventoryClick}
-          >
-            <h3 className="text-lg font-bold">INVENTORY</h3>
-            <div className="bg-white text-sm flex"></div>
-            {inventoryItems.length > 0 ? (
-              inventoryItems.map((item, index) => (
-                <div key={index} className="mt-4">
-                  <div className="bg-gray-200 p-4 rounded-lg shadow-md flex justify-between items-center">
-                    <div className="flex-1">
-                      <span className="font-bold">{index + 1}. </span>
-                      {item.product_name}
-                    </div>
-                    <div className="flex-1 text-center">{item.category_name}</div>
-                    <div className="flex-1">₱ {item.original_price}</div>
-                    <div className="flex-1 text-right">{item.quantity}x</div>
-                  </div>
-                </div>
-              ))
-            ) : (
-              <div className="text-center py-1">
-                All products are above 100+ quantity
-              </div>
-            )}
-          </div>
+            <div
+              className="bg-white p-6 rounded-3xl shadow-md hover:shadow-2xl hover:shadow-gray-400 duration-200 cursor-pointer"
+              onClick={handleInventoryClick}
+            >
+              <h3 className="text-lg font-bold">INVENTORY</h3>
 
+              {/* Labels Row */}
+              <div className="flex justify-between items-center mt-2 mb-2">
+                <div className="text-sm font-medium w-1/4 text-left">Product ID</div>
+                <div className="text-sm font-medium w-1/4 text-center">Product Name</div>
+                <div className="text-sm font-medium w-1/4 text-center">Price</div>
+                <div className="text-sm font-medium w-1/4 text-right">Quantity</div>
+              </div>
+              {/*    */}
+              {/* Item Rows */}
+              {inventoryItems.length > 0 ? (
+                inventoryItems.map((item, index) => (
+                  <div key={index} className="mt-4">
+                    <div className="bg-gray-200 p-4 rounded-lg shadow-md flex justify-between items-center">
+                      {/* Item Details */}
+                      <div className="w-1/4 text-left">
+                        <div className="">{item.id}</div>
+                      </div>
+                      <div className="w-1/4 text-center">
+                        <div className="">{item.product_name}</div>
+                      </div>
+                      <div className="w-1/4 text-center">
+                        <div className="">₱{item.original_price}</div>
+                      </div>
+                      <div className="w-1/4 text-right">
+                        <div className="">{item.quantity}x</div>
+                      </div>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <div className="text-center py-1">
+                  All products are above 100+ quantity
+                </div>
+              )}
+            </div>
           </div>
           </>
           )}
