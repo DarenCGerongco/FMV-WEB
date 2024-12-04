@@ -113,26 +113,20 @@ function Sales() {
                 rightImage: "high.png",
               },
               {
-                title: "Last Month's Revenue",
-                value: `Php ${monthlyData.PreviousMonthRevenue || "0.00"}`,
-                leftImage: "up.png",
-                rightImage: "high.png",
-              },
-              {
                 title: "This Month's Damages",
                 value: `Php ${monthlyData.CurrentMonthDamages || "0.00"}`,
                 leftImage: "damage.png",
                 rightImage: "down.png",
               },
               {
-                title: "Last Month's Damages",
-                value: `Php ${monthlyData.PreviousMonthDamages || "0.00"}`,
-                leftImage: "damage.png",
-                rightImage: "down.png",
+                title: "Last Month's Revenue",
+                value: `Php ${monthlyData.PreviousMonthRevenue || "0.00"}`,
+                leftImage: "up.png",
+                rightImage: "high.png",
               },
               {
-                title: "Total Damages",
-                value: `Php ${monthlyData.TotalDamagesOfPurchaseOrder || "0.00"}`,
+                title: "Last Month's Damages",
+                value: `Php ${monthlyData.PreviousMonthDamages || "0.00"}`,
                 leftImage: "damage.png",
                 rightImage: "down.png",
               },
@@ -143,6 +137,12 @@ function Sales() {
                 rightImage: "high.png",
               },
 
+              {
+                title: "Total Damages",
+                value: `Php ${monthlyData.TotalDamagesOfPurchaseOrder || "0.00"}`,
+                leftImage: "damage.png",
+                rightImage: "down.png",
+              },
             ].map((item, index) => (
               <div
                 key={index}
