@@ -6,7 +6,6 @@ import { useNavigate } from 'react-router-dom'; // Import useNavigate
 import { GlobalContext } from '../../GlobalContext';  // Import GlobalContext
 import catLoadingGif from './../assets/overview/catJumping.gif'; // Import your GIF file
 import { Bar } from 'react-chartjs-2'; // Import Bar from react-chartjs-2
-
 import Walkin from '../components/walkin';
 
 ChartJS.register(ArcElement, Tooltip, Legend);
@@ -14,7 +13,6 @@ ChartJS.register(ArcElement, Tooltip, Legend);
 function Overview() {
   const url = import.meta.env.VITE_API_URL;
   const navigate = useNavigate();
-  const [salesData, setSalesData] = useState([]);
   const [userNames, setUserNames] = useState([]);
   const [inventoryItems, setInventoryItems] = useState([]);
   const [orders, setOrders] = useState([]);
@@ -25,25 +23,20 @@ function Overview() {
   const [availableYears, setAvailableYears] = useState([]);
   const monthlyRecordsUrl = `${import.meta.env.VITE_API_URL}/api/Insights/Monthly-Records`;
 
-  const getYears = () => {
-    return availableYears.length > 0 ? availableYears : [2023, new Date().getFullYear()];
-  };
-
-  // Debugging - log the `id` and `userName` values
+  // sales fetching
   useEffect(() => {
-    console.log("Global Context ID:", id);
-    console.log("Global Context userName:", userName);
-  }, [id, userName]);
+    fetchMonthlyRecords();
+  }, [year]);
 
   const fetchMonthlyRecords = async () => {
     try {
       const response = await axios.get(monthlyRecordsUrl, {
         params: { year },
       });
-
+  
       const data = response.data.data || [];
       setAvailableYears(response.data.available_years || []);
-
+  
       setChartData({
         labels: data.map((item) => item.month || "Unknown"),
         datasets: [
@@ -70,9 +63,11 @@ function Overview() {
     }
   };
 
+  // Debugging - log the `id` and `userName` values
   useEffect(() => {
-    fetchMonthlyRecords();
-  }, [year]);
+    console.log("Global Context ID:", id);
+    console.log("Global Context userName:", userName);
+  }, [id, userName]);
 
   // Fetch order data
   const fetchOrderData = async () => {
@@ -136,22 +131,7 @@ function Overview() {
     }
   };
 
-  const options = {
-    plugins: {
-      legend: {
-        position: 'top',
-      },
-      tooltip: {
-        callbacks: {
-          label: function (tooltipItem) {
-            return `${tooltipItem.label}: ${tooltipItem.raw}`;
-          },
-        },
-      },
-    },
-    responsive: true,
-    maintainAspectRatio: false,
-  };
+
 
   const handleInventoryClick = () => {
     navigate('/inventory'); // Redirect to inventory page
@@ -299,21 +279,30 @@ function Overview() {
           
           
             {/* Sales Container */}
-            <div className="bg-white p-6 rounded-3xl shadow-md hover:shadow-2xl hover:shadow-gray-400 duration-200 cursor-pointer" onClick={handleSalesClick}>
-              <h3 className="text-lg font-bold mb-4">SALES</h3>
-              <div className="w-full h-full">
-                <Bar
-                  data={chartData}
-                  options={{
-                    responsive: true,
-                    plugins: {
-                      legend: { position: "top" },
-                      title: { display: true, text: `Revenue and Damages (Php) for ${year}` },
-                    },
-                  }}
-                />
-              </div>
-            </div>
+            <div className="bg-white p-6 rounded-3xl shadow-md hover:shadow-2xl hover:shadow-gray-400 duration-200 cursor-pointer">
+                  <h3 className="text-lg font-bold mb-4">SALES</h3>
+                  
+                  {chartData && chartData.labels.length > 0 && chartData.datasets[0].data.length > 0 ? (
+                    <div className="w-full h-full" onClick={handleSalesClick}> 
+                      
+                      <Bar
+                        data={chartData}
+                        options={{
+                          responsive: true,
+                          plugins: {
+                            legend: { position: "top" },
+                            title: {
+                              display: true,
+                              text: `Revenue and Damages (Php) for ${year}`,
+                            },
+                          },
+                        }}
+                      />
+                    </div>
+                  ) : (
+                    <div className="text-center text-gray-500">No chart data available</div>
+                  )}
+                </div>
             {/* Inventory Container */}   
             <div
               className="bg-white p-6 rounded-3xl shadow-md hover:shadow-2xl hover:shadow-gray-400 duration-200 cursor-pointer"

@@ -16,6 +16,7 @@ Currently, two official plugins are available:
 - `npm install vite-plugin-node-polyfills --save-dev`
 - `npm i react-toastify`
 - `npm install react-icons`
+- `npm install react-chartjs-2@latest chart.js@latest`
 
 
 # To run the Code:
