@@ -20,18 +20,14 @@ function Sales() {
   const [year, setYear] = useState(new Date().getFullYear()); // Default to current year
   const [monthlyData, setMonthlyData] = useState(null); // Combined data for current and previous months
   const [chartData, setChartData] = useState(null);
+  const [availableYears, setAvailableYears] = useState([]);
 
   const monthlyRecordsUrl = `${import.meta.env.VITE_API_URL}/api/Insights/Monthly-Records`;
   const monthlyDataUrl = `${import.meta.env.VITE_API_URL}/api/Insights/Monthly-Data`;
 
   const getYears = () => {
-    const startYear = 2023;
-    const currentYear = new Date().getFullYear();
-    let years = [];
-    for (let i = startYear; i <= currentYear; i++) {
-      years.push(i);
-    }
-    return years;
+    // If availableYears exists, use it. Otherwise, fallback to a range from 2023 to current year
+    return availableYears.length > 0 ? availableYears : [2023, new Date().getFullYear()];
   };
 
   const fetchMonthlyRecords = async () => {
@@ -39,10 +35,15 @@ function Sales() {
       const response = await axios.get(monthlyRecordsUrl, {
         params: { year },
       });
-
+  
       console.log("Monthly Records Response (Bar Graph):", response.data);
-
+  
       const data = response.data.data || [];
+      
+      // Set available years from the API response
+      setAvailableYears(response.data.available_years || []);
+  
+      // Set the chart data for revenue and damages
       setChartData({
         labels: data.map((item) => item.month || "Unknown"),
         datasets: [
@@ -68,6 +69,7 @@ function Sales() {
       console.error("Failed to fetch monthly records:", error);
     }
   };
+  
 
   const fetchMonthlyData = async () => {
     const currentMonth = new Date().getMonth() + 1;
