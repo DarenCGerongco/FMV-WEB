@@ -24,7 +24,6 @@ function Sales() {
   const monthlyRecordsUrl = `${import.meta.env.VITE_API_URL}/api/Insights/Monthly-Records`;
   const monthlyDataUrl = `${import.meta.env.VITE_API_URL}/api/Insights/Monthly-Data`;
 
-  // Create a dynamic list of years starting from 2023 up to the current year
   const getYears = () => {
     const startYear = 2023;
     const currentYear = new Date().getFullYear();
@@ -35,14 +34,13 @@ function Sales() {
     return years;
   };
 
-  // Fetch data for bar graph
   const fetchMonthlyRecords = async () => {
     try {
       const response = await axios.get(monthlyRecordsUrl, {
-        params: { year }, // Use the year state for filtering
+        params: { year },
       });
 
-      console.log("Monthly Records Response (Bar Graph):", response.data); // Log bar graph data
+      console.log("Monthly Records Response (Bar Graph):", response.data);
 
       const data = response.data.data || [];
       setChartData({
@@ -51,7 +49,7 @@ function Sales() {
           {
             label: "Total Revenue (Php)",
             backgroundColor: "#4caf50",
-            borderRadius: 10, // Rounded corners for the bars
+            borderRadius: 10,
             data: data.map((item) =>
               parseFloat(item.total_revenue?.replace(/,/g, "") || 0)
             ),
@@ -59,7 +57,7 @@ function Sales() {
           {
             label: "Total Damages (Php)",
             backgroundColor: "#f44336",
-            borderRadius: 10, // Rounded corners for the bars
+            borderRadius: 10,
             data: data.map((item) =>
               parseFloat(item.total_damages?.replace(/,/g, "") || 0)
             ),
@@ -71,42 +69,90 @@ function Sales() {
     }
   };
 
-  // Fetch current and previous month data
   const fetchMonthlyData = async () => {
     const currentMonth = new Date().getMonth() + 1;
     const previousMonth = currentMonth === 1 ? 12 : currentMonth - 1;
     const previousYear = currentMonth === 1 ? year - 1 : year;
 
     try {
-      // Fetch data for the current month
       const response = await axios.get(monthlyDataUrl, {
         params: { month: currentMonth, year },
       });
 
-      console.log("Monthly Data Response (Current and Previous):", response.data); // Log monthly data
-      setMonthlyData(response.data); // Directly set the entire response
+      console.log("Monthly Data Response (Current and Previous):", response.data);
+      setMonthlyData(response.data);
     } catch (error) {
       console.error("Failed to fetch monthly data:", error);
     }
   };
 
   useEffect(() => {
-    fetchMonthlyRecords(); // Fetch bar graph data
-    fetchMonthlyData(); // Fetch current and previous month data
+    fetchMonthlyRecords();
+    fetchMonthlyData();
   }, [year]);
 
   return (
     <div className="flex w-full">
-      <Navbar/>
-      <Walkin/>
+      <Navbar />
+      <Walkin />
 
       <div className="w-full bg-white-100">
         <div className="w-4/5 mx-auto bg-white p-6 m-3 rounded-lg shadow-md mb-6 border">
           <h2 className="text-1xl font-bold">MANAGEMENT SYSTEM SALES</h2>
         </div>
 
-        {/* Bar Graph Section */}
-        <div className="w-4/5 mx-auto bg-white p-3 rounded-lg drop-shadow-md">
+        {monthlyData && (
+          <div className="w-4/5 mx-auto bg-white rounded-lg flex justify-between items-stretch gap-x-4">
+            {[
+              {
+                title: "This Month's Revenue",
+                value: `Php ${monthlyData.CurrentPurchaseOrderRevenue || "0.00"}`,
+                leftImage: "up.png",
+                rightImage: "high.png",
+              },
+              {
+                title: "Last Month's Revenue",
+                value: `Php ${monthlyData.PreviousMonthRevenue || "0.00"}`,
+                leftImage: "up.png",
+                rightImage: "high.png",
+              },
+              {
+                title: "This Month's Damages",
+                value: `Php ${monthlyData.CurrentMonthDamages || "0.00"}`,
+                leftImage: "damage.png",
+                rightImage: "down.png",
+              },
+              {
+                title: "Last Month's Damages",
+                value: `Php ${monthlyData.PreviousMonthDamages || "0.00"}`,
+                leftImage: "damage.png",
+                rightImage: "down.png",
+              },
+            ].map((item, index) => (
+              <div
+                key={index}
+                className="flex flex-col items-center justify-center bg-white my-5 p-5 border rounded-lg w-11/12 space-y-2 shadow-lg"
+              >
+                <div className="flex items-center justify-center space-x-2">
+                  <img
+                    src={`/src/assets/${item.leftImage}`}
+                    alt={item.title}
+                    className="w-6 h-6"
+                  />
+                  <span className="font-bold text-sm text-center">{item.title}</span>
+                  <img
+                    src={`/src/assets/${item.rightImage}`}
+                    alt={item.title}
+                    className="w-10 h-10"
+                  />
+                </div>
+                <span className="text-center">{item.value}</span>
+              </div>
+            ))}
+          </div>
+        )}
+
+        <div className="w-4/5 mx-auto bg-white p-3 rounded-lg drop-shadow-lg border">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-lg font-bold">Monthly Records</h3>
             <select
@@ -132,27 +178,6 @@ function Sales() {
                 },
               }}
             />
-          )}
-          {/* Monthly Data Section */}
-          {monthlyData && (
-            <div className="w-full mx-auto bg-white rounded-lg grid grid-cols-3 gap-4">
-              <div className="flex flex-col items-center p-4 border rounded">
-                <span className="font-bold mb-2">Current Month's Revenue:</span>
-                <span>Php {monthlyData.CurrentPurchaseOrderRevenue || "0.00"}</span>
-                <span className="font-bold mt-4">Current Month's Damages:</span>
-                <span>Php {monthlyData.CurrentMonthDamages || "0.00"}</span>
-              </div>
-              <div className="flex flex-col items-center p-4 border rounded">
-                <span className="font-bold mb-2">Previous Month's Revenue:</span>
-                <span>Php {monthlyData.PreviousMonthRevenue || "0.00"}</span>
-                <span className="font-bold mt-4">Previous Month's Damages:</span>
-                <span>Php {monthlyData.PreviousMonthDamages || "0.00"}</span>
-              </div>
-              <div className="flex flex-col items-center p-4 border rounded">
-                <span className="font-bold mb-2">Contribution Percentage:</span>
-                <span>{monthlyData.ContributionPercentage || "0.00"}%</span>
-              </div>
-            </div>
           )}
         </div>
       </div>
