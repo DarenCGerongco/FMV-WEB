@@ -199,8 +199,9 @@ const CreatePurchaseOrder = () => {
           Cancel
         </button>
 
+        <div className="flex gap-x-4">
         <button
-          className="mr-4 bg-transparent hover:bg-blue-500 text-blue-700 hover:text-white px-4 py-2 border border-blue-500 hover:border-transparent rounded"
+          className="w-32 r-4 bg-transparent hover:bg-blue-500 text-blue-700 hover:text-white px-4 py-2 border border-blue-500 hover:border-transparent rounded-lg"
           onClick={toggleModal}
         >
           Select
@@ -210,12 +211,14 @@ const CreatePurchaseOrder = () => {
             isSubmitting
               ? "bg-gray-400 cursor-not-allowed"
               : "bg-[#2465EB] hover:bg-green-400"
-          } text-white px-4 py-2 rounded`}
+          } w-32 text-white px-4 py-2 rounded-lg`}
           onClick={createOrder}
           disabled={isSubmitting} // Disable button while submitting
         >
           {isSubmitting ? "Loading..." : "Submit"}
         </button>
+      </div>
+
       </div> 
       </div>
       <Modal isOpen={isModalOpen} onClose={toggleModal} addProductToList={addProductToList} />
