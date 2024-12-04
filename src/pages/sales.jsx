@@ -128,6 +128,19 @@ function Sales() {
                 leftImage: "damage.png",
                 rightImage: "down.png",
               },
+              {
+                title: "Total Damages",
+                value: `Php ${monthlyData.TotalDamagesOfPurchaseOrder || "0.00"}`,
+                leftImage: "damage.png",
+                rightImage: "down.png",
+              },
+              {
+                title: "Total Revenue",
+                value: `Php ${monthlyData.TotalRevenueOfPurchaseOrder || "0.00"}`,
+                leftImage: "up.png",
+                rightImage: "high.png",
+              },
+
             ].map((item, index) => (
               <div
                 key={index}

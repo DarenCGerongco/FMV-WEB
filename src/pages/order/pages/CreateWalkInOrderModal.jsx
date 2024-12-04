@@ -51,7 +51,7 @@ const CreateWalkInOrderModal = ({ isOpen, onClose }) => {
             // If product is not chosen, add it and set default quantity to 1
             newChosenProducts[product.product_id] = {
                 ...product,
-                orderQuantity: 1, // Separate field for order quantity
+                orderQuantity: "", // Separate field for order quantity
             };
         }
         return newChosenProducts;
@@ -209,7 +209,7 @@ const CreateWalkInOrderModal = ({ isOpen, onClose }) => {
                   <input
                       type="number"
                       min="1"
-                      value={product.orderQuantity || 1}  // Ensure a valid default value (1)
+                      value={product.orderQuantity}  // Ensure a valid default value (1)
                       onChange={(e) =>
                           handleQuantityChange(product.product_id, parseInt(e.target.value, 10))
                       }
