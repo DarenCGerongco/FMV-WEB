@@ -201,7 +201,9 @@ const CreateWalkInOrderModal = ({ isOpen, onClose }) => {
                 <div className="font-bold text-sm">{product.product_name}</div>
                 <div className="text-sm">Category: {product.category_name}</div>
                 <div className="text-sm">Price: ₱ {product.original_price}</div>
-                <div className="font-bold text-green-500 text-sm">
+                <div
+                  className={`font-bold text-sm ${product.quantity <= 250 ? 'text-red-500' : 'text-green-500'}`}
+                >
                   Quantity Available: {product.quantity}
                 </div>
                 <div className="mt-2">
@@ -209,6 +211,7 @@ const CreateWalkInOrderModal = ({ isOpen, onClose }) => {
                   <input
                       type="number"
                       min="1"
+                      placeholder='Input Quantity Here'
                       value={product.orderQuantity}  // Ensure a valid default value (1)
                       onChange={(e) =>
                           handleQuantityChange(product.product_id, parseInt(e.target.value, 10))

@@ -31,12 +31,27 @@ const ViewDeliveriesModal = ({ onClose, viewDeliveriesModalOpen, purchaseOrderId
 
   if (!viewDeliveriesModalOpen || !deliveryData) return null;
 
+  const getUniqueStatuses = (returns) => {
+    const statusSet = new Set();
+    returns.forEach(ret => {
+      statusSet.add(ret.status);
+    });
+    return Array.from(statusSet);
+  };
+
+  const statusLabels = {
+    'S': 'Refunded',
+    'P': 'Awaiting Refund',
+    'NR': 'No Refunds',
+    'default': 'On Delivery' // Default status if no returns
+  };
+
   return (
     <div
       id="viewDeliveriesModal"
       className="modal fixed top-0 left-0 w-full h-full flex justify-center items-center bg-black bg-opacity-50"
     >
-      <div className="bg-white p-6 rounded-lg shadow-2xl w-[60%] z-9999 max-h-[90vh] overflow-y-auto">
+      <div className="bg-white p-6 rounded-lg shadow-2xl w-[60%] z-50 max-h-[90vh] overflow-y-auto">
         <div className="bg-blue-500 text-white text-center py-2 mb-4 rounded-md">
           <h3 className="text-lg font-bold">View Deliveries</h3>
         </div>
@@ -52,7 +67,7 @@ const ViewDeliveriesModal = ({ onClose, viewDeliveriesModalOpen, purchaseOrderId
             Status: {deliveryData.status}
           </p>
           <p className="text-black font-bold">
-            Ordered Created by: {deliveryData.admin_name}
+            Order Created by: {deliveryData.admin_name}
           </p>
           <p className="text-black font-bold">
             Address: {deliveryData.address?.street || 'N/A'}, 
@@ -71,13 +86,13 @@ const ViewDeliveriesModal = ({ onClose, viewDeliveriesModalOpen, purchaseOrderId
           deliveryData.deliveries.map((delivery, index) => (
             <div key={index} className="mb-6 bg-white p-2 rounded-xl border-b-1 hover:bg-slate-100 shadow-md">
               <div className="flex justify-between items-center">
-                <h4 className="font-bold">Delivery no: {delivery.delivery_no}</h4>
+                <h4 className="font-bold">Delivery ID#: {delivery.delivery_id}</h4>
               </div>
               <p className="text-sm text-gray-500">
-                Delivery ID #: <span className="font-bold">{delivery.delivery_id}</span>
+                Delivery ID #: <span className="font-bold">Delivery No: {delivery.delivery_no}</span>
               </p>
               <p className="text-sm text-gray-500">
-                Delivery man: <span className="font-bold">{delivery.delivery_man_name}</span>
+                Delivery Man: <span className="font-bold">{delivery.delivery_man_name}</span>
               </p>
               <p className="text-sm text-gray-500">
                 Delivery Status: {delivery.delivery_status}
@@ -92,63 +107,29 @@ const ViewDeliveriesModal = ({ onClose, viewDeliveriesModalOpen, purchaseOrderId
               {/* Products for each delivery */}
               <div className="mt-4">
                 <div className="grid grid-cols-5 py-1 px-1">
-                  <p className="grid-span-1 font-bold pl-4 text-sm">
-                    Price
-                  </p>
-                  <p className="grid-span-1 font-bold pl-4 text-sm">
-                    Product Name
-                  </p>
-                  <p className="grid-span-1 font-bold pl-4 text-sm">
-                    Delivered Quantity
-                  </p>
-                  <p className="grid-span-1 font-bold pl-4 text-sm">
-                    Damages
-                  </p>
-                  <p className="grid-span-1 font-bold pl-4 text-sm">
-                    Returns
-                  </p>
+                  <p className="col-span-1 font-bold pl-4 text-sm">Price</p>
+                  <p className="col-span-1 font-bold pl-4 text-sm">Product Name</p>
+                  <p className="col-span-1 font-bold pl-4 text-sm">Delivered Quantity</p>
+                  <p className="col-span-1 font-bold pl-4 text-sm">Damages</p>
+                  <p className="col-span-1 font-bold pl-4 text-sm">Returns</p>
                 </div>
-                {delivery.products.map((product, productIndex) => {
-                  // Calculate total returned quantity
-                  const totalReturned = product.returns.reduce((sum, ret) => sum + ret.quantity, 0);
-                  const allDamagesReturned = totalReturned === product.no_of_damages;
-
-                  return (
-                    <div key={productIndex} className="grid grid-cols-5 bg-gray-200 shadow-md border-b-1 rounded-md py-1 px-1 mb-2">
-                      <p className="grid-span-1 font-bold pl-4 text-sm">
-                        ₱{product.price}
-                      </p>
-                      <p className="grid-span-1 font-bold pl-4 text-sm">
-                        {product.product_name}
-                      </p>
-                      <p className="grid-span-1 font-bold pl-4 text-sm">
-                        x{product.quantity}
-                      </p>
-                      <p className="grid-span-1 font-bold pl-4 text-sm">
-                        {product.no_of_damages}
-                      </p>
-                      <div className="grid-span-1 text-sm text-gray-700">
-                        {product.no_of_damages > 0 ? (
-                          totalReturned === 0 ? (
-                            <p
-                              className='text-red-500 font-bold'
-                            >Awaiting for return</p>
-                          ) : (
-                            <p
-                              className='text-green-500 font-bold'
-                            >{allDamagesReturned ? "Returned" : "Awaiting for return"}</p>
-                          )
-                        ) : (
-                          <p
-                            className='font-medium italic'
-                          >
-                            No Returns
-                          </p>
-                        )}
-                      </div>
+                {delivery.products.map((product, productIndex) => (
+                  <div key={productIndex} className="grid grid-cols-5 bg-gray-200 shadow-md border-b-1 rounded-md py-1 px-1 mb-2">
+                    <p className="col-span-1 font-bold pl-4 text-sm">₱{product.price}</p>
+                    <p className="col-span-1 font-bold pl-4 text-sm">{product.product_name}</p>
+                    <p className="col-span-1 font-bold pl-4 text-sm">x{product.quantity}</p>
+                    <p className="col-span-1 font-bold pl-4 text-sm">{product.no_of_damages}</p>
+                    <div className="col-span-1 text-sm text-gray-700">
+                      {product.returns.length > 0 ? (
+                        getUniqueStatuses(product.returns).map((status, idx) => (
+                          <p key={idx} className="font-bold">{statusLabels[status]}</p>
+                        ))
+                      ) : (
+                        <p className="font-bold text-yellow-500">{statusLabels['default']}</p>
+                      )}
                     </div>
-                  );
-                })}
+                  </div>
+                ))}
               </div>
             </div>
           ))

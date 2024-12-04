@@ -15,14 +15,11 @@ function Order() {
   const { id: userID, setID } = useContext(GlobalContext);
   const [loading, setLoading] = useState(true); // Initialize loading state
 
-  const [orders, setOrders] = useState([]);
   const [itemsOrderedModalOpen, setItemsOrderedModalOpen] = useState(false);
   const [createDeliveryModalOpen, setCreateDeliveryModalOpen] = useState(false);
   const [newDeliveryModalOpen, setNewDeliveryModalOpen] = useState(false);
-  const [productsListed, setProductsListed] = useState([]);
   const [viewDeliveriesModalOpen, setViewDeliveriesModalOpen] = useState(false);
   const [purchaseOrderData, setPurchaseOrderData] = useState([]);
-  const [products, setProducts] = useState([]);
   const [selectedPurchaseOrderId, setSelectedPurchaseOrderId] = useState(null);
   const [openDropDowns, setOpenDropDowns] = useState({});
   const [selectedItemsOrderId, setSelectedItemsOrderId] = useState(null);
