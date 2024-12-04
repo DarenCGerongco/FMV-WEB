@@ -263,16 +263,16 @@ function Overview() {
               onClick={handleDeliveryClick}
             >
               <h3 className="text-lg font-bold mb-4">DELIVERY</h3>
-              <div className="p-4 rounded-lg shadow-md mt-4 flex justify-between items-center bg-[#8EF7A8]">
-                <span className="text-gray-700 text-sm">Confirm Delivery:</span>
-                <span className="text-gray-700 text-sm">2</span>
-              </div>
-              <div className="p-4 rounded-lg shadow-md mt-4 flex justify-between items-center bg-[#E6FCE6]">
-                <span className="text-gray-700 text-sm">On Delivery:</span>
+              <div className="bg-gray-200 p-4 rounded-lg shadow-md mt-4 flex justify-between items-center">
+                <span className="text-gray-700 text-sm">Delivery ID:</span>
                 <span className="text-gray-700 text-sm">2</span>
               </div>
               <div className="bg-gray-200 p-4 rounded-lg shadow-md mt-4 flex justify-between items-center">
-                <span className="text-gray-700 text-sm">Delivered:</span>
+                <span className="text-gray-700 text-sm">Delivery Man:</span>
+                <span className="text-gray-700 text-sm">2</span>
+              </div>
+              <div className="bg-gray-200 p-4 rounded-lg shadow-md mt-4 flex justify-between items-center">
+                <span className="text-gray-700 text-sm">Delivery Status:</span>
                 <span className="text-gray-700 text-sm">2</span>
               </div>
             </div>
