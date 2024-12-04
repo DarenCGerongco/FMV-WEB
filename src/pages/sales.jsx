@@ -105,66 +105,54 @@ function Sales() {
 
         {monthlyData && (
           <div className="w-4/5 mx-auto bg-white rounded-lg flex justify-between items-stretch gap-x-4">
-            {[
-              {
-                title: "This Month's Revenue",
-                value: `Php ${monthlyData.CurrentPurchaseOrderRevenue || "0.00"}`,
-                leftImage: "up.png",
-                rightImage: "high.png",
-              },
-              {
-                title: "This Month's Damages",
-                value: `Php ${monthlyData.CurrentMonthDamages || "0.00"}`,
-                leftImage: "damage.png",
-                rightImage: "down.png",
-              },
-              {
-                title: "Last Month's Revenue",
-                value: `Php ${monthlyData.PreviousMonthRevenue || "0.00"}`,
-                leftImage: "up.png",
-                rightImage: "high.png",
-              },
-              {
-                title: "Last Month's Damages",
-                value: `Php ${monthlyData.PreviousMonthDamages || "0.00"}`,
-                leftImage: "damage.png",
-                rightImage: "down.png",
-              },
-              {
-                title: "Total Revenue",
-                value: `Php ${monthlyData.TotalRevenueOfPurchaseOrder || "0.00"}`,
-                leftImage: "up.png",
-                rightImage: "high.png",
-              },
-
-              {
-                title: "Total Damages",
-                value: `Php ${monthlyData.TotalDamagesOfPurchaseOrder || "0.00"}`,
-                leftImage: "damage.png",
-                rightImage: "down.png",
-              },
-            ].map((item, index) => (
-              <div
-                key={index}
-                className="flex flex-col items-center justify-center bg-white my-5 p-5 border rounded-lg w-11/12 space-y-2 shadow-lg"
-              >
-                <div className="flex items-center justify-center space-x-2">
-                  <img
-                    src={`/src/assets/${item.leftImage}`}
-                    alt={item.title}
-                    className="w-6 h-6"
-                  />
-                  <span className="font-bold text-sm text-center">{item.title}</span>
-                  <img
-                    src={`/src/assets/${item.rightImage}`}
-                    alt={item.title}
-                    className="w-10 h-10"
-                  />
-                </div>
-                <span className="text-center">{item.value}</span>
+          {[
+            {
+              title: "Total Revenue",
+              value: `Php ${monthlyData.TotalRevenueOfPurchaseOrder || "0.00"}`,
+              leftImage: "up.png",
+              rightImage: "high.png",
+            },
+            {
+              title: "This Month's Revenue",
+              value: `Php ${monthlyData.CurrentPurchaseOrderRevenue || "0.00"}`,
+              leftImage: "up.png",
+              rightImage: "high.png",
+            },
+            {
+              title: "Last Month's Revenue",
+              value: `Php ${monthlyData.PreviousMonthRevenue || "0.00"}`,
+              leftImage: "up.png",
+              rightImage: "high.png",
+            },
+            {
+              title: "Total Damages",
+              value: `Php ${monthlyData.TotalDamagesOfPurchaseOrder || "0.00"}`,
+              leftImage: "damage.png",
+              rightImage: "down.png",
+            },
+          ].map((item, index) => (
+            <div
+              key={index}
+              className="flex flex-col bg-white my-5 p-5 border rounded-lg w-11/12 space-y-2 shadow-lg"
+            >
+              <div className="flex items-center justify-start space-x-2 w-full">
+                <img
+                  src={`/src/assets/${item.leftImage}`}
+                  alt={item.title}
+                  className="w-6 h-6"
+                />
+                <span className="font-bold text-sm text-left flex-grow">{item.title}</span>
+                <img
+                  src={`/src/assets/${item.rightImage}`}
+                  alt={item.title}
+                  className="w-14 h-14"
+                />
               </div>
-            ))}
-          </div>
+              <span className="text-center">{item.value}</span>
+            </div>
+          ))}
+        </div>
+        
         )}
 
         <div className="w-4/5 mx-auto bg-white p-3 rounded-lg drop-shadow-lg border">
