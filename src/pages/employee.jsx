@@ -52,7 +52,7 @@ function Employee() {
   useEffect(() => {
     const fetchDeliveryMen = async () => {
       try {
-        const response = await axios.get(`${url}/api/users`, {
+        const response = await axios.get(`${url}/api/users/employee`, {
           params: { page: currentPage, per_page: 20 }
         });
 
