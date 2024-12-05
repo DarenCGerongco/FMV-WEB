@@ -255,7 +255,7 @@ function Inventory() {
 
 
         {/* Pagination */}
-        <div className="flex justify-center mt-4 space-x-2">
+        <div className="flex justify-center w-full space-x-2 my-10">
           <button
             onClick={() => setPagination((prev) => ({ ...prev, currentPage: 1 }))}
             disabled={pagination.currentPage === 1}

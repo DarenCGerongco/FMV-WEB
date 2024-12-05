@@ -290,8 +290,8 @@ function Order() {
                     {openDropDowns[customerData.purchase_order_id] && (
                       <div
                         ref={dropDownRef}
-                        className="absolute mt-10 w-48 bg-white border border-gray-300 right-[60px] rounded shadow-lg z-50"
-                      >
+                        className="absolute mt-0 w-1/8 bg-white border border-gray-300 right-[10px] rounded shadow-lg z-50"
+                        >
                         <ul className="py-1">
                           <li
                             className="px-4 p-1 hover:bg-blue-500 hover:text-white font-bold duration-300 cursor-pointer"
@@ -375,7 +375,7 @@ function Order() {
             </div>
           )}
         {/* Pagination Controls */}
-        <div className="flex justify-center w-full space-x-2 my-4">
+        <div className="flex justify-center w-full space-x-2 my-7">
           <button
             onClick={() => handlePageChange(1)}
             disabled={paginationInfo.currentPage === 1}
