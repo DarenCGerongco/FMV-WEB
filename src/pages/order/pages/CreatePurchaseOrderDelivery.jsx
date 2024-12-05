@@ -142,11 +142,27 @@ const CreatePurchaseOrder = () => {
                 id={field}
                 name={field}
                 value={purchaseOrderDetails[field]}
-                onChange={handleChange}
+                onChange={(e) => {
+                  const { name, value } = e.target;
+
+                  // Validation for customer_name: allow only letters
+                  if (name === 'customer_name' && /[0-9]/.test(value)) {
+                    return; // Prevent updating if the value contains numbers
+                  }
+
+                  // Validation for zipcode: allow only numbers
+                  if (name === 'zipcode' && /[^\d]/.test(value)) {
+                    return; // Prevent updating if the value contains non-numeric characters
+                  }
+
+                  handleChange(e); // Call the existing change handler for valid input
+                }}
               />
             </div>
           ))}
         </div>
+
+
         <hr className="h-px my-8 bg-gray-500 border-0 shadow-md"></hr>
         <h1 className="text-xl font-bold">Product Listed:</h1>
         <div className="grid grid-cols-10 bg-gray-300 p-2 rounded">
