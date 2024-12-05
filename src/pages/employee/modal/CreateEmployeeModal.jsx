@@ -26,9 +26,18 @@ const CreateEmployee = ({ newDeliveryMan, handleAddDeliveryManChange, submitAddM
           name="name"
           className="w-full px-3 py-2 border border-gray-300 rounded-md"
           value={newDeliveryMan.name}
-          onChange={handleAddDeliveryManChange}
+          onChange={(e) => {
+            const { value } = e.target;
+            // Allow any character except numbers (0-9)
+            if (!/\d/.test(value)) {
+              handleAddDeliveryManChange(e);
+            }
+          }}
+          placeholder="Enter the name"
         />
       </div>
+
+
       <div className="mb-4">
         <label htmlFor="username" className="block text-gray-700">Username:</label>
         <input
@@ -59,9 +68,16 @@ const CreateEmployee = ({ newDeliveryMan, handleAddDeliveryManChange, submitAddM
           name="number"
           className="w-full px-3 py-2 border border-gray-300 rounded-md"
           value={newDeliveryMan.number}
-          onChange={handleAddDeliveryManChange}
+          onChange={(e) => {
+            const { value } = e.target;
+            // Allow only numbers, spaces, plus (+), minus (-), and parentheses ()
+            if (/^[\d\s()+-]*$/.test(value)) {
+              handleAddDeliveryManChange(e);
+            }
+          }}
         />
       </div>
+
       <div className="mb-4">
         <label htmlFor="password" className="block text-gray-700">Password:</label>
         <input
