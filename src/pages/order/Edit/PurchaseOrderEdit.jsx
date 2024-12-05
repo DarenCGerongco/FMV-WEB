@@ -211,17 +211,17 @@ const PurchaseOrderEdit = () => {
 
           <div className="flex justify-end mt-5 items-end">
           <button
-            className="mr-4 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-400"
-            onClick={toggleModal}
-          >
-            Add Product
-          </button>
-            <button
               className="mr-4 bg-red-500 text-white px-4 py-2 rounded hover:bg-red-400"
               onClick={() => window.history.back()}
             >
               Cancel
             </button>
+          <button
+            className="mr-4 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-400"
+            onClick={toggleModal}
+          >
+            Add Product
+          </button>
             <button
               className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-400"
               onClick={openConfirmationModal}
