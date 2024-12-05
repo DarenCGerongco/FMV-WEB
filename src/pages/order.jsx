@@ -176,10 +176,10 @@ function Order() {
       <Navbar/>
       <QuickButtons/>
       <div className="flex flex-col w-full bg-white">
-        <div className="w-4/5 mx-auto bg-white p-6 m-3 rounded-lg drop-shadow-md mb-6 border">
+        <div className="w-4/5 mx-auto p-6 m-3 rounded-lg mb-6 bg-white shadow-lg shadow-gray-400">
           <h2 className="text-1xl font-bold">MANAGEMENT SYSTEM ORDER</h2>
         </div>
-        <div className="w-4/5 mx-auto bg-white p-3 rounded-lg drop-shadow-md">
+        <div className="w-4/5 mx-auto p-3 rounded-lg bg-white shadow-lg shadow-gray-400">
           <div className="relative flex items-center space-x-4">
             <div className="flex items-center w-full px-4 border border-gray-300 rounded-md shadow-md focus-within:border-blue-500 relative h-12">
               <span className="text-black-500 font-bold whitespace-nowrap">ORDER</span>
@@ -236,7 +236,7 @@ function Order() {
           </div>
         </div>
         <div className="w-4/5 mx-auto mt-6">
-          <div className="bg-white rounded-lg shadow-xl">
+          <div className="bg-white shadow-lg shadow-gray-400 rounded-lg">
             <div className="grid grid-cols-11 font-bold px-2 text-sm py-3 border-b border-gray-300">
               <p className="col-span-1 text-left">POID</p>
               <p className="col-span-2 text-left">Customer's Name</p>
