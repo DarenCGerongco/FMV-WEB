@@ -21,7 +21,11 @@ function Index() {
     try {
       const response = await axios.post(`${url}/api/login`, { username, password });
 
-      if (response.status === 200) {
+      // console.log(response.data.user.user_type_id)
+
+      const user_type = response.data.user.user_type_id
+
+      if (response.status === 200 && user_type === 1) {
         localStorage.setItem('token', response.data.token);
         
         // Save userID in localStorage and GlobalContext after login
@@ -29,7 +33,13 @@ function Index() {
         setID(response.data.user.id);  // Also set it in the global context
 
         navigate('/overview');  // Navigate without passing the id
-      } else {
+      } 
+      else if (user_type === 2){
+        setMessage('Admin status require');
+        setShowMessageBox(true);
+      }
+      
+      else {
         setMessage('Invalid login credentials.');
         setShowMessageBox(true);
       }
