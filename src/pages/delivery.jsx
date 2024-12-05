@@ -97,10 +97,10 @@ function Delivery() {
       <Navbar />
       <QuickButtons/>
       <div className="flex flex-col w-full bg-white">
-        <div className="w-4/5 mx-auto bg-white p-6 m-3 rounded-lg shadow-md mb-6 border">
+        <div className="w-4/5 mx-auto bg-white p-6 m-3 rounded-lg bg-white shadow-lg shadow-gray-400 mb-6">
           <h2 className="text-1xl font-bold">MANAGEMENT SYSTEM DELIVERY</h2>
         </div>
-        <div className="w-4/5 mx-auto bg-white p-3 rounded-lg drop-shadow-md">
+        <div className="w-4/5 mx-auto bg-white p-3 rounded-lg bg-white shadow-lg shadow-gray-400">
           <div className="flex items-center w-full px-4 py-3 border border-gray-300 rounded-md shadow-md relative h-12">
             <span className="font-bold text-black-500 whitespace-nowrap">
               DELIVERY
@@ -160,7 +160,7 @@ function Delivery() {
             </button>
           </div>
         </div>
-        <div className="w-4/5 mx-auto mt-2 bg-white p-3 rounded-lg drop-shadow-md">
+        <div className="w-4/5 mx-auto mt-2 p-3 rounded-lg bg-white shadow-lg shadow-gray-400">
           <div className="grid grid-cols-7 text-sm font-bold p-1 rounded-md">
             <div className="col-span-1">Delivery ID#</div>
             <div className="col-span-1">Purchase Order ID#</div>
@@ -173,7 +173,7 @@ function Delivery() {
             filteredDeliveries.map((delivery) => (
               <div
                 key={delivery.delivery_id}
-                className="hover:bg-blue-50 duration-200 grid text-sm grid-cols-7 border-b shadow-md rounded my-1 border-gray-300 p-1 items-center cursor-pointer"
+                className="hover:bg-blue-50 duration-200 grid text-sm grid-cols-7 rounded my-1 bg-white shadow-lg shadow-gray-400 p-1 items-center cursor-pointer"
                 onClick={() => handleDeliveryClick(delivery.delivery_id)} // Open modal
               >
                 <div className="col-span-1">{delivery.delivery_id}</div>

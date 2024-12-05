@@ -188,10 +188,10 @@ function Employee() {
       <Navbar/>
       <QuickButtons/>
       <div className="flex flex-col w-full bg-white">
-        <div className="w-4/5 mx-auto bg-white p-6 m-3 rounded-lg shadow-md mb-6 border">
+        <div className="w-4/5 mx-auto p-6 m-3 rounded-lg bg-white shadow-lg shadow-gray-400 mb-6">
           <h2 className="font-bold text-1xl">MANAGEMENT SYSTEM EMPLOYEE</h2>
         </div>
-        <div className="w-4/5 mx-auto bg-white p-3 rounded-lg shadow-md">
+        <div className="w-4/5 mx-auto p-3 rounded-lg bg-white shadow-lg shadow-gray-400">
           <div className="relative mt-4 flex items-center space-x-4">
             <div className="flex flex-row items-center w-full px-4 py-3 mr-1 border border-gray-300 rounded-md shadow-md focus-within:border-blue-500 relative h-12">
               <span className="font-bold text-black-500 whitespace-nowrap">
@@ -215,7 +215,7 @@ function Employee() {
           </div>
         </div>
 
-        <div className="w-4/5 mx-auto bg-white p-5 m-3 rounded-lg shadow-md">
+        <div className="w-4/5 mx-auto p-5 m-3 rounded-lg bg-white shadow-lg shadow-gray-400">
           <div id="delivery-man-container" className="mt-4 space-y-1">
             <div className="grid grid-cols-6 gap-1 font-bold p-1">
               <div className="col-span-2">Name</div>
@@ -226,7 +226,7 @@ function Employee() {
             {filteredDeliveryMen.map((deliveryMan, index) => (
               <div
                 key={index}
-                className="grid grid-cols-6 rounded-lg hover:bg-blue-50 duration-300 shadow-md border-b border-gray-300 p-3"
+                className="grid grid-cols-6 rounded-lg hover:bg-blue-50 duration-300 bg-white shadow-lg shadow-gray-400 p-3"
               >
                 <div className="col-span-2">{deliveryMan.name}</div>
                 <div className="col-span-2">{deliveryMan.number}</div>
