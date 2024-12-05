@@ -157,7 +157,7 @@ function Overview() {
       <Navbar />
       <QuickButtons/>
       <div className="flex flex-col xl:w-4/5 bg-white">
-        <div className="w-11/12 mx-auto bg-white p-6 m-3 rounded-3xl shadow-md mb-6 border">
+        <div className="w-11/12 mx-auto bg-white p-6 m-3 rounded-3xl shadow-lg mb-6 border">
           <h2 className="text-1xl font-bold">
             Management System Overviews   {/* Handle empty userName case */}
           </h2>
@@ -175,7 +175,7 @@ function Overview() {
           <div className="flex flex-col space-y-4 w-1/3">
             {/* Order Container */}   
             <div 
-              className="bg-white p-6 rounded-3xl shadow-md hover:shadow-2xl hover:shadow-gray-400 duration-200 cursor-pointer" 
+              className="bg-white p-6 rounded-3xl shadow-lg hover:shadow-2xl hover:shadow-gray-400 duration-200 cursor-pointer border" 
               onClick={handleOrderClick}
             >
               <h3 className="text-lg font-bold mb-4">
@@ -209,7 +209,7 @@ function Overview() {
                   orders.orders.map((customerData, index) => (
                     <div
                       key={index}
-                      className="p-1 w-full bg-white flex rounded-lg shadow-md my-2 group"
+                      className="p-1 w-full bg-white flex rounded-lg shadow-lg my-2 group"
                     >
                       <div className='w-[15%] flex justify-center  '>
                         <span className='text-xs'>
@@ -240,7 +240,7 @@ function Overview() {
 
             {/* Delivery Container */}
             <div 
-              className="bg-white p-6 rounded-3xl shadow-md hover:shadow-2xl hover:shadow-gray-400 duration-200 cursor-pointer" 
+              className="bg-white p-6 rounded-3xl shadow-lg hover:shadow-2xl hover:shadow-gray-400 duration-200 cursor-pointer border" 
               onClick={handleDeliveryClick}
             >
               <h3 className="text-lg font-bold mb-4">DELIVERY</h3>
@@ -258,13 +258,13 @@ function Overview() {
               </div>
             </div>
 
-            <div className="bg-white p-6 rounded-3xl shadow-md hover:shadow-2xl hover:shadow-gray-400 duration-200 cursor-pointer"
+            <div className="bg-white p-6 rounded-3xl shadow-lg hover:shadow-2xl hover:shadow-gray-400 duration-200 cursor-pointer border"
               onClick={handleDeliveryManClick}
             >
               <h3 className="text-lg font-bold mb-4">EMPLOYEE ACCOUNT</h3>
               {userNames.length > 0 ? (
                 userNames.map((name, index) => (
-                  <div key={index} className="bg-gray-200 p-4 rounded-lg shadow-md mt-4">
+                  <div key={index} className="bg-gray-200 p-4 rounded-lg shadow-lg mt-4">
                     <p className="text-gray-700 text-sm whitespace-nowrap">{name}</p>
                   </div>
                 ))
@@ -279,7 +279,7 @@ function Overview() {
           
           
             {/* Sales Container */}
-            <div className="bg-white p-6 rounded-3xl shadow-md hover:shadow-2xl hover:shadow-gray-400 duration-200 cursor-pointer">
+            <div className="bg-white p-6 rounded-3xl shadow-lg hover:shadow-2xl hover:shadow-gray-400 duration-200 cursor-pointer border">
                   <h3 className="text-lg font-bold mb-4">SALES</h3>
                   
                   {chartData && chartData.labels.length > 0 && chartData.datasets[0].data.length > 0 ? (
@@ -305,7 +305,7 @@ function Overview() {
                 </div>
             {/* Inventory Container */}   
             <div
-              className="bg-white p-6 rounded-3xl shadow-md hover:shadow-2xl hover:shadow-gray-400 duration-200 cursor-pointer"
+              className="bg-white p-6 rounded-3xl shadow-md hover:shadow-2xl hover:shadow-gray-400 duration-200 cursor-pointer border"
               onClick={handleInventoryClick}
             >
               <h3 className="text-lg font-bold">INVENTORY</h3>
@@ -322,7 +322,7 @@ function Overview() {
               {inventoryItems.length > 0 ? (
                 inventoryItems.map((item, index) => (
                   <div key={index} className="mt-4">
-                    <div className="bg-gray-200 p-4 rounded-lg shadow-md flex justify-between items-center">
+                    <div className="bg-gray-200 p-4 rounded-lg shadow-lg flex justify-between items-center">
                       {/* Item Details */}
                       <div className="w-1/4 text-left">
                         <div className="">{item.id}</div>
