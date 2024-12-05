@@ -28,12 +28,6 @@ const Walkin = () => {
           src={WalkinIcon}
           alt="Walk-in Icon"
         />
-        <span
-          className="absolute bottom-0 mb-2 right-[-80%] transform -translate-x-1/2 w-max py-1 px-2 rounded bg-gray-800 text-white text-xs opacity-0 group-hover:opacity-100 transition-opacity duration-200 font-bold"
-          style={{ whiteSpace: 'nowrap' }}
-        >
-          Create Purchase Order
-        </span>
       </button>
 
       {/* Button to open the Walk-In Order Modal */}
@@ -46,12 +40,6 @@ const Walkin = () => {
           src={WalkinIcon}
           alt="Walk-in Icon"
         />
-        <span
-          className="absolute bottom-0 mb-2 right-[-80%] transform -translate-x-1/2 w-max py-1 px-2 rounded bg-gray-800 text-white text-xs opacity-0 group-hover:opacity-100 transition-opacity duration-200 font-bold"
-          style={{ whiteSpace: 'nowrap' }}
-        >
-          Create Walk In Order
-        </span>
       </button>
 
       {/* Walk-In Order Modal */}

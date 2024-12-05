@@ -11,7 +11,7 @@ import {
   Legend,
 } from "chart.js";
 import axios from "axios";
-import Walkin from '../components/walkin';
+import QuickButtons from '../components/quickButtons';
 
 // Register required Chart.js components
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
@@ -96,7 +96,7 @@ function Sales() {
   return (
     <div className="flex w-full">
       <Navbar />
-      <Walkin />
+      <QuickButtons/>
 
       <div className="w-full bg-white-100">
         <div className="w-4/5 mx-auto bg-white p-6 m-3 rounded-lg shadow-md mb-6 border">

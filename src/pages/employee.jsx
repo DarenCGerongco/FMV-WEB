@@ -3,7 +3,7 @@ import Navbar from '../components/navbar';
 import axios from 'axios';
 import CreateEmployee from './employee/modal/CreateEmployeeModal';
 import EditEmployeeModal from './employee/modal/EditEmployeeModal'; // Import the edit modal
-import Walkin from '../components/walkin';
+import QuickButtons from '../components/quickButtons';
 
 function Employee() {
   const url = import.meta.env.VITE_API_URL;
@@ -103,6 +103,7 @@ function Employee() {
       });
     }
   };
+  
 
   const closeEditModal = () => setEditModalOpen(false);
 
@@ -122,17 +123,44 @@ function Employee() {
     }));
   };
 
+  const submitAddModal = async () => {
+    try {
+      const response = await axios.post(`${url}/api/users`, {
+        user_type_id: newDeliveryMan.usertype, // Match the backend key
+        name: newDeliveryMan.name,
+        username: newDeliveryMan.username,
+        password: newDeliveryMan.password,
+        email: newDeliveryMan.email || null, // Optional field
+        number: newDeliveryMan.number,
+      });
+  
+      if (response.status === 201) {
+        // Successfully created a new user
+        console.log('User created successfully:', response.data);
+        // Update the delivery men list
+        setDeliveryMen((prevDeliveryMen) => [...prevDeliveryMen, response.data.data]);
+        // Close the modal after submission
+        closeAddModal();
+      } else {
+        console.error('Failed to create user:', response.data.message);
+      }
+    } catch (error) {
+      console.error('An error occurred while creating the user:', error);
+    }
+  };
+  
   const submitEditModal = async () => {
     try {
       const response = await axios.put(`${url}/api/users/${editDeliveryMan.id}`, {
+        user_type_id: editDeliveryMan.usertype, // Match the backend key
         name: editDeliveryMan.name,
         username: editDeliveryMan.username,
-        user_type_id: editDeliveryMan.usertype,
-        email: editDeliveryMan.email || null,
+        email: editDeliveryMan.email || null, // Optional field
         number: editDeliveryMan.number,
       });
-
+  
       if (response.status === 200) {
+        // Update the deliveryMen list
         setDeliveryMen((prevDeliveryMen) =>
           prevDeliveryMen.map((man) =>
             man.id === editDeliveryMan.id ? response.data.data : man
@@ -140,12 +168,13 @@ function Employee() {
         );
         closeEditModal();
       } else {
-        console.error('Error updating Employee');
+        console.error('Failed to update user:', response.data.message);
       }
     } catch (error) {
-      console.error('An error occurred while updating the Employee:', error);
+      console.error('An error occurred while updating the user:', error);
     }
   };
+  
 
   // Pagination controls
   const handlePageChange = (page) => {
@@ -157,7 +186,7 @@ function Employee() {
   return (
     <div className="flex w-full bg-100">
       <Navbar/>
-      <Walkin/>
+      <QuickButtons/>
       <div className="flex flex-col w-full bg-white">
         <div className="w-4/5 mx-auto bg-white p-6 m-3 rounded-lg shadow-md mb-6 border">
           <h2 className="font-bold text-1xl">MANAGEMENT SYSTEM EMPLOYEE</h2>

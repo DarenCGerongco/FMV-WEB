@@ -61,57 +61,78 @@ const CreateDeliveryModal = ({ createDeliveryModalOpen, closeCreateDeliveryModal
 
   const assignEmployeeFunction = async () => {
     if (!selectedUser) {
-        toast.error('Please select a delivery man.');
-        return;
+      toast.error('Please select a delivery man.');
+      return;
     }
-
+  
     // Filter out product details where no quantity is set or quantity is zero
     const validProductDetails = productDetails.filter(product => {
-        const quantity = quantityInputs[product.product_id];
-        return quantity > 0; // Ensure quantity is greater than zero
+      const quantity = quantityInputs[product.product_id];
+      return quantity > 0; // Ensure quantity is greater than zero
     });
-
+  
     // Check for invalid quantities entered by the user
     const invalidQuantities = validProductDetails.filter(product => {
-        const inputQuantity = quantityInputs[product.product_id];
-        return inputQuantity > product.remaining_quantity;
+      const inputQuantity = quantityInputs[product.product_id];
+      return inputQuantity > product.remaining_quantity;
     });
-
+  
     if (invalidQuantities.length > 0) {
-        const errorMessage = invalidQuantities.map(product =>
-            `Product: ${product.product_name} exceeds the remaining quantity. Remaining: ${product.remaining_quantity}, Entered: ${quantityInputs[product.product_id]}`
-        ).join('\n');
-        toast.error(`Error:\n${errorMessage}`);
-        return;
+      const errorMessage = invalidQuantities.map(product =>
+        `Product: ${product.product_name} exceeds the remaining quantity. Remaining: ${product.remaining_quantity}, Entered: ${quantityInputs[product.product_id]}`
+      ).join('\n');
+      toast.error(`Error:\n${errorMessage}`);
+      return;
     }
-
+  
     setIsLoading(true); // Start loading indicator
-
+  
     // Prepare the form data to send to the backend
     const formData = {
-        purchase_order_id: purchaseOrderId,
-        user_id: deliverymanRecord.find(user => user.name === selectedUser)?.id,
-        product_details: validProductDetails.map(product => ({
-            product_id: product.product_id,
-            quantity: quantityInputs[product.product_id] || 0,
-        })),
-        notes: ""
+      purchase_order_id: purchaseOrderId,
+      user_id: deliverymanRecord.find(user => user.name === selectedUser)?.id,
+      product_details: validProductDetails.map(product => ({
+        product_id: product.product_id,
+        quantity: quantityInputs[product.product_id] || 0,
+      })),
+      notes: "",
     };
-
+  
     // Send the POST request to the backend API
     try {
-        const response = await axios.post(`${url}/api/assign-employee`, formData);
-        toast.success('Employee assigned successfully!');
-        setTimeout(() => {
-            setIsLoading(false); // Stop loading indicator
-            closeCreateDeliveryModal(); // Close the modal on success
-        }, 2000);
+      const response = await axios.post(`${url}/api/assign-employee`, formData);
+      toast.success('Employee assigned successfully!');
+      setTimeout(() => {
+        setIsLoading(false); // Stop loading indicator
+        closeCreateDeliveryModal(); // Close the modal on success
+      }, 2000);
     } catch (error) {
-        console.error('Error assigning employee:', error);
+      setIsLoading(false); // Stop loading indicator
+  
+      // Extract backend error response
+      const backendError = error.response?.data;
+  
+      // Check for specific error messages and display them
+      if (backendError && backendError.error) {
+        // If the backend provides detailed exceeding products, display them
+        if (backendError.exceeding_products && backendError.exceeding_products.length > 0) {
+          const exceedingProductMessages = backendError.exceeding_products.map(product => (
+            `Product: ${product.product_name} - Requested: ${product.requested_quantity}, Available: ${product.available_quantity || product.available_stock}`
+          )).join('\n');
+          toast.error(`Error: ${backendError.error}\n${exceedingProductMessages}`);
+        } else {
+          // Generic error message from the backend
+          toast.error(backendError.error);
+        }
+      } else {
+        // Fallback error message
         toast.error('Failed to assign employee. Please try again.');
-        setIsLoading(false); // Stop loading indicator if there is an error
+      }
+  
+      console.error('Error assigning employee:', error.response || error);
     }
-};
+  };
+  
 
 
   return (

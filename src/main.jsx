@@ -10,7 +10,7 @@ import Delivery from './pages/delivery.jsx';
 import Overview from './pages/overview.jsx';
 import Order from './pages/order.jsx';
 import CreatePurchaseOrder from './pages/order/pages/CreatePurchaseOrderDelivery.jsx';
-import WalkIn from './pages/order/pages/CreatePurchaseOrderWalkIn.jsx';
+import PurchaseOrderEdit from './pages/order/Edit/PurchaseOrderEdit.jsx'; // Import the component
 import { GlobalProvider } from '../GlobalContext'; // Import GlobalProvider
 
 const root = createRoot(document.getElementById('root'));
@@ -28,7 +28,7 @@ root.render(
           <Route path="/overview" element={<Overview />} />
           <Route path="/order" element={<Order />} />
           <Route path="/order/create-delivery" element={<CreatePurchaseOrder />} />
-          <Route path="/order/create-walkin" element={<WalkIn />} />
+          <Route path="/order/edit/:purchaseOrderId" element={<PurchaseOrderEdit />} /> {/* Add the route */}
         </Routes>
       </BrowserRouter>
     </GlobalProvider>

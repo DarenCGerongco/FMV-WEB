@@ -7,7 +7,7 @@ import { useNavigate } from 'react-router-dom';
 import CreateDeliveryModal from './order/modals/createdeliverymodal';
 import ViewDeliveriesModal from './order/modals/viewdeliveriesmodal';
 import ItemsOrderedModal from './order/modals/viewitemsorderedmodal';
-import Walkin from '../components/walkin';
+import QuickButtons from '../components/quickButtons';
 
 function Order() {
   const navigate = useNavigate(); // Initialize navigate
@@ -28,6 +28,10 @@ function Order() {
   const [currentPage, setCurrentPage] = useState(1);
   const [paginationInfo, setPaginationInfo] = useState({});
   const [statusFilter, setStatusFilter] = useState("");
+
+  const [confirmEditModalOpen, setConfirmEditModalOpen] = useState(false);
+  const [purchaseOrderToEdit, setPurchaseOrderToEdit] = useState(null);
+  
 
   const [purchaseOrderDetails, setPurchaseOrderDetails] = useState({
     customer_name: '',
@@ -170,7 +174,7 @@ function Order() {
   return (
     <div className="flex w-full bg-white">
       <Navbar/>
-      <Walkin/>
+      <QuickButtons/>
       <div className="flex flex-col w-full bg-white">
         <div className="w-4/5 mx-auto bg-white p-6 m-3 rounded-lg drop-shadow-md mb-6 border">
           <h2 className="text-1xl font-bold">MANAGEMENT SYSTEM ORDER</h2>
@@ -310,11 +314,14 @@ function Order() {
                           <li
                             className="px-4 p-1 bg-white text-red-500 font-bold hover:bg-red-500 hover:text-white duration-300 cursor-pointer"
                             onClick={() => {
-                              
+                              setPurchaseOrderToEdit(customerData.purchase_order_id);
+                              setConfirmEditModalOpen(true);
+                              setOpenDropDowns({ ...openDropDowns, [customerData.purchase_order_id]: false });
                             }}
                           >
                             Edit
                           </li>
+
                           <li
                             className="px-4 p-1 bg-white text-red-500 font-bold hover:bg-red-500 hover:text-white duration-300 cursor-pointer"
                             onClick={() => {
@@ -333,7 +340,40 @@ function Order() {
             )}
           </div>
         </div>
+        {confirmEditModalOpen && (
+            <div className="fixed inset-0 flex justify-center items-center bg-black bg-opacity-50 z-50">
+              <div className="bg-white p-6 rounded-md shadow-lg w-1/3">
+                <div className="flex flex-row">
+                <h3 className="text-lg font-bold mb-4 mr-1">Confirm Edit </h3>
+                <h3 className="text-lg font-bold mb-4 text-red-500">!!Warning!!</h3>
+                </div>
+                <p className="text-gray-700 mb-4">
+                  Are you sure you want to edit purchase order ID: {purchaseOrderToEdit}? Products that have a record of delivery or has been deducted because of deliveries cannot be edited anymore.
+                </p>
+                <p className="text-red-700 mb-4 font-bold ">
+                  Note: Please double check the Purchase Order Issued by the Customer before proceeding!
+                </p>
 
+                <div className="flex justify-end space-x-4">
+                  <button
+                    className="px-4 py-2 bg-gray-500 text-white rounded-md font-bold hover:bg-white hover:text-black border shadow-md duration-200"
+                    onClick={() => setConfirmEditModalOpen(false)}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    className="px-4 py-2 bg-red-500  text-white rounded-md hover:bg-white hover:text-red-500 shadow-md border font-bold duration-200"
+                    onClick={() => {
+                      setConfirmEditModalOpen(false);
+                      navigate(`/order/edit/${purchaseOrderToEdit}`);
+                    }}
+                  >
+                    Proceed
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
         {/* Pagination Controls */}
         <div className="flex justify-center w-full space-x-2 my-4">
           <button

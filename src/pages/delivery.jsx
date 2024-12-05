@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import Navbar from "../components/navbar";
 import axios from "axios";
 import ViewDeliveryModal from "./delivery/modal/ViewDeliveryModal"; // Import the modal component
-import Walkin from '../components/walkin';
+import QuickButtons from '../components/quickButtons';
 
 function Delivery() {
   const url = import.meta.env.VITE_API_URL;
@@ -95,7 +95,7 @@ function Delivery() {
   return (
     <div className="flex w-full bg-white-100">
       <Navbar />
-      <Walkin/>
+      <QuickButtons/>
       <div className="flex flex-col w-full bg-white">
         <div className="w-4/5 mx-auto bg-white p-6 m-3 rounded-lg shadow-md mb-6 border">
           <h2 className="text-1xl font-bold">MANAGEMENT SYSTEM DELIVERY</h2>

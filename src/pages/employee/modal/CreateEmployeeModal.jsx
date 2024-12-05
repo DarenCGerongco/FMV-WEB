@@ -2,7 +2,7 @@ import React from 'react';
 
 const CreateEmployee = ({ newDeliveryMan, handleAddDeliveryManChange, submitAddModal, closeAddModal }) => {
   return (
-    <div className="bg-white p-6 rounded-lg shadow-2xl w-1/4">
+    <div className="bg-white p-6 rounded-lg shadow-2xl w-1/2">
       <h3 className="text-lg font-bold mb-4">Add Employee</h3>
       <div className="mb-4">
         <label htmlFor="usertype" className="block text-gray-700">Usertype:</label>

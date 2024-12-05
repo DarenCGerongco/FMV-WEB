@@ -6,7 +6,7 @@ import { useNavigate } from 'react-router-dom'; // Import useNavigate
 import { GlobalContext } from '../../GlobalContext';  // Import GlobalContext
 import catLoadingGif from './../assets/overview/catJumping.gif'; // Import your GIF file
 import { Bar } from 'react-chartjs-2'; // Import Bar from react-chartjs-2
-import Walkin from '../components/walkin';
+import QuickButtons from '../components/quickButtons';
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
@@ -155,7 +155,7 @@ function Overview() {
   return (
     <div className="flex w-full bg-white">
       <Navbar />
-      <Walkin/>
+      <QuickButtons/>
       <div className="flex flex-col xl:w-4/5 bg-white">
         <div className="w-11/12 mx-auto bg-white p-6 m-3 rounded-3xl shadow-md mb-6 border">
           <h2 className="text-1xl font-bold">
