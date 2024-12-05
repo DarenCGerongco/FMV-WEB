@@ -43,16 +43,24 @@ const EditEmployeeModal = ({
         />
       </div>
       <div className="mb-4">
-        <label htmlFor="number" className="block text-gray-700">Number:</label>
-        <input
-          type="text"
-          id="number"
-          name="number"
-          value={editDeliveryMan.number}
-          onChange={handleEditDeliveryManChange}
-          className="w-full px-3 py-2 border border-gray-300 rounded-md"
-        />
-      </div>
+  <label htmlFor="number" className="block text-gray-700">Number:</label>
+  <input
+    type="text"
+    id="number"
+    name="number"
+    value={editDeliveryMan.number}
+    onChange={(e) => {
+      const { value } = e.target;
+      // Allow only numbers, plus (+), minus (-), parentheses (), and spaces
+      if (/^[\d\s()+-]*$/.test(value)) {
+        handleEditDeliveryManChange(e);
+      }
+    }}
+    className="w-full px-3 py-2 border border-gray-300 rounded-md"
+  />
+</div>
+
+
       <div className="flex justify-end space-x-4">
         <button
           onClick={closeEditModal}
