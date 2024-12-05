@@ -256,7 +256,7 @@ const CreateDeliveryModal = ({ createDeliveryModalOpen, closeCreateDeliveryModal
                 {isLoading ? 'Processing...' : 'Create delivery'}
               </button>
               <button 
-                className='bg-red-500 duration-200 shadow-md rounded-md p-2 text-white font-bold hover:bg-white hover:text-red-500' 
+                className='w-32 r-4 bg-transparent hover:bg-red-500 text-blue-700 hover:text-white px-4 py-2 border border-blue-500 hover:border-transparent rounded-lg' 
                 onClick={closeCreateDeliveryModal} // This is your cancel button
               >
                 Cancel
