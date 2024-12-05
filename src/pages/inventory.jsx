@@ -211,7 +211,7 @@ function Inventory() {
                 <div
                   key={index}
                   className={` grid text-sm grid-cols-8 border-b ${
-                    item.quantity === 0
+                    item.quantity <= 100
                       ? "bg-[#C6C6C6] text-white shadow-md"
                       : "hover:bg-blue-50 shadow-md"
                   } rounded my-1 border-gray-300 p-1 items-center`}
