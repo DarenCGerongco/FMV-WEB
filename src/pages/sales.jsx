@@ -99,7 +99,7 @@ function Sales() {
       <QuickButtons/>
 
       <div className="w-full bg-white-100">
-        <div className="w-4/5 mx-auto bg-white p-6 m-3 rounded-lg shadow-md mb-6 border">
+        <div className="w-4/5 mx-auto p-6 m-3 rounded-lg bg-white shadow-lg shadow-gray-400 mb-6">
           <h2 className="text-1xl font-bold">MANAGEMENT SYSTEM SALES</h2>
         </div>
 
@@ -133,7 +133,7 @@ function Sales() {
           ].map((item, index) => (
             <div
               key={index}
-              className="flex flex-col bg-white my-5 p-5 border rounded-lg w-11/12 space-y-2 shadow-lg"
+              className="flex flex-col bg-white shadow-lg shadow-gray-400 my-5 p-5 border rounded-lg w-11/12 space-y-2"
             >
               <div className="flex items-center justify-start space-x-2 w-full">
                 <img
@@ -155,7 +155,7 @@ function Sales() {
         
         )}
 
-        <div className="w-4/5 mx-auto bg-white p-3 rounded-lg drop-shadow-lg border">
+        <div className="w-4/5 mx-auto bg-white shadow-lg shadow-gray-400 p-3 rounded-lg">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-lg font-bold">Monthly Records</h3>
             <select
