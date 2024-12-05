@@ -104,19 +104,19 @@ const AddProductModal = ({ onClose, fetchProducts }) => {
         </div>
 
         {/* Modal Buttons */}
-        <div className="flex justify-end mt-4">
+        <div className="flex justify-end mt-4 gap-x-4">
           <button
-            className="bg-blue-500 text-white hover:bg-blue-700 px-4 py-2 rounded-md transition-all mr-2"
+            className="w-32 r-4 bg-transparent hover:bg-blue-500 text-blue-700 hover:text-white px-4 py-2 border border-blue-500 hover:border-transparent rounded-lg"
+            onClick={onClose}
+          >
+            Cancel
+          </button>
+          <button
+            className="w-40 r-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700 rounded-lg"
             onClick={handleSubmit}
             disabled={loading}
           >
             {loading ? "Adding..." : "Add Product"}
-          </button>
-          <button
-            className="bg-red-500 text-white hover:bg-red-700 px-4 py-2 rounded-md transition-all"
-            onClick={onClose}
-          >
-            Cancel
           </button>
         </div>
       </div>

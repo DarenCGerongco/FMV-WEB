@@ -226,7 +226,7 @@ const CreatePurchaseOrder = () => {
           className={`${
             isSubmitting
               ? "bg-gray-400 cursor-not-allowed"
-              : "bg-[#2465EB] hover:bg-green-400"
+              : "bg-[#2465EB] hover:bg-white hover:text-black hover:border-blue-700 border"
           } w-32 text-white px-4 py-2 rounded-lg`}
           onClick={createOrder}
           disabled={isSubmitting} // Disable button while submitting

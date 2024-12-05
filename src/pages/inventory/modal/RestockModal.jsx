@@ -60,14 +60,14 @@ const RestockModal = ({ productId, productName, onClose, onRestockSuccess }) => 
           <div className="flex justify-end space-x-4">
             <button
               onClick={onClose}
-              className="px-4 py-2 bg-red-500 text-white font-bold rounded hover:bg-red-700"
+              className="w-32 r-4 bg-transparent hover:bg-blue-500 text-blue-700 hover:text-white px-4 py-2 border border-blue-500 hover:border-transparent rounded-lg"
               disabled={loading}
             >
               Cancel
             </button>
             <button
               onClick={handleRestock}
-              className="px-4 py-2 bg-blue-500 text-white font-bold rounded hover:bg-blue-700"
+              className="w-32 r-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700 rounded-lg"
               disabled={loading}
             >
               {loading ? "Restocking..." : "Restock"}

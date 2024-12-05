@@ -102,13 +102,13 @@ const CreateEmployee = ({ newDeliveryMan, handleAddDeliveryManChange, submitAddM
       </div>
       <div className="flex justify-end space-x-4">
         <button
-          className="bg-gray-500 text-white px-4 py-2 rounded-md shadow-2xl"
+          className="w-32 r-4 bg-transparent hover:bg-blue-500 text-blue-700 hover:text-white px-4 py-2 border border-blue-500 hover:border-transparent rounded-lg"
           onClick={closeAddModal}
         >
-          Close
+          Cancel
         </button>
         <button
-          className="bg-blue-500 text-white px-4 py-2 rounded-md shadow-2xl"
+          className="w-32 r-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700 rounded-lg"
           onClick={submitAddModal}
         >
           Create

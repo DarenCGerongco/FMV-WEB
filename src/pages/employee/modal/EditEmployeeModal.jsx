@@ -62,13 +62,13 @@ const EditEmployeeModal = ({
       <div className="flex justify-end space-x-4">
         <button
           onClick={closeEditModal}
-          className="px-4 py-2 bg-gray-500 text-white rounded-md shadow-md"
+          className="w-32 r-4 bg-transparent hover:bg-blue-500 text-blue-700 hover:text-white px-4 py-2 border border-blue-500 hover:border-transparent rounded-lg"
         >
-          Close
+          Cancel
         </button>
         <button
           onClick={submitEditModal}
-          className="px-4 py-2 bg-blue-500 text-white rounded-md shadow-md"
+          className="w-32 r-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700 rounded-lg"
         >
           Save
         </button>
