@@ -216,7 +216,7 @@ function Delivery() {
             <div className="text-center p-4">No deliveries found.</div>
           )}
         </div>
-        <div className="flex justify-center w-full space-x-2 my-4">
+        <div className="flex justify-center w-full space-x-2 my-7">
           <button
             onClick={() => handlePageChange(1)}
             disabled={currentPage === 1}
