@@ -157,7 +157,7 @@ function Overview() {
       <Navbar />
       <QuickButtons/>
       <div className="flex flex-col xl:w-4/5 bg-white">
-        <div className="w-11/12 mx-auto bg-white p-6 m-3 rounded-3xl shadow-lg mb-6 border">
+        <div className="w-11/12 mx-auto bg-white p-6 m-3 rounded-3xl bg-white shadow-lg shadow-gray-400 mb-6">
           <h2 className="text-1xl font-bold">
             Management System Overviews   {/* Handle empty userName case */}
           </h2>
@@ -179,7 +179,7 @@ function Overview() {
               onClick={handleOrderClick}
             >
               <h3 className="text-lg font-bold mb-4">
-                ORDER (WIP)
+                ORDER
               </h3>
               {orders.summary && (
                 <div className="flex flex-col w-full p-5 bg-white duration-100 rounded-lg">
@@ -189,13 +189,13 @@ function Overview() {
                   <span className="text-black text-sm ">
                     Initial Revenue:
                   </span>
-                  <h1 className="text-black text-center text-3xl m-1 px-2 py-1 text-left shadow-lg rounded-2xl inline-block">
+                  <h1 className="text-black text-center text-3xl m-1 px-2 py-1 text-left bg-white shadow-lg shadow-gray-400 rounded-2xl inline-block">
                     ₱{orders.summary.totalMoneyAccumulated}
                   </h1>
                   <span className="text-black mt-2 text-sm">
                     Total Purchase Order Created:
                   </span>
-                  <h1 className="text-black text-3xl text-center m-1 px-2 py-1 text-left shadow-lg rounded-2xl inline-block">
+                  <h1 className="text-black text-3xl text-center m-1 px-2 py-1 text-left bg-white shadow-lg shadow-gray-400 rounded-2xl inline-block">
                     {orders.summary.totalPurchaseOrders}
                   </h1>
                 </div>
@@ -209,7 +209,7 @@ function Overview() {
                   orders.orders.map((customerData, index) => (
                     <div
                       key={index}
-                      className="p-1 w-full bg-white flex rounded-lg shadow-lg my-2 group"
+                      className="p-1 w-full flex rounded-lg bg-white shadow-lg shadow-gray-400 my-2 group"
                     >
                       <div className='w-[15%] flex justify-center  '>
                         <span className='text-xs'>
@@ -244,15 +244,15 @@ function Overview() {
               onClick={handleDeliveryClick}
             >
               <h3 className="text-lg font-bold mb-4">DELIVERY</h3>
-              <div className="bg-gray-200 p-4 rounded-lg shadow-md mt-4 flex justify-between items-center">
+              <div className="bg-white shadow-lg shadow-gray-400 p-4 rounded-lg mt-4 flex justify-between items-center">
                 <span className="text-gray-700 text-sm">Confirm Delivery:</span>
                 <span className="text-gray-700 text-sm">2</span>
               </div>
-              <div className="bg-gray-200 p-4 rounded-lg shadow-md mt-4 flex justify-between items-center">
+              <div className="bg-white shadow-lg shadow-gray-400 p-4 rounded-lg mt-4 flex justify-between items-center">
                 <span className="text-gray-700 text-sm">On-Delivery:</span>
                 <span className="text-gray-700 text-sm">2</span>
               </div>
-              <div className="bg-gray-200 p-4 rounded-lg shadow-md mt-4 flex justify-between items-center">
+              <div className="bg-white shadow-lg shadow-gray-400 p-4 rounded-lg mt-4 flex justify-between items-center">
                 <span className="text-gray-700 text-sm">Delivered:</span>
                 <span className="text-gray-700 text-sm">2</span>
               </div>
@@ -264,7 +264,7 @@ function Overview() {
               <h3 className="text-lg font-bold mb-4">EMPLOYEE ACCOUNT</h3>
               {userNames.length > 0 ? (
                 userNames.map((name, index) => (
-                  <div key={index} className="bg-gray-200 p-4 rounded-lg shadow-lg mt-4">
+                  <div key={index} className="bg-white shadow-lg shadow-gray-400 p-4 rounded-lg mt-4">
                     <p className="text-gray-700 text-sm whitespace-nowrap">{name}</p>
                   </div>
                 ))
@@ -322,7 +322,7 @@ function Overview() {
               {inventoryItems.length > 0 ? (
                 inventoryItems.map((item, index) => (
                   <div key={index} className="mt-4">
-                    <div className="bg-gray-200 p-4 rounded-lg shadow-lg flex justify-between items-center">
+                    <div className="bg-white shadow-lg shadow-gray-400 p-4 rounded-lg shadow-lg flex justify-between items-center">
                       {/* Item Details */}
                       <div className="w-1/4 text-left">
                         <div className="">{item.id}</div>
