@@ -175,7 +175,7 @@ function Overview() {
           <div className="flex flex-col space-y-4 w-1/3">
             {/* Order Container */}   
             <div 
-              className="bg-white p-6 rounded-3xl shadow-lg hover:shadow-2xl hover:shadow-gray-400 duration-200 cursor-pointer border" 
+              className="bg-white p-6 rounded-3xl shadow-lg shadow-gray-400 hover:shadow-2xl hover:shadow-gray-400 duration-200 cursor-pointer" 
               onClick={handleOrderClick}
             >
               <h3 className="text-lg font-bold mb-4">
@@ -240,7 +240,7 @@ function Overview() {
 
             {/* Delivery Container */}
             <div 
-              className="bg-white p-6 rounded-3xl shadow-lg hover:shadow-2xl hover:shadow-gray-400 duration-200 cursor-pointer border" 
+              className="bg-white p-6 rounded-3xl shadow-lg shadow-gray-400 hover:shadow-2xl hover:shadow-gray-400 duration-200 cursor-pointer" 
               onClick={handleDeliveryClick}
             >
               <h3 className="text-lg font-bold mb-4">DELIVERY</h3>
@@ -258,7 +258,7 @@ function Overview() {
               </div>
             </div>
 
-            <div className="bg-white p-6 rounded-3xl shadow-lg hover:shadow-2xl hover:shadow-gray-400 duration-200 cursor-pointer border"
+            <div className="bg-white p-6 rounded-3xl shadow-lg shadow-gray-400 hover:shadow-2xl hover:shadow-gray-400 duration-200 cursor-pointer "
               onClick={handleDeliveryManClick}
             >
               <h3 className="text-lg font-bold mb-4">EMPLOYEE ACCOUNT</h3>
@@ -279,7 +279,7 @@ function Overview() {
           
           
             {/* Sales Container */}
-            <div className="bg-white p-6 rounded-3xl shadow-lg hover:shadow-2xl hover:shadow-gray-400 duration-200 cursor-pointer border">
+            <div className="bg-white p-6 rounded-3xl shadow-lg shadow-gray-400 hover:shadow-2xl hover:shadow-gray-400 duration-200 cursor-pointer">
                   <h3 className="text-lg font-bold mb-4">SALES</h3>
                   
                   {chartData && chartData.labels.length > 0 && chartData.datasets[0].data.length > 0 ? (
@@ -305,7 +305,7 @@ function Overview() {
                 </div>
             {/* Inventory Container */}   
             <div
-              className="bg-white p-6 rounded-3xl shadow-md hover:shadow-2xl hover:shadow-gray-400 duration-200 cursor-pointer border"
+              className="bg-white p-6 rounded-3xl shadow-lg shadow-gray-400 hover:shadow-2xl hover:shadow-gray-400 duration-200 cursor-pointer"
               onClick={handleInventoryClick}
             >
               <h3 className="text-lg font-bold">INVENTORY</h3>
