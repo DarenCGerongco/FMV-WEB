@@ -139,24 +139,40 @@ const PurchaseOrderEdit = () => {
           <h1 className="text-xl font-bold">Customer's Detail with <span className="text-red-500 underline font-bold ">Purchase Order ID#: {purchaseOrderId}</span></h1>
           <hr className="h-px my-8 bg-gray-500 border-0 shadow-md"></hr>
           <div className="grid grid-cols-2 gap-4">
-            {Object.keys(purchaseOrderDetails).map((field, index) => (
-              <div key={index}>
-                <label className="block text-sm font-bold">
-                  {field
-                    .split("_")
-                    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-                    .join(" ")}
-                  :
-                </label>
-                <input
-                  className="w-full p-2 text-sm rounded-lg border shadow-lg"
-                  type="text"
-                  value={purchaseOrderDetails[field]}
-                  onChange={(e) => handleDetailChange(field, e.target.value)}
-                />
-              </div>
-            ))}
-          </div>
+          {Object.keys(purchaseOrderDetails).map((field, index) => (
+            <div key={index}>
+              <label className="block text-sm font-bold">
+                {field
+                  .split("_")
+                  .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+                  .join(" ")}
+                :
+              </label>
+              <input
+                className="w-full p-2 text-sm rounded-lg border shadow-lg"
+                type="text"
+                value={purchaseOrderDetails[field]}
+                onChange={(e) => {
+                  const value = e.target.value;
+
+                  // Validation for `customer_name`: allow only letters
+                  if (field === "customer_name" && /[0-9]/.test(value)) {
+                    return; // Prevent updating if numbers are detected
+                  }
+
+                  // Validation for `zipcode`: allow only numbers
+                  if (field === "zipcode" && /[^\d]/.test(value)) {
+                    return; // Prevent updating if non-numeric characters are detected
+                  }
+
+                  // Handle valid input
+                  handleDetailChange(field, value);
+                }}
+              />
+            </div>
+          ))}
+        </div>
+
           <hr className="h-px my-8 bg-gray-500 border-0 shadow-md"></hr>
           <h1 className="text-xl font-bold">Product Listed:</h1>
           {/* Product Table */}
