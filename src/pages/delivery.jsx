@@ -190,7 +190,7 @@ function Delivery() {
                       : delivery.status === "F"
                       ? "bg-red-500"
                       : delivery.status === "S"
-                      ? "bg-green-500"
+                      ? "bg-green-400 text-black"
                       : "bg-gray-500"
                   }`}
                 >
