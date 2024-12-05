@@ -345,18 +345,17 @@ function Order() {
               <div className="bg-white p-6 rounded-md shadow-lg w-1/3">
                 <div className="flex flex-row">
                 <h3 className="text-lg font-bold mb-4 mr-1">Confirm Edit </h3>
-                <h3 className="text-lg font-bold mb-4 text-red-500">!!Warning!!</h3>
                 </div>
                 <p className="text-gray-700 mb-4">
-                  Are you sure you want to edit purchase order ID: {purchaseOrderToEdit}? Products that have a record of delivery or has been deducted because of deliveries cannot be edited anymore.
+                  Are you sure you want to edit purchase order ID: {purchaseOrderToEdit}? Please note that if a delivery has already been made or deductions have been applied, the purchase order can no longer be edited.
                 </p>
                 <p className="text-red-700 mb-4 font-bold ">
-                  Note: Please double check the Purchase Order Issued by the Customer before proceeding!
+                  Note: Please double check the Purchase Order Issued before proceeding.
                 </p>
 
                 <div className="flex justify-end space-x-4">
                   <button
-                    className="px-4 py-2 bg-gray-500 text-white rounded-md font-bold hover:bg-white hover:text-black border shadow-md duration-200"
+                    className="px-4 py-2 bg-transparent hover:bg-red-500 text-red-500 hover:text-white px-4 py-2 border border-red-500 hover:border-transparent rounded-lg"
                     onClick={() => setConfirmEditModalOpen(false)}
                   >
                     Cancel
