@@ -97,7 +97,7 @@ const ViewDeliveryModal = ({ deliveryId, onClose }) => {
           <p><strong>Delivery ID:</strong> {deliveryDetails.delivery.delivery_id}</p>
           <p><strong>Purchase Order ID:</strong> {deliveryDetails.delivery.purchase_order_id}</p>
           <p><strong>Employee Assigned:</strong> {deliveryDetails.user.name || 'N/A'}</p>
-          <p><strong>Status:</strong> {deliveryDetails.delivery.status}</p>
+          <p><strong>Status:</strong> {deliveryDetails.delivery.status} </p>
           <p><strong>Created:</strong> {deliveryDetails.delivery.created_at}</p>
           <p><strong>Notes:</strong> {deliveryDetails.delivery.notes || 'No comment'}</p>
         </div>
@@ -170,7 +170,7 @@ const ViewDeliveryModal = ({ deliveryId, onClose }) => {
         <div className="flex justify-end item-center w-full p-3">
           <button
             onClick={onClose}
-            className="bg-red-500 p-2 text-white font-bold rounded hover:bg-white hover:text-red-500 shadow-md duration-200"
+            className="px-4 py-2 bg-transparent hover:bg-blue-500 text-blue-500 hover:text-white px-4 py-2 border border-blue-500 hover:border-transparent rounded-lg"
           >
             Close
           </button>
@@ -178,7 +178,7 @@ const ViewDeliveryModal = ({ deliveryId, onClose }) => {
             onClick={handleAccept}
             className={`ml-5 p-2 rounded text-white font-bold shadow-md duration-200 ${
               isAcceptable
-                ? "bg-blue-500 hover:bg-white hover:text-blue-500"
+                ? "w-32 bg-blue-500 hover:bg-white hover:text-blue-500"
                 : "bg-gray-400 cursor-not-allowed"
             }`}
             disabled={!isAcceptable}
