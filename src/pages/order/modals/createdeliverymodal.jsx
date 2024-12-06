@@ -133,7 +133,7 @@ const CreateDeliveryModal = ({ createDeliveryModalOpen, closeCreateDeliveryModal
     }
   };
   
-
+  const isDeliveryButtonDisabled = productDetails.every(product => product.remaining_quantity === 0);
 
   return (
     <div
@@ -243,11 +243,11 @@ const CreateDeliveryModal = ({ createDeliveryModalOpen, closeCreateDeliveryModal
             <div className='flex flex-row-reverse'>
             <button
                 className={`ml-2 duration-200 shadow-md rounded-md p-2 font-bold ${
-                  isLoading
+                  isLoading || isDeliveryButtonDisabled
                     ? 'bg-gray-400 text-gray-600 cursor-not-allowed'
                     : 'bg-blue-500 hover:bg-blue-700 rounded-lg text-white'
                 }`}
-                disabled={isLoading}
+                disabled={isLoading || isDeliveryButtonDisabled}
                 onClick={(e) => {
                   e.preventDefault();
                   assignEmployeeFunction();
