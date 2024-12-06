@@ -205,7 +205,8 @@ function Employee() {
               />
             </div>
             <button
-              className="flex bg-blue-500 text-white w-[10rem] duration-200 justify-center hover:text-blue-500 hover:bg-white items-center font-bold shadow-md rounded"
+              className="flex bg-blue-500 text-white w-[10rem] duration-200 justify-center rounded hover:bg-blue-700 rounded-lg items-center font-bold"
+              // bg-blue-500 text-white rounded hover:bg-blue-700 rounded-lg
               onClick={openAddModal}
             >
               Add Employee
