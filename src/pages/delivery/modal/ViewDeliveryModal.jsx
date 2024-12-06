@@ -2,6 +2,22 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { FaShippingFast, FaCheckCircle } from "react-icons/fa";
 
+// Define getStatusDisplayName Function
+const getStatusDisplayName = (status) => {
+  switch (status) {
+    case "OD":
+      return "On Delivery";
+    case "P":
+      return "Pending";
+    case "F":
+      return "Failed";
+    case "S":
+      return "Successful";
+    default:
+      return "Unknown Status";
+  }
+};
+
 const ViewDeliveryModal = ({ deliveryId, onClose }) => {
   const url = import.meta.env.VITE_API_URL; // Use the base URL from environment variables
   const [deliveryDetails, setDeliveryDetails] = useState(null);
@@ -97,7 +113,28 @@ const ViewDeliveryModal = ({ deliveryId, onClose }) => {
           <p><strong>Delivery ID:</strong> {deliveryDetails.delivery.delivery_id}</p>
           <p><strong>Purchase Order ID:</strong> {deliveryDetails.delivery.purchase_order_id}</p>
           <p><strong>Employee Assigned:</strong> {deliveryDetails.user.name || 'N/A'}</p>
-          <p><strong>Status:</strong> {deliveryDetails.delivery.status}</p>
+          <p>
+            <strong>Status:</strong>
+            {deliveryDetails?.delivery?.status ? (
+              <span
+                className={`px-2 font-bold text-center rounded-full ml-2 ${
+                  deliveryDetails.delivery.status === "OD"
+                    ? "bg-green-200 border border-green-500 text-green-500"
+                    : deliveryDetails.delivery.status === "P"
+                    ? "bg-pink-200 border border-pink-500 text-pink-500"
+                    : deliveryDetails.delivery.status === "F"
+                    ? "bg-red-500 text-white"
+                    : deliveryDetails.delivery.status === "S"
+                    ? "bg-green-400 text-black"
+                    : "bg-gray-500 text-white"
+                }`}
+              >
+                {getStatusDisplayName(deliveryDetails.delivery.status)}
+              </span>
+            ) : (
+              <span className="text-gray-500 ml-2">No Status</span>
+            )}
+          </p>
           <p><strong>Created:</strong> {deliveryDetails.delivery.created_at}</p>
           <p><strong>Notes:</strong> {deliveryDetails.delivery.notes || 'No comment'}</p>
         </div>
@@ -170,7 +207,7 @@ const ViewDeliveryModal = ({ deliveryId, onClose }) => {
         <div className="flex justify-end item-center w-full p-3">
           <button
             onClick={onClose}
-            className="bg-red-500 p-2 text-white font-bold rounded hover:bg-white hover:text-red-500 shadow-md duration-200"
+            className="px-4 py-2 bg-transparent hover:bg-blue-500 text-blue-500 hover:text-white px-4 py-2 border border-blue-500 hover:border-transparent rounded-lg"
           >
             Close
           </button>
@@ -178,8 +215,8 @@ const ViewDeliveryModal = ({ deliveryId, onClose }) => {
             onClick={handleAccept}
             className={`ml-5 p-2 rounded text-white font-bold shadow-md duration-200 ${
               isAcceptable
-                ? "bg-blue-500 hover:bg-white hover:text-blue-500"
-                : "bg-gray-400 cursor-not-allowed"
+                ? "w-32 bg-blue-500 hover:bg-white hover:text-blue-500"
+                : "w-32 bg-gray-400 cursor-not-allowed"
             }`}
             disabled={!isAcceptable}
           >
