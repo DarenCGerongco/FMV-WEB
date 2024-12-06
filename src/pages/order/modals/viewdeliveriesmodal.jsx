@@ -130,10 +130,10 @@ const ViewDeliveriesModal = ({ onClose, viewDeliveriesModalOpen, purchaseOrderId
                     </div>
                   </div>
                 ))}
-              </div>
-            </div>
-          ))
-        ) : (
+              </div>    
+            </div>           
+          )) 
+        ) : (  
           <h4 className="text-center text-gray-500">No Deliveries have been made yet.</h4>
         )}
 

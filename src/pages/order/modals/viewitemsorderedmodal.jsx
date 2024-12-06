@@ -28,7 +28,9 @@ const ItemsOrderedModal = ({ itemsOrderedModalOpen, onClose, purchaseOrderID }) 
       className="modal fixed top-0 left-0 w-full h-full bg-gray-800 bg-opacity-75 flex justify-center items-center"
     >
       <div className="bg-white p-5 rounded-lg drop-shadow-md w-1/2">
-        <h3 className="text-center text-lg font-bold mb-5">Items Ordered</h3>
+      <div className='bg-blue-500 text-white text-center py-2 mb-7 rounded-md'>
+        <h3 className="text-lg font-bold">Items Ordered</h3>
+        </div>
         <div className="grid grid-cols-8">
           <p className='col-span-1'>Prod. ID</p>
           <p className='col-span-2'>Prod. Name</p>
