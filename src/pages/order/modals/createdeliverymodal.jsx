@@ -245,7 +245,7 @@ const CreateDeliveryModal = ({ createDeliveryModalOpen, closeCreateDeliveryModal
                 className={`ml-2 duration-200 shadow-md rounded-md p-2 font-bold ${
                   isLoading
                     ? 'bg-gray-400 text-gray-600 cursor-not-allowed'
-                    : 'bg-blue-500 text-white hover:bg-white hover:text-blue-500'
+                    : 'bg-blue-500 hover:bg-blue-700 rounded-lg text-white'
                 }`}
                 disabled={isLoading}
                 onClick={(e) => {
