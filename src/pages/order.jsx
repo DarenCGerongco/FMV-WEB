@@ -193,7 +193,7 @@ function Order() {
               />
             </div>
             <button
-              className="w-[15%] shadow-md font-bold px-4 py-2 bg-blue-500 hover:bg-white hover:text-blue-500 duration-300 text-white rounded-md focus:outline-none"
+              className="w-[15%] font-bold px-4 py-2 bg-blue-500 hover:bg-blue-700 rounded-lg text-white"
               onClick={createDeliveryPage}
             >
               Create Order
@@ -275,13 +275,13 @@ function Order() {
                   <p className="col-span-2 text-left text-sm text-gray-700">{customerData.created_at}</p>
                   <div className="col-span-2 flex space-x-2 justify-center">
                     <button
-                      className="bg-blue-500 p-1 hover:bg-white hover:text-blue-500 font-bold duration-300 text-white rounded-md w-[150px]"
+                      className="bg-blue-500 p-1 text-white hover:bg-blue-700 rounded-lg font-bold duration-300 w-[150px]"
                       onClick={() => openCreateDeliveryModal(customerData.purchase_order_id)}
                     >
                       Create Deliveries
                     </button>
                     <button
-                      className="bg-blue-500 p-1 hover:bg-white hover:text-blue-500 font-bold duration-300 text-white rounded-md w-[75px]"
+                      className="bg-blue-500 p-1 text-white hover:bg-blue-700 rounded-lg font-bold w-[75px]"
                       onClick={() => toggleDropDown(customerData.purchase_order_id)}
                     >
                       More
