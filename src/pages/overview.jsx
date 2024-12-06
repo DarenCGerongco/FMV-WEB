@@ -189,13 +189,13 @@ function Overview() {
                   <span className="text-black text-sm ">
                     Initial Revenue:
                   </span>
-                  <h1 className="text-black text-center text-3xl m-1 px-2 py-1 text-left bg-white shadow-lg shadow-gray-400 rounded-2xl inline-block">
+                  <h1 className="text-black text-3xl m-1 px-2 py-1  bg-white shadow-lg shadow-gray-400 rounded-2xl inline-block">
                     ₱{orders.summary.totalMoneyAccumulated}
                   </h1>
                   <span className="text-black mt-2 text-sm">
                     Total Purchase Order Created:
                   </span>
-                  <h1 className="text-black text-3xl text-center m-1 px-2 py-1 text-left bg-white shadow-lg shadow-gray-400 rounded-2xl inline-block">
+                  <h1 className="text-black text-3xl m-1 px-2 py-1  bg-white shadow-lg shadow-gray-400 rounded-2xl inline-block">
                     {orders.summary.totalPurchaseOrders}
                   </h1>
                 </div>
@@ -228,7 +228,7 @@ function Overview() {
                         </span>
                       </div>
                       <div className='w-[30%] flex justify-end items-center font-bold'>
-                        <span className='bg-green-500 px-2 text-white rounded-2xl'>
+                        <span className='bg-green-500 text-sm px-2 text-white rounded-2xl'>
                           + ₱{customerData.total_worth}
                         </span>
                       </div>

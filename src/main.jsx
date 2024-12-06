@@ -1,23 +1,28 @@
 import React from 'react';
 import './index.css';
+
 import { createRoot } from 'react-dom/client';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { GlobalProvider } from '../GlobalContext'; // Import GlobalProvider
+
 import Index from './pages/index.jsx';
 import Employee from './pages/employee.jsx';
 import Inventory from './pages/inventory.jsx';
 import Sales from './pages/sales.jsx';
 import Delivery from './pages/delivery.jsx';
 import Overview from './pages/overview.jsx';
+
 import Order from './pages/order.jsx';
 import CreatePurchaseOrder from './pages/order/pages/CreatePurchaseOrderDelivery.jsx';
 import PurchaseOrderEdit from './pages/order/Edit/PurchaseOrderEdit.jsx'; // Import the component
-import { GlobalProvider } from '../GlobalContext'; // Import GlobalProvider
+
+import Settings from './pages/settings.jsx';
 
 const root = createRoot(document.getElementById('root'));
 
 root.render(
   <React.StrictMode>
-    <GlobalProvider> {/* Wrap the app inside GlobalProvider */}
+    <GlobalProvider>
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Index />} />
@@ -27,6 +32,7 @@ root.render(
           <Route path="/delivery" element={<Delivery />} />
           <Route path="/overview" element={<Overview />} />
           <Route path="/order" element={<Order />} />
+          <Route path="/settings" element={<Settings />} />
           <Route path="/order/create-delivery" element={<CreatePurchaseOrder />} />
           <Route path="/order/edit/:purchaseOrderId" element={<PurchaseOrderEdit />} /> {/* Add the route */}
         </Routes>
