@@ -110,25 +110,25 @@ function Sales() {
               title: "Total Revenue",
               value: `Php ${monthlyData.TotalRevenueOfPurchaseOrder || "0.00"}`,
               leftImage: "up.png",
-              rightImage: "high.png",
+              rightImage: "upt.ico",
             },
             {
               title: "This Month's Revenue",
               value: `Php ${monthlyData.CurrentPurchaseOrderRevenue || "0.00"}`,
               leftImage: "up.png",
-              rightImage: "high.png",
+              rightImage: "upt.ico",
             },
             {
               title: "Last Month's Revenue",
               value: `Php ${monthlyData.PreviousMonthRevenue || "0.00"}`,
               leftImage: "up.png",
-              rightImage: "high.png",
+              rightImage: "upt.ico",
             },
             {
               title: "Total Damages",
               value: `Php ${monthlyData.TotalDamagesOfPurchaseOrder || "0.00"}`,
               leftImage: "damage.png",
-              rightImage: "down.png",
+              rightImage: "downt.ico",
             },
           ].map((item, index) => (
             <div
@@ -145,7 +145,7 @@ function Sales() {
                 <img
                   src={`/src/assets/${item.rightImage}`}
                   alt={item.title}
-                  className="w-14 h-14"
+                  className="w-20 h-20"
                 />
               </div>
               <span className="text-center">{item.value}</span>
