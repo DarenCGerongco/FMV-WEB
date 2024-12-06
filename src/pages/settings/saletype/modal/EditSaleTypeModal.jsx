@@ -60,7 +60,7 @@ const EditSaleTypeModal = ({ isOpen, onClose, saleType, onSaleTypeUpdated }) => 
           <div className="flex justify-end space-x-4">
             <button
               type="button"
-              className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600"
+              className="w-20 p-1 bg-transparent hover:bg-blue-500 text-blue-500 hover:text-white border border-blue-500 hover:border-transparent rounded-lg"
               onClick={onClose}
             >
               Cancel

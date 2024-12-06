@@ -106,7 +106,7 @@ function Settings() {
       <QuickButtons />
       <div className="w-full bg-white-100">
         <div className="w-4/5 mx-auto p-6 m-3 rounded-lg bg-white shadow-lg shadow-gray-400 mb-6">
-          <h2 className="text-1xl font-bold">SETTINGS</h2>
+          <h2 className="text-1xl font-bold">MANAGEMENT SYSTEM CONFIGURATION</h2>
         </div>
 
         {/* Tabs */}
@@ -150,13 +150,13 @@ function Settings() {
                     </span>
                     <div className="flex gap-2">
                       <button
-                        className="border rounded p-1 bg-yellow-500 text-white hover:bg-yellow-600"
+                        className="w-20 p-1 bg-transparent hover:bg-blue-500 text-blue-500 hover:text-white border border-blue-500 hover:border-transparent rounded-lg"
                         onClick={() => handleEditUsertype(user)}
                       >
                         Edit
                       </button>
                       <button
-                        className="border rounded p-1 bg-red-500 text-white hover:bg-red-600"
+                        className="w-32 border rounded p-1 bg-red-500 text-white hover:bg-red-600 rounded-lg"
                         onClick={() => handleSoftDelete(usertypeApi, user.id, fetchUsertype, 'User Type')}
                       >
                         Delete
@@ -185,13 +185,13 @@ function Settings() {
                     </span>
                     <div className="flex gap-2">
                       <button
-                        className="border rounded p-1 bg-yellow-500 text-white hover:bg-yellow-600"
+                        className="w-20 p-1 bg-transparent hover:bg-blue-500 text-blue-500 hover:text-white border border-blue-500 hover:border-transparent rounded-lg"
                         onClick={() => handleEditCategory(category)}
                       >
                         Edit
                       </button>
                       <button
-                        className="border rounded p-1 bg-red-500 text-white hover:bg-red-600"
+                        className="w-32 border rounded p-1 bg-red-500 text-white hover:bg-red-600 rounded-lg"
                         onClick={() => handleSoftDelete(categoriesApi, category.id, fetchCategories, 'Category')}
                       >
                         Delete
@@ -220,13 +220,13 @@ function Settings() {
                     </span>
                     <div className="flex gap-2">
                       <button
-                        className="border rounded p-1 bg-yellow-500 text-white hover:bg-yellow-600"
+                        className="w-20 p-1 bg-transparent hover:bg-blue-500 text-blue-500 hover:text-white border border-blue-500 hover:border-transparent rounded-lg"
                         onClick={() => handleEditSaleType(saleType)}
                       >
                         Edit
                       </button>
                       <button
-                        className="border rounded p-1 bg-red-500 text-white hover:bg-red-600"
+                        className="w-32 border rounded p-1 bg-red-500 text-white hover:bg-red-600 rounded-lg"
                         onClick={() => handleSoftDelete(saletypesApi, saleType.id, fetchSaleTypes, 'Sale Type')}
                       >
                         Delete

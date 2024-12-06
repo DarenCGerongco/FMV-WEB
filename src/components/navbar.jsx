@@ -154,7 +154,7 @@ const Navbar = () => {
                 alt="Settings Icon"
                 className={`w-6 h-6 mr-2 transition group-hover:invert-0 ${isActive('/settings') ? 'invert-0' : 'invert'}`}
               />
-              <Link to="/settings" className={`text-base md:text-xl ${isActive('/settings') ? 'text-black' : 'text-white group-hover:text-black'}`}>SETTINGS</Link>
+              <Link to="/settings" className={`text-base md:text-xl ${isActive('/settings') ? 'text-black' : 'text-white group-hover:text-black'}`}>CONFIGURATION</Link>
             </li>
 
             {/* <li className={`my-3 flex items-center transition pl-2 md:pl-5 group ${isActive('/logs') ? 'bg-white text-black rounded' : 'hover:bg-white hover:text-black rounded'}`}>
