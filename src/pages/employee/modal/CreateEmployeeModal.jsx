@@ -64,7 +64,7 @@ const CreateEmployee = ({
           </select>
         </div>
 
-        {/* Other Input Fields */}
+        {/* Name Field */}
         <div className="mb-4">
           <label htmlFor="name" className="block text-gray-700">
             Name:
@@ -79,6 +79,8 @@ const CreateEmployee = ({
             placeholder="Enter the name"
           />
         </div>
+
+        {/* Username Field */}
         <div className="mb-4">
           <label htmlFor="username" className="block text-gray-700">
             Username:
@@ -92,6 +94,8 @@ const CreateEmployee = ({
             onChange={handleAddDeliveryManChange}
           />
         </div>
+
+        {/* Email Field */}
         <div className="mb-4">
           <label htmlFor="email" className="block text-gray-700">
             Email (optional):
@@ -105,6 +109,24 @@ const CreateEmployee = ({
             onChange={handleAddDeliveryManChange}
           />
         </div>
+
+        {/* Number Field */}
+        <div className="mb-4">
+          <label htmlFor="number" className="block text-gray-700">
+            Phone Number:
+          </label>
+          <input
+            type="text"
+            id="number"
+            name="number"
+            className="w-full px-3 py-2 border border-gray-300 rounded-md"
+            value={newDeliveryMan.number}
+            onChange={handleAddDeliveryManChange}
+            placeholder="Enter the phone number"
+          />
+        </div>
+
+        {/* Password Field */}
         <div className="mb-4">
           <label htmlFor="password" className="block text-gray-700">
             Password:
@@ -118,6 +140,8 @@ const CreateEmployee = ({
             onChange={handleAddDeliveryManChange}
           />
         </div>
+
+        {/* Confirm Password Field */}
         <div className="mb-4">
           <label htmlFor="confirmPassword" className="block text-gray-700">
             Confirm Password:
@@ -142,7 +166,7 @@ const CreateEmployee = ({
           </button>
           <button
             className="w-32 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700"
-            onClick={submitAddModal}
+            onClick={submitAddModal} // Call the submit function passed as a prop
           >
             Create
           </button>
