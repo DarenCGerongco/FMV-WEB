@@ -1,9 +1,10 @@
-import { useState, useEffect } from 'react';
-import Navbar from '../components/navbar';
-import axios from 'axios';
-import CreateEmployee from './employee/modal/CreateEmployeeModal';
-import EditEmployeeModal from './employee/modal/EditEmployeeModal'; // Import the edit modal
-import QuickButtons from '../components/quickButtons';
+import { useState, useEffect } from "react";
+import Navbar from "../components/navbar";
+import axios from "axios";
+import CreateEmployee from "./employee/modal/CreateEmployeeModal";
+import EditEmployeeModal from "./employee/modal/EditEmployeeModal"; // Import the edit modal
+import QuickButtons from "../components/quickButtons";
+import { toast } from "react-toastify";
 
 function Employee() {
   const url = import.meta.env.VITE_API_URL;
@@ -11,35 +12,36 @@ function Employee() {
   const [addModalOpen, setAddModalOpen] = useState(false);
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [deliveryMen, setDeliveryMen] = useState([]);
-  const [searchQuery, setSearchQuery] = useState('');
+  const [userTypes, setUserTypes] = useState([]); // Store user types
+  const [searchQuery, setSearchQuery] = useState("");
 
   // Pagination State
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
 
   const [newDeliveryMan, setNewDeliveryMan] = useState({
-    usertype: '',
-    name: '',
-    username: '',
-    password: '',
-    confirmPassword: '',
-    email: '',
-    number: '',
+    usertype: "",
+    name: "",
+    username: "",
+    password: "",
+    confirmPassword: "",
+    email: "",
+    number: "",
   });
 
   const [editDeliveryMan, setEditDeliveryMan] = useState({
-    id: '',
-    usertype: '',
-    name: '',
-    username: '',
-    password: '',
-    confirmPassword: '',
-    email: '',
-    number: '',
+    id: "",
+    usertype: "",
+    name: "",
+    username: "",
+    password: "",
+    confirmPassword: "",
+    email: "",
+    number: "",
   });
 
   const filteredDeliveryMen = Array.isArray(deliveryMen)
-    ? deliveryMen.filter(man =>
+    ? deliveryMen.filter((man) =>
         man.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         man.number.toLowerCase().includes(searchQuery.toLowerCase())
       )
@@ -53,7 +55,7 @@ function Employee() {
     const fetchDeliveryMen = async () => {
       try {
         const response = await axios.get(`${url}/api/users/employee`, {
-          params: { page: currentPage, per_page: 20 }
+          params: { page: currentPage, per_page: 20 },
         });
 
         console.log("Full API Response:", response.data);
@@ -66,7 +68,7 @@ function Employee() {
           setDeliveryMen([]);
         }
       } catch (error) {
-        console.error('An error occurred while fetching employee:', error);
+        console.error("An error occurred while fetching employees:", error);
         setDeliveryMen([]);
       }
     };
@@ -77,13 +79,13 @@ function Employee() {
   const openAddModal = () => {
     setAddModalOpen(true);
     setNewDeliveryMan({
-      usertype: '',
-      name: '',
-      username: '',
-      password: '',
-      confirmPassword: '',
-      email: '',
-      number: '',
+      usertype: "",
+      name: "",
+      username: "",
+      password: "",
+      confirmPassword: "",
+      email: "",
+      number: "",
     });
   };
 
@@ -98,12 +100,11 @@ function Employee() {
         id: deliveryMan.id,
         name: deliveryMan.name,
         username: deliveryMan.username,
-        email: deliveryMan.email || '',
-        number: deliveryMan.number || '',
+        email: deliveryMan.email || "",
+        number: deliveryMan.number || "",
       });
     }
   };
-  
 
   const closeEditModal = () => setEditModalOpen(false);
 
@@ -111,7 +112,7 @@ function Employee() {
     const { name, value } = e.target;
     setNewDeliveryMan((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
   };
 
@@ -119,48 +120,45 @@ function Employee() {
     const { name, value } = e.target;
     setEditDeliveryMan((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
   };
 
   const submitAddModal = async () => {
     try {
       const response = await axios.post(`${url}/api/users`, {
-        user_type_id: newDeliveryMan.usertype, // Match the backend key
         name: newDeliveryMan.name,
+        email: newDeliveryMan.email || null, // Optional field
         username: newDeliveryMan.username,
         password: newDeliveryMan.password,
-        email: newDeliveryMan.email || null, // Optional field
+        user_type_id: newDeliveryMan.usertype, // Matches the backend's field
         number: newDeliveryMan.number,
       });
-  
+
       if (response.status === 201) {
-        // Successfully created a new user
-        console.log('User created successfully:', response.data);
-        // Update the delivery men list
+        toast.success("User created successfully!");
         setDeliveryMen((prevDeliveryMen) => [...prevDeliveryMen, response.data.data]);
-        // Close the modal after submission
         closeAddModal();
       } else {
-        console.error('Failed to create user:', response.data.message);
+        toast.error("Failed to create user.");
       }
     } catch (error) {
-      console.error('An error occurred while creating the user:', error);
+      console.error("Error while creating user:", error);
+      toast.error(error.response?.data?.message || "An error occurred.");
     }
   };
-  
+
   const submitEditModal = async () => {
     try {
       const response = await axios.put(`${url}/api/users/${editDeliveryMan.id}`, {
-        user_type_id: editDeliveryMan.usertype, // Match the backend key
+        user_type_id: editDeliveryMan.usertype,
         name: editDeliveryMan.name,
         username: editDeliveryMan.username,
         email: editDeliveryMan.email || null, // Optional field
         number: editDeliveryMan.number,
       });
-  
+
       if (response.status === 200) {
-        // Update the deliveryMen list
         setDeliveryMen((prevDeliveryMen) =>
           prevDeliveryMen.map((man) =>
             man.id === editDeliveryMan.id ? response.data.data : man
@@ -168,13 +166,13 @@ function Employee() {
         );
         closeEditModal();
       } else {
-        console.error('Failed to update user:', response.data.message);
+        toast.error("Failed to update user.");
       }
     } catch (error) {
-      console.error('An error occurred while updating the user:', error);
+      console.error("An error occurred while updating the user:", error);
+      toast.error(error.response?.data?.message || "An error occurred.");
     }
   };
-  
 
   // Pagination controls
   const handlePageChange = (page) => {
@@ -185,17 +183,15 @@ function Employee() {
 
   return (
     <div className="flex w-full bg-100">
-      <Navbar/>
-      <QuickButtons/>
+      <Navbar />
+      <QuickButtons />
       <div className="flex flex-col w-full bg-white">
         <div className="w-4/5 mx-auto p-6 m-3 rounded-lg bg-white shadow-lg shadow-gray-400 mb-6">
-          <h2 className="font-bold text-1xl">
-            MANAGEMENT SYSTEM EMPLOYEE
-          </h2>
+          <h2 className="font-bold text-1xl">MANAGEMENT SYSTEM EMPLOYEE</h2>
         </div>
-        <div className="w-4/5 mx-auto bg-white p-3 m-3 rounded-lg  shadow-lg shadow-gray-400">
+        <div className="w-4/5 mx-auto bg-white p-3 m-3 rounded-lg shadow-lg shadow-gray-400">
           <div className="flex flex-row">
-            <div className="flex flex-row items-center w-full px-2 py-1 mr-1 border border-gray-300 rounded-md shadow-md focus-within:border-blue-500 relative h-12">
+            <div className="flex flex-row items-center w-full px-2 py-1 mr-1 border border-gray-300 rounded-md shadow-md">
               <span className="font-bold text-black-500 whitespace-nowrap">
                 EMPLOYEE
               </span>
@@ -205,16 +201,14 @@ function Employee() {
                 value={searchQuery}
                 onChange={handleSearchChange}
                 placeholder="Search for Employee"
-                className="flex-grow focus:outline-none px-4 py-2 rounded-md sm:text-sm border-gray-300 focus:ring-blue-500 focus:border-blue-500 block w-full"
+                className="flex-grow px-4 py-2 border border-gray-300 rounded-md"
               />
             </div>
             <button
-              className="flex bg-blue-500 text-white w-[10rem] duration-200 justify-center hover:text-blue-500 hover:bg-white items-center font-bold shadow-md rounded"
+              className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-700"
               onClick={openAddModal}
             >
-              <h1 className="text-center text-md">
-                Add Employee
-              </h1>
+              Add Employee
             </button>
           </div>
         </div>
@@ -245,47 +239,31 @@ function Employee() {
                     src="./src/assets/delete.png"
                     alt="Delete"
                     className="w-5 h-5 cursor-pointer"
-                    onClick={() => handleDelete(deliveryMan.id)}
+                    onClick={() => console.log("Delete", deliveryMan.id)}
                   />
                 </div>
               </div>
             ))}
           </div>
-
-          {/* Pagination Controls */}
-          <div className="flex justify-center w-full space-x-2 my-4">
-            {/* Pagination buttons here */}
-          </div>
         </div>
 
-        {/* Add Modal with CreateEmployee Component */}
         {addModalOpen && (
-          <div
-            id="addModal"
-            className="modal fixed top-0 left-0 w-full h-full bg-gray-800 bg-opacity-75 flex justify-center items-center"
-          >
-            <CreateEmployee
-              newDeliveryMan={newDeliveryMan}
-              handleAddDeliveryManChange={handleAddDeliveryManChange}
-              submitAddModal={submitAddModal}
-              closeAddModal={closeAddModal}
-            />
-          </div>
+          <CreateEmployee
+            newDeliveryMan={newDeliveryMan}
+            handleAddDeliveryManChange={handleAddDeliveryManChange}
+            submitAddModal={submitAddModal}
+            closeAddModal={closeAddModal}
+          />
         )}
 
-        {/* Edit Modal with EditEmployeeModal Component */}
+
         {editModalOpen && (
-          <div
-            id="editModal"
-            className="modal fixed top-0 left-0 w-full h-full bg-gray-800 bg-opacity-75 flex justify-center items-center"
-          >
-            <EditEmployeeModal
-              editDeliveryMan={editDeliveryMan}
-              handleEditDeliveryManChange={handleEditDeliveryManChange}
-              submitEditModal={submitEditModal}
-              closeEditModal={closeEditModal}
-            />
-          </div>
+          <EditEmployeeModal
+            editDeliveryMan={editDeliveryMan}
+            handleEditDeliveryManChange={handleEditDeliveryManChange}
+            submitEditModal={submitEditModal}
+            closeEditModal={closeEditModal}
+          />
         )}
       </div>
     </div>
