@@ -189,11 +189,13 @@ function Employee() {
       <QuickButtons/>
       <div className="flex flex-col w-full bg-white">
         <div className="w-4/5 mx-auto p-6 m-3 rounded-lg bg-white shadow-lg shadow-gray-400 mb-6">
-          <h2 className="font-bold text-1xl">MANAGEMENT SYSTEM EMPLOYEE</h2>
+          <h2 className="font-bold text-1xl">
+            MANAGEMENT SYSTEM EMPLOYEE
+          </h2>
         </div>
-        <div className="w-4/5 mx-auto p-3 rounded-lg bg-white shadow-lg shadow-gray-400">
-          <div className="relative mt-4 flex items-center space-x-4">
-            <div className="flex flex-row items-center w-full px-4 py-3 mr-1 border border-gray-300 rounded-md shadow-md focus-within:border-blue-500 relative h-12">
+        <div className="w-4/5 mx-auto bg-white p-3 m-3 rounded-lg  shadow-lg shadow-gray-400">
+          <div className="flex flex-row">
+            <div className="flex flex-row items-center w-full px-2 py-1 mr-1 border border-gray-300 rounded-md shadow-md focus-within:border-blue-500 relative h-12">
               <span className="font-bold text-black-500 whitespace-nowrap">
                 EMPLOYEE
               </span>
@@ -207,10 +209,12 @@ function Employee() {
               />
             </div>
             <button
-              className="px-4 py-2 bg-blue-500 text-white rounded-md shadow-md focus:outline-none"
+              className="flex bg-blue-500 text-white w-[10rem] duration-200 justify-center hover:text-blue-500 hover:bg-white items-center font-bold shadow-md rounded"
               onClick={openAddModal}
             >
-              +
+              <h1 className="text-center text-md">
+                Add Employee
+              </h1>
             </button>
           </div>
         </div>

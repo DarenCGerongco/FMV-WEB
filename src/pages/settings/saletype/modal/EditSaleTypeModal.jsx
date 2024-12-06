@@ -1,14 +1,15 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
-const CreateSaleTypeModal = ({ isOpen, onClose, onSaleTypeCreated }) => {
+const EditSaleTypeModal = ({ isOpen, onClose, saleType, onSaleTypeUpdated }) => {
   const url = import.meta.env.VITE_API_URL;
-  const saletypesApi = '/api/sale-types';
-
   const [saleTypeName, setSaleTypeName] = useState('');
-  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  useEffect(() => {
+    if (saleType) setSaleTypeName(saleType.sale_type_name);
+  }, [saleType]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -18,24 +19,20 @@ const CreateSaleTypeModal = ({ isOpen, onClose, onSaleTypeCreated }) => {
       return;
     }
 
-    setIsSubmitting(true);
-
     try {
-      await axios.post(`${url}${saletypesApi}`, { sale_type_name: saleTypeName });
-      toast.success('Sale type created successfully!');
-      setSaleTypeName(''); // Clear the input field
-      onSaleTypeCreated(); // Refresh sale types in the parent component
-      onClose(); // Close the modal
+      await axios.post(`${url}/api/sale-type/${saleType.id}/update`, {
+        sale_type_name: saleTypeName,
+      });
+      toast.success('Sale type updated successfully!');
+      onSaleTypeUpdated();
+      onClose();
     } catch (error) {
-      console.error('Error creating sale type:', error);
-      if (error.response && error.response.data?.error) {
-        // Display validation errors
+      console.error('Error updating sale type:', error);
+      if (error.response && error.response.data.error) {
         Object.values(error.response.data.error).forEach((errMsg) => toast.error(errMsg));
       } else {
         toast.error('An unknown error occurred.');
       }
-    } finally {
-      setIsSubmitting(false);
     }
   };
 
@@ -44,7 +41,7 @@ const CreateSaleTypeModal = ({ isOpen, onClose, onSaleTypeCreated }) => {
   return (
     <div className="fixed inset-0 flex justify-center items-center bg-black bg-opacity-50 z-50">
       <div className="bg-white p-6 rounded-md shadow-lg w-1/3">
-        <h2 className="text-lg font-bold mb-4">Create Sale Type</h2>
+        <h2 className="text-lg font-bold mb-4">Edit Sale Type</h2>
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
             <label htmlFor="saleTypeName" className="block text-sm font-bold mb-2">
@@ -70,14 +67,9 @@ const CreateSaleTypeModal = ({ isOpen, onClose, onSaleTypeCreated }) => {
             </button>
             <button
               type="submit"
-              className={`px-4 py-2 ${
-                isSubmitting
-                  ? 'bg-gray-300 text-gray-700 cursor-not-allowed'
-                  : 'bg-blue-500 text-white hover:bg-blue-600'
-              } rounded`}
-              disabled={isSubmitting}
+              className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
             >
-              {isSubmitting ? 'Creating...' : 'Create'}
+              Update
             </button>
           </div>
         </form>
@@ -86,4 +78,4 @@ const CreateSaleTypeModal = ({ isOpen, onClose, onSaleTypeCreated }) => {
   );
 };
 
-export default CreateSaleTypeModal;
+export default EditSaleTypeModal;
