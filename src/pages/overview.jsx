@@ -186,40 +186,38 @@ function Overview() {
                   <span className="text-black text-center font-bold">
                     Purchase Order Total Value
                   </span>
-                  <span className="text-black text-sm ">
-                    Initial Revenue:
-                  </span>
-                  <h1 className="text-black text-3xl m-1 px-2 py-1  bg-white shadow-lg shadow-gray-400 rounded-2xl inline-block">
-                    ₱{orders.summary.totalMoneyAccumulated}
+
+                  {/* Initial Revenue */}
+                  <span className="text-black text-sm">Initial Revenue:</span>
+                  <h1 className="text-black text-3xl m-1 px-2 py-1 bg-white shadow-lg shadow-gray-400 rounded-2xl inline-block">
+                    ₱{parseFloat(orders.summary.totalMoneyAccumulated).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                   </h1>
-                  <span className="text-black mt-2 text-sm">
-                    Total Purchase Order Created:
-                  </span>
-                  <h1 className="text-black text-3xl m-1 px-2 py-1  bg-white shadow-lg shadow-gray-400 rounded-2xl inline-block">
+
+                  {/* Total Purchase Order Created */}
+                  <span className="text-black mt-2 text-sm">Total Purchase Order Created:</span>
+                  <h1 className="text-black text-3xl m-1 px-2 py-1 bg-white shadow-lg shadow-gray-400 rounded-2xl inline-block">
                     {orders.summary.totalPurchaseOrders}
                   </h1>
                 </div>
               )}
               <div className="flex flex-col w-full p-5 mt-3 bg-white duration-100 rounded-lg">
-              <span>
-                Pending Purchase Order
-              </span>
+                <span>Pending Purchase Order</span>
                 {Array.isArray(orders.orders) &&
-                  
                   orders.orders.map((customerData, index) => (
                     <div
                       key={index}
                       className="p-1 w-full flex rounded-lg bg-white shadow-lg shadow-gray-400 my-2 group"
                     >
-                      <div className='w-[15%] flex justify-center  '>
-                        <span className='text-xs'>
-                          # 
-                        </span>
-                        <span className='text-3xl font-bold items-center'>
+                      {/* Purchase Order ID */}
+                      <div className="w-[15%] flex justify-center">
+                        <span className="text-xs">#</span>
+                        <span className="text-3xl font-bold items-center">
                           {customerData.purchase_order_id}
                         </span>
                       </div>
-                      <div className='w-[55%] flex flex-col justify-start'>
+
+                      {/* Customer Name and Created At */}
+                      <div className="w-[55%] flex flex-col justify-start">
                         <span className="text-s font-bold text-sm duration-200">
                           {customerData.customer_name}
                         </span>
@@ -227,14 +225,18 @@ function Overview() {
                           {customerData.created_at}
                         </span>
                       </div>
-                      <div className='w-[30%] flex justify-end items-center font-bold'>
-                        <span className='bg-green-500 text-sm px-2 text-white rounded-2xl'>
-                          + ₱{customerData.total_worth}
+
+                      {/* Total Worth */}
+                      <div className="w-[30%] flex justify-end items-center font-bold">
+                        <span className="bg-green-500 text-sm px-2 text-white rounded-2xl">
+                          + ₱{parseFloat(customerData.total_worth).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                         </span>
                       </div>
                     </div>
                   ))}
               </div>
+
+
 
             </div>
 

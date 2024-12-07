@@ -37,8 +37,10 @@ const AddProductModal = ({ onClose, fetchProducts }) => {
     const newErrors = {};
     if (!categoryId) newErrors.categoryId = "Category is required.";
     if (!productName) newErrors.productName = "Product name is required.";
-    if (!originalPrice || originalPrice <= 0) newErrors.originalPrice = "Price is required.";
-    if (!quantity || quantity <= 0) newErrors.quantity = "Quantity missing and quantity must be greater than zero.";
+    if (!originalPrice || isNaN(originalPrice) || originalPrice <= 0)
+      newErrors.originalPrice = "Valid price is required.";
+    if (!quantity || quantity <= 0)
+      newErrors.quantity = "Quantity missing and must be greater than zero.";
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -67,11 +69,11 @@ const AddProductModal = ({ onClose, fetchProducts }) => {
     }
   };
 
-  // Restrict non-numeric input for the Original Price field
-  const handleNumberInput = (e) => {
-    const allowedKeys = ["Backspace", "ArrowLeft", "ArrowRight", "Tab", "Delete"];
-    if (!/^\d$/.test(e.key) && !allowedKeys.includes(e.key)) {
-      e.preventDefault();
+  // Allow decimals in Original Price input
+  const handleDecimalInput = (e) => {
+    const value = e.target.value;
+    if (/^\d*\.?\d{0,2}$/.test(value)) {
+      setOriginalPrice(value);
     }
   };
 
@@ -90,7 +92,9 @@ const AddProductModal = ({ onClose, fetchProducts }) => {
             onChange={(e) => setCategoryId(e.target.value)}
             className={`w-full p-2 border rounded-md ${errors.categoryId ? "border-red-500" : ""}`}
           >
-            <option value="" disabled>Select a category</option>
+            <option value="" disabled>
+              Select a category
+            </option>
             {categories.map((category) => (
               <option key={category.id} value={category.id}>
                 {category.category_name}
@@ -118,8 +122,7 @@ const AddProductModal = ({ onClose, fetchProducts }) => {
           <input
             type="text"
             value={originalPrice}
-            onChange={(e) => setOriginalPrice(e.target.value)}
-            onKeyDown={handleNumberInput}
+            onChange={handleDecimalInput}
             className={`w-full p-2 border rounded-md ${errors.originalPrice ? "border-red-500" : ""}`}
           />
           {errors.originalPrice && <p className="text-red-500 text-sm">{errors.originalPrice}</p>}
