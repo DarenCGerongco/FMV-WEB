@@ -8,6 +8,14 @@ const AddProductModal = ({ onClose, fetchProducts }) => {
   const [originalPrice, setOriginalPrice] = useState("");
   const [quantity, setQuantity] = useState("");
   const [loading, setLoading] = useState(false);
+  
+  const [errors, setErrors] = useState({
+    categoryId: "",
+    productName: "",
+    originalPrice: "",
+    quantity: "",
+  });
+
   const url = import.meta.env.VITE_API_URL;
 
   // Fetch categories from the API
@@ -24,7 +32,20 @@ const AddProductModal = ({ onClose, fetchProducts }) => {
     fetchCategories();
   }, [url]);
 
+  // Validate form fields
+  const validateFields = () => {
+    const newErrors = {};
+    if (!categoryId) newErrors.categoryId = "Category is required.";
+    if (!productName) newErrors.productName = "Product name is required.";
+    if (!originalPrice || originalPrice <= 0) newErrors.originalPrice = "Valid price is required.";
+    if (!quantity || quantity <= 0) newErrors.quantity = "Quantity must be greater than zero.";
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
   const handleSubmit = async () => {
+    if (!validateFields()) return;
+
     setLoading(true);
     try {
       const response = await axios.post(`${url}/api/products`, {
@@ -59,7 +80,7 @@ const AddProductModal = ({ onClose, fetchProducts }) => {
           <select
             value={categoryId}
             onChange={(e) => setCategoryId(e.target.value)}
-            className="w-full p-2 border rounded-md"
+            className={`w-full p-2 border rounded-md ${errors.categoryId ? "border-red-500" : ""}`}
           >
             <option value="" disabled>Select a category</option>
             {categories.map((category) => (
@@ -68,6 +89,7 @@ const AddProductModal = ({ onClose, fetchProducts }) => {
               </option>
             ))}
           </select>
+          {errors.categoryId && <p className="text-red-500 text-sm">{errors.categoryId}</p>}
         </div>
 
         {/* Product Name Input */}
@@ -77,8 +99,9 @@ const AddProductModal = ({ onClose, fetchProducts }) => {
             type="text"
             value={productName}
             onChange={(e) => setProductName(e.target.value)}
-            className="w-full p-2 border rounded-md"
+            className={`w-full p-2 border rounded-md ${errors.productName ? "border-red-500" : ""}`}
           />
+          {errors.productName && <p className="text-red-500 text-sm">{errors.productName}</p>}
         </div>
 
         {/* Original Price Input */}
@@ -88,8 +111,9 @@ const AddProductModal = ({ onClose, fetchProducts }) => {
             type="number"
             value={originalPrice}
             onChange={(e) => setOriginalPrice(e.target.value)}
-            className="w-full p-2 border rounded-md"
+            className={`w-full p-2 border rounded-md ${errors.originalPrice ? "border-red-500" : ""}`}
           />
+          {errors.originalPrice && <p className="text-red-500 text-sm">{errors.originalPrice}</p>}
         </div>
 
         {/* Quantity Input */}
@@ -99,8 +123,9 @@ const AddProductModal = ({ onClose, fetchProducts }) => {
             type="number"
             value={quantity}
             onChange={(e) => setQuantity(e.target.value)}
-            className="w-full p-2 border rounded-md"
+            className={`w-full p-2 border rounded-md ${errors.quantity ? "border-red-500" : ""}`}
           />
+          {errors.quantity && <p className="text-red-500 text-sm">{errors.quantity}</p>}
         </div>
 
         {/* Modal Buttons */}
