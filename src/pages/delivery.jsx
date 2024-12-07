@@ -3,6 +3,8 @@ import Navbar from "../components/navbar";
 import axios from "axios";
 import ViewDeliveryModal from "./delivery/modal/ViewDeliveryModal";
 import EditDeliveryModal from "./delivery/modal/EditDeliveryModal";
+import CancelDeliveryModal from "./delivery/modal/CancelDeliveryModal";
+
 import QuickButtons from "../components/quickButtons";
 
 function Delivery() {
@@ -11,6 +13,11 @@ function Delivery() {
   const [selectedDeliveryStatus, setSelectedDeliveryStatus] = useState("");
   const [selectedReturnStatus, setSelectedReturnStatus] = useState(""); // NEW: Return Status
 
+  const [cancelModalOpen, setCancelModalOpen] = useState(false);
+  const [selectedCancelDeliveryId, setSelectedCancelDeliveryId] = useState(null);
+  const [selectedCancelDeliveryStatus, setSelectedCancelDeliveryStatus] = useState(""); // Delivery status
+  const [selectedCancelReturnStatus, setSelectedCancelReturnStatus] = useState(""); // Return status
+  
   const [deliveries, setDeliveries] = useState([]);
   const [statusFilter, setStatusFilter] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
@@ -258,7 +265,12 @@ function Delivery() {
                       </button>
                       <button
                         className="block w-full px-4 py-2 text-left font-bold text-red-500 hover:bg-red-100 duration-200"
-                        onClick={() => console.log("Cancel Delivery")}
+                        onClick={() => {
+                          setCancelModalOpen(true);
+                          setSelectedCancelDeliveryId(delivery.delivery_id);
+                          setSelectedCancelDeliveryStatus(delivery.status);
+                          setSelectedCancelReturnStatus(delivery.return_status);
+                        }}
                       >
                         Cancel Delivery
                       </button>
@@ -323,7 +335,7 @@ function Delivery() {
           onClose={() => setShowViewModal(false)}
         />
       )}
-
+      
       {/* Edit Delivery Modal */}
       {editModalOpen && (
         <EditDeliveryModal
@@ -339,6 +351,21 @@ function Delivery() {
             setSelectedReturnStatus("");
           }}
           onSave={fetchDeliveries}
+        />
+      )}
+
+      {cancelModalOpen && (
+        <CancelDeliveryModal
+          deliveryId={selectedCancelDeliveryId}
+          deliveryStatus={selectedCancelDeliveryStatus} // Pass delivery status
+          returnStatus={selectedCancelReturnStatus} // Pass return status
+          onClose={() => {
+            setCancelModalOpen(false);
+            setSelectedCancelDeliveryId(null);
+            setSelectedCancelDeliveryStatus("");
+            setSelectedCancelReturnStatus("");
+          }}
+          onCancelSuccess={fetchDeliveries} // Refresh deliveries on success
         />
       )}
     </div>
