@@ -234,7 +234,7 @@ function Inventory() {
                   <div className="col-span-2">{item.category_name}</div>
                   <div>₱ {item.original_price}</div>
                   <div>{item.quantity}</div>
-                  <div>
+                  <div className="flex gap-x-1">
                     <button
                       className="bg-blue-500 text-white hover:bg-blue-700 rounded-lg px-3 py-1"
                       onClick={() => handleRestockClick(item)}
@@ -242,7 +242,7 @@ function Inventory() {
                       Restock
                     </button>
                     <button
-                      className="bg-green-500 hover:bg-white hover:text-green-500 shadow-md duration-200 font-bold text-white px-3 py-1 rounded-md"
+                      className="bg-transparent hover:bg-blue-500 text-blue-500 hover:text-white border border-blue-500 hover:border-transparent px-3 py-1 rounded-md"
                       onClick={() => handleEditClick(item)}
                     >
                       Edit

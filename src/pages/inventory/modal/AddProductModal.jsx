@@ -8,7 +8,7 @@ const AddProductModal = ({ onClose, fetchProducts }) => {
   const [originalPrice, setOriginalPrice] = useState("");
   const [quantity, setQuantity] = useState("");
   const [loading, setLoading] = useState(false);
-  
+
   const [errors, setErrors] = useState({
     categoryId: "",
     productName: "",
@@ -37,8 +37,8 @@ const AddProductModal = ({ onClose, fetchProducts }) => {
     const newErrors = {};
     if (!categoryId) newErrors.categoryId = "Category is required.";
     if (!productName) newErrors.productName = "Product name is required.";
-    if (!originalPrice || originalPrice <= 0) newErrors.originalPrice = "Valid price is required.";
-    if (!quantity || quantity <= 0) newErrors.quantity = "Quantity must be greater than zero.";
+    if (!originalPrice || originalPrice <= 0) newErrors.originalPrice = "Price is required.";
+    if (!quantity || quantity <= 0) newErrors.quantity = "Quantity missing and quantity must be greater than zero.";
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -64,6 +64,14 @@ const AddProductModal = ({ onClose, fetchProducts }) => {
       console.error("Error creating product:", error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  // Restrict non-numeric input for the Original Price field
+  const handleNumberInput = (e) => {
+    const allowedKeys = ["Backspace", "ArrowLeft", "ArrowRight", "Tab", "Delete"];
+    if (!/^\d$/.test(e.key) && !allowedKeys.includes(e.key)) {
+      e.preventDefault();
     }
   };
 
@@ -108,9 +116,10 @@ const AddProductModal = ({ onClose, fetchProducts }) => {
         <div className="mb-4">
           <label className="block font-bold text-blue-600 mb-2">Original Price:</label>
           <input
-            type="number"
+            type="text"
             value={originalPrice}
             onChange={(e) => setOriginalPrice(e.target.value)}
+            onKeyDown={handleNumberInput}
             className={`w-full p-2 border rounded-md ${errors.originalPrice ? "border-red-500" : ""}`}
           />
           {errors.originalPrice && <p className="text-red-500 text-sm">{errors.originalPrice}</p>}
@@ -131,13 +140,13 @@ const AddProductModal = ({ onClose, fetchProducts }) => {
         {/* Modal Buttons */}
         <div className="flex justify-end mt-4 gap-x-4">
           <button
-            className="w-32 r-4 bg-transparent hover:bg-blue-500 text-blue-700 hover:text-white px-4 py-2 border border-blue-500 hover:border-transparent rounded-lg"
+            className="w-32 bg-transparent hover:bg-blue-500 text-blue-700 hover:text-white px-4 py-2 border border-blue-500 hover:border-transparent rounded-lg"
             onClick={onClose}
           >
             Cancel
           </button>
           <button
-            className="w-40 r-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700 rounded-lg"
+            className="w-40 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700 rounded-lg"
             onClick={handleSubmit}
             disabled={loading}
           >
