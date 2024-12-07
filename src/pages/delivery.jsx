@@ -169,7 +169,7 @@ function Delivery() {
             <div className="col-span-2">Delivery man</div>
             <div className="col-span-1 text-center ">Delivery Status</div>
             <div className="col-span-1 text-center ">Return Status</div>
-            <div className="col-span-1">Delivery Created (24hrs)</div>
+            <div className="col-span-1 text-center">Delivery Created (24hrs)</div>
             <div className="col-span-1 text-center">Actions</div>
           </div>
           {filteredDeliveries.length > 0 ? (
