@@ -3,6 +3,8 @@ import Navbar from "../components/navbar";
 import axios from "axios";
 import AddProductModal from "./inventory/modal/AddProductModal";
 import RestockModal from "./inventory/modal/RestockModal";
+import EditProductModal from "./inventory/modal/EditProductModal"; 
+
 import QuickButtons from "../components/quickButtons";
 
 function Inventory() {
@@ -23,6 +25,8 @@ function Inventory() {
   const [showAddProductModal, setShowAddProductModal] = useState(false);
   const [showRestockModal, setShowRestockModal] = useState(false);
   const [restockProduct, setRestockProduct] = useState(null);
+  const [showEditProductModal, setShowEditProductModal] = useState(false);
+  const [editProduct, setEditProduct] = useState(null); 
 
   // Fetch categories
   const fetchCategories = async () => {
@@ -98,6 +102,13 @@ function Inventory() {
     });
     setShowRestockModal(true);
   };
+
+  const handleEditClick = (product) => {
+    setEditProduct({ ...product, category_name: product.category_name }); // Pass the category_name
+    setShowEditProductModal(true);
+  };
+  
+  
 
   return (
     <div className="flex w-full bg-white">
@@ -225,10 +236,16 @@ function Inventory() {
                   <div>{item.quantity}</div>
                   <div>
                     <button
-                      className="bg-blue-500 text-white rounded hover:bg-blue-700 rounded-lg px-3 py-1"
+                      className="bg-blue-500 text-white hover:bg-blue-700 rounded-lg px-3 py-1"
                       onClick={() => handleRestockClick(item)}
                     >
                       Restock
+                    </button>
+                    <button
+                      className="bg-green-500 hover:bg-white hover:text-green-500 shadow-md duration-200 font-bold text-white px-3 py-1 rounded-md"
+                      onClick={() => handleEditClick(item)}
+                    >
+                      Edit
                     </button>
                   </div>
                 </div>
@@ -254,6 +271,16 @@ function Inventory() {
             onRestockSuccess={() => fetchProducts(pagination.currentPage)}
           />
         )}
+
+        {/* Edit Product Modal */}
+        {showEditProductModal && editProduct && (
+          <EditProductModal
+            product={editProduct} // Pass product to be edited
+            onClose={() => setShowEditProductModal(false)}
+            onEditSuccess={() => fetchProducts(pagination.currentPage)}
+          />
+        )}
+
 
 
         {/* Pagination */}
