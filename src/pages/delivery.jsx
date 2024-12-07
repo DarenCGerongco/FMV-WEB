@@ -1,30 +1,35 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import Navbar from "../components/navbar";
 import axios from "axios";
-import ViewDeliveryModal from "./delivery/modal/ViewDeliveryModal"; // Import the modal component
-import QuickButtons from '../components/quickButtons';
+import ViewDeliveryModal from "./delivery/modal/ViewDeliveryModal";
+import EditDeliveryModal from "./delivery/modal/EditDeliveryModal";
+import QuickButtons from "../components/quickButtons";
 
 function Delivery() {
   const url = import.meta.env.VITE_API_URL;
+  const [selectedDeliveryManName, setSelectedDeliveryManName] = useState("");
+  const [selectedDeliveryStatus, setSelectedDeliveryStatus] = useState("");
+  const [selectedReturnStatus, setSelectedReturnStatus] = useState(""); // NEW: Return Status
 
-  // State for deliveries, filters, and pagination
   const [deliveries, setDeliveries] = useState([]);
   const [statusFilter, setStatusFilter] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [filteredDeliveries, setFilteredDeliveries] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedDeliveryId, setSelectedDeliveryId] = useState(null); // Selected delivery ID for modal
-  const [showModal, setShowModal] = useState(false); // Toggle modal visibility
+  const [selectedDeliveryId, setSelectedDeliveryId] = useState(null);
+  const [showViewModal, setShowViewModal] = useState(false);
+  const [editModalOpen, setEditModalOpen] = useState(false);
+  const [selectedEditDeliveryId, setSelectedEditDeliveryId] = useState(null);
+  const [dropdownOpen, setDropdownOpen] = useState(null);
 
-  // Fetch deliveries from the backend
+  const dropdownRefs = useRef({});
+
+  // Define fetchDeliveries outside useEffect
   const fetchDeliveries = async () => {
     try {
       const response = await axios.get(`${url}/api/deliveries/index`, {
-        params: {
-          status: statusFilter,
-          page: currentPage,
-        },
+        params: { status: statusFilter, page: currentPage },
       });
       setDeliveries(response.data.deliveries || []);
       setTotalPages(response.data.pagination?.lastPage || 1);
@@ -36,43 +41,68 @@ function Delivery() {
     }
   };
 
-  // Fetch deliveries when the filter or page changes
+  // Fetch deliveries when filters change
   useEffect(() => {
     fetchDeliveries();
   }, [statusFilter, currentPage]);
 
-  // Handle filter changes
   const handleFilterChange = (status) => {
     setStatusFilter(status);
-    setCurrentPage(1); // Reset to the first page
+    setCurrentPage(1);
   };
 
-  // Handle page change
   const handlePageChange = (page) => {
-    if (page > 0 && page <= totalPages) {
-      setCurrentPage(page);
-    }
+    if (page > 0 && page <= totalPages) setCurrentPage(page);
   };
 
-  // Handle clicking on a delivery row
   const handleDeliveryClick = (deliveryId) => {
-    setSelectedDeliveryId(deliveryId); // Set the selected delivery ID
-    setShowModal(true); // Show the modal
+    setSelectedDeliveryId(deliveryId);
+    setShowViewModal(true);
   };
 
-  // Handle live search
+  const handleEditDelivery = (delivery) => {
+    setSelectedEditDeliveryId(delivery.delivery_id);
+    setSelectedDeliveryManName(delivery.delivery_man.name);
+    setSelectedDeliveryStatus(delivery.status);
+    setSelectedReturnStatus(delivery.return_status); // NEW: Pass Return Status
+
+    setEditModalOpen(true);
+    setDropdownOpen(null); // Close dropdown
+  };
+
   const handleSearchChange = (e) => {
     const query = e.target.value.toLowerCase();
     setSearchQuery(query);
 
-    // Filter deliveries based on the search query
     const filtered = deliveries.filter((delivery) =>
       delivery.delivery_man.name.toLowerCase().includes(query)
     );
     setFilteredDeliveries(filtered);
   };
 
-  // Map delivery statuses to display names
+  const toggleDropdown = (deliveryId) => {
+    setDropdownOpen((prev) => (prev === deliveryId ? null : deliveryId));
+  };
+
+  // Handle closing dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        dropdownOpen &&
+        (!dropdownRefs.current[dropdownOpen] ||
+          !dropdownRefs.current[dropdownOpen].contains(event.target))
+      ) {
+        setDropdownOpen(null);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [dropdownOpen]);
+
   const getStatusDisplayName = (status) => {
     const statuses = {
       OD: "On-Delivery",
@@ -88,19 +118,20 @@ function Delivery() {
       NR: "No Returns",
       P: "Pending",
       S: "Success",
-    }
+    };
     return statuses[return_status] || "Unknown";
-  }
+  };
+
 
   return (
     <div className="flex w-full bg-white-100">
       <Navbar />
-      <QuickButtons/>
+      <QuickButtons />
       <div className="flex flex-col w-full bg-white">
-        <div className="w-4/5 mx-auto bg-white p-6 m-3 rounded-lg bg-white shadow-lg shadow-gray-400 mb-6">
+        <div className="w-4/5 mx-auto bg-white p-6 m-3 rounded-lg shadow-lg mb-6">
           <h2 className="text-1xl font-bold">MANAGEMENT SYSTEM DELIVERY</h2>
         </div>
-        <div className="w-4/5 mx-auto bg-white p-3 rounded-lg bg-white shadow-lg shadow-gray-400">
+        <div className="w-4/5 mx-auto bg-white p-3 rounded-lg shadow-lg">
           <div className="flex items-center w-full px-4 py-3 border border-gray-300 rounded-md shadow-md relative h-12">
             <span className="font-bold text-black-500 whitespace-nowrap">
               DELIVERY
@@ -111,109 +142,133 @@ function Delivery() {
               className="flex-grow focus:outline-none px-4 py-2 rounded-md sm:text-sm border-gray-300 focus:ring-blue-500 focus:border-blue-500 block w-full"
               placeholder="Search for Delivery man"
               value={searchQuery}
-              onChange={handleSearchChange} // Live search handler
+              onChange={handleSearchChange}
             />
           </div>
           <div className="flex mt-4">
             <span className="mx-1 font-bold py-1 px-3 text-blue-500 rounded">
               Delivery Status:
             </span>
-            <button
-              className={`mx-1 font-bold py-1 px-3 ${
-                statusFilter === "" ? "bg-blue-500 text-white" : ""
-              } rounded shadow-md hover:bg-blue-500 hover:text-white duration-200`}
-              onClick={() => handleFilterChange("")}
-            >
-              All
-            </button>
-            <button
-              className={`mx-1 font-bold py-1 px-3 ${
-                statusFilter === "P" ? "bg-blue-500 text-white" : ""
-              } rounded shadow-md hover:bg-blue-500 hover:text-white duration-200`}
-              onClick={() => handleFilterChange("P")}
-            >
-              Pending
-            </button>
-            <button
-              className={`mx-1 font-bold py-1 px-3 ${
-                statusFilter === "OD" ? "bg-blue-500 text-white" : ""
-              } rounded shadow-md hover:bg-blue-500 hover:text-white duration-200`}
-              onClick={() => handleFilterChange("OD")}
-            >
-              On-Delivery
-            </button>
-            <button
-              className={`mx-1 font-bold py-1 px-3 ${
-                statusFilter === "F" ? "bg-blue-500 text-white" : ""
-              } rounded shadow-md hover:bg-blue-500 hover:text-white duration-200`}
-              onClick={() => handleFilterChange("F")}
-            >
-              Failed
-            </button>
-            <button
-              className={`mx-1 font-bold py-1 px-3 ${
-                statusFilter === "S" ? "bg-blue-500 text-white" : ""
-              } rounded shadow-md hover:bg-blue-500 hover:text-white duration-200`}
-              onClick={() => handleFilterChange("S")}
-            >
-              Successful
-            </button>
+            {["", "P", "OD", "F", "S"].map((status) => (
+              <button
+                key={status}
+                className={`mx-1 font-bold py-1 px-3 ${
+                  statusFilter === status ? "bg-blue-500 text-white" : ""
+                } rounded shadow-md hover:bg-blue-500 hover:text-white duration-200`}
+                onClick={() => handleFilterChange(status)}
+              >
+                {status ? getStatusDisplayName(status) : "All"}
+              </button>
+            ))}
           </div>
         </div>
-        <div className="w-4/5 mx-auto mt-2 p-3 rounded-lg bg-white shadow-lg shadow-gray-400">
-          <div className="grid grid-cols-7 text-sm font-bold p-1 rounded-md">
+        <div className="w-4/5 mx-auto mt-2 p-3 rounded-lg bg-white shadow-lg">
+          <div className="grid grid-cols-8 text-sm font-bold rounded-md">
             <div className="col-span-1">Delivery ID#</div>
             <div className="col-span-1">Purchase Order ID#</div>
             <div className="col-span-2">Delivery man</div>
-            <div className="col-span-1 text-center w-[80%]">Delivery Status</div>
-            <div className="col-span-1 text-center w-[80%]">Return Status</div>
+            <div className="col-span-1 text-center ">Delivery Status</div>
+            <div className="col-span-1 text-center ">Return Status</div>
             <div className="col-span-1">Delivery Created (24hrs)</div>
+            <div className="col-span-1 text-center">Actions</div>
           </div>
-          {filteredDeliveries && filteredDeliveries.length > 0 ? (
+          {filteredDeliveries.length > 0 ? (
             filteredDeliveries.map((delivery) => (
               <div
                 key={delivery.delivery_id}
-                className="hover:bg-blue-50 duration-200 grid text-sm grid-cols-7 rounded my-1 bg-white shadow-lg shadow-gray-400 p-1 items-center cursor-pointer"
-                onClick={() => handleDeliveryClick(delivery.delivery_id)} // Open modal
+                className="hover:bg-blue-50 duration-200 grid grid-cols-8 gap-2 rounded my-2 bg-white shadow-md p-3 items-center"
               >
-                <div className="col-span-1">{delivery.delivery_id}</div>
-                <div className="col-span-1">
+                {/* Delivery ID */}
+                <div className="col-span-1 text-sm font-medium text-left truncate">
+                  {delivery.delivery_id}
+                </div>
+
+                {/* Purchase Order ID */}
+                <div className="col-span-1 text-sm font-bold text-blue-700 text-left truncate">
                   {delivery.purchase_order.purchase_order_id}
                 </div>
-                <div className="col-span-2">{delivery.delivery_man.name}</div>
+
+                {/* Delivery Man Name */}
+                <div className="col-span-2 text-sm font-medium truncate">
+                  {delivery.delivery_man.name}
+                </div>
+
+                {/* Delivery Status */}
                 <div
-                  className={`col-span-1 px-2 w-[80%] font-bold text-center rounded-full ${
+                  className={`col-span-1 px-2 py-1 font-bold text-center rounded-full truncate ${
                     delivery.status === "OD"
-                      ? "bg-green-200 border border-green-500 text-green-500"
+                      ? "bg-green-200 text-green-600"
                       : delivery.status === "P"
-                      ? "bg-pink-200 border border-pink-500 text-pink-500"
+                      ? "bg-pink-200 text-pink-600"
                       : delivery.status === "F"
-                      ? "bg-red-500"
+                      ? "bg-red-200 text-red-600"
                       : delivery.status === "S"
                       ? "bg-green-400 text-black"
-                      : "bg-gray-500"
+                      : "bg-gray-400 text-white"
                   }`}
                 >
                   {getStatusDisplayName(delivery.status)}
                 </div>
+
+                {/* Return Status */}
                 <div
-                  className={`col-span-1 px-2 w-[80%] font-bold text-center rounded-full ${
+                  className={`col-span-1 px-2 py-1 font-bold text-center rounded-full truncate ${
                     delivery.return_status === "NR"
-                      ? "border border-green-400 text-green-500" // Gray for NR (No Return)
+                      ? "border border-green-400 text-green-600"
                       : delivery.return_status === "P"
-                      ? "bg-red-200 border border-red-500 text-red-500" // Red for Pending
+                      ? "bg-red-200 border border-red-500 text-red-600"
                       : delivery.return_status === "S"
-                      ? "bg-green-200 border border-green-500 text-green-500" // Green for Success
-                      : "bg-gray-200 border border-gray-400 text-gray-500" // Default in case
+                      ? "bg-green-200 border border-green-500 text-green-600"
+                      : "bg-gray-200 border border-gray-400 text-gray-600"
                   }`}
                 >
                   {getReturnStatusDisplay(delivery.return_status)}
                 </div>
-                <div className="col-span-1">{delivery.formatted_date}</div>
+
+                {/* Formatted Date */}
+                <div className="col-span-1 text-sm font-medium text-center truncate">
+                  {delivery.formatted_date}
+                </div>
+
+                {/* Actions */}
+                <div className="col-span-1 text-center relative">
+                  <button
+                    className="bg-blue-500 text-white font-bold px-3 py-1 rounded-md hover:bg-blue-600 hover:text-white duration-200 w-full"
+                    onClick={() => toggleDropdown(delivery.delivery_id)}
+                  >
+                    More
+                  </button>
+                  {dropdownOpen === delivery.delivery_id && (
+                    <div
+                      className="absolute left-36 top-0 z-50 w-40 bg-white border border-gray-300 rounded shadow-lg"
+                      ref={(el) => (dropdownRefs.current[delivery.delivery_id] = el)}
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <button
+                        className="block w-full px-4 py-2 text-left  font-bold text-blue-500 hover:bg-blue-100 duration-200"
+                        onClick={() => handleDeliveryClick(delivery.delivery_id)}
+                      >
+                        View Details
+                      </button>
+                      <button
+                        className="block w-full px-4 py-2 text-left  font-bold text-blue-500 hover:bg-blue-100 duration-200"
+                        onClick={() => handleEditDelivery(delivery)}
+                      >
+                        Edit Delivery
+                      </button>
+                      <button
+                        className="block w-full px-4 py-2 text-left font-bold text-red-500 hover:bg-red-100 duration-200"
+                        onClick={() => console.log("Cancel Delivery")}
+                      >
+                        Cancel Delivery
+                      </button>
+                    </div>
+                  )}
+                </div>
               </div>
             ))
           ) : (
-            <div className="text-center p-4">No deliveries found.</div>
+            <div className="text-center p-4 text-sm font-medium">No deliveries found.</div>
           )}
         </div>
         <div className="flex justify-center w-full space-x-2 my-7">
@@ -261,11 +316,29 @@ function Delivery() {
         </div>
       </div>
 
-      {/* Modal Component */}
-      {showModal && (
+      {/* View Delivery Modal */}
+      {showViewModal && (
         <ViewDeliveryModal
-          deliveryId={selectedDeliveryId} // Pass the selected delivery ID
-          onClose={() => setShowModal(false)} // Close the modal
+          deliveryId={selectedDeliveryId}
+          onClose={() => setShowViewModal(false)}
+        />
+      )}
+
+      {/* Edit Delivery Modal */}
+      {editModalOpen && (
+        <EditDeliveryModal
+          deliveryId={selectedEditDeliveryId}
+          deliveryManName={selectedDeliveryManName}
+          status={selectedDeliveryStatus}
+          returnStatus={selectedReturnStatus} // Pass Return Status
+          onClose={() => {
+            setEditModalOpen(false);
+            setSelectedEditDeliveryId(null);
+            setSelectedDeliveryManName("");
+            setSelectedDeliveryStatus("");
+            setSelectedReturnStatus("");
+          }}
+          onSave={fetchDeliveries}
         />
       )}
     </div>

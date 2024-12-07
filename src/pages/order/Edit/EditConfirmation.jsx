@@ -71,6 +71,7 @@ const EditConfirmation = ({ isOpen, onClose, confirmationData, purchaseOrderId }
         </div>
 
         {/* Product List */}
+{/* Product List */}
         <h4 className="font-bold">Products:</h4>
         <div className="grid grid-cols-12 bg-gray-300 p-2 rounded mt-2">
           <span className="col-span-1 font-bold">ID</span>
@@ -79,15 +80,18 @@ const EditConfirmation = ({ isOpen, onClose, confirmationData, purchaseOrderId }
           <span className="col-span-2 font-bold">Price</span>
           <span className="col-span-2 font-bold">Quantity</span>
         </div>
-        {products.map((product, index) => (
-          <div key={index} className="grid grid-cols-12 items-center p-2 border-b">
-            <span className="col-span-1">{product.product_id}</span>
-            <span className="col-span-4">{product.product_name}</span>
-            <span className="col-span-2">{product.category_name}</span>
-            <span className="col-span-2">₱ {product.price}</span>
-            <span className="col-span-2">{product.quantity}</span>
-          </div>
-        ))}
+        <div className="mt-2 max-h-[200px] overflow-y-auto border rounded"> {/* Scrollable Container */}
+          {products.map((product, index) => (
+            <div key={index} className="grid grid-cols-12 items-center p-2 border-b">
+              <span className="col-span-1 text-sm">{product.product_id}</span>
+              <span className="col-span-4 text-sm">{product.product_name}</span>
+              <span className="col-span-2 text-sm">{product.category_name}</span>
+              <span className="col-span-2 text-sm">₱ {product.price}</span>
+              <span className="col-span-2 text-sm">{product.quantity}</span>
+            </div>
+          ))}
+        </div>
+
 
         {/* Buttons */}
         <div className="flex justify-end mt-4">

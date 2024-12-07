@@ -95,7 +95,8 @@ const ViewDeliveryModal = ({ deliveryId, onClose }) => {
   }
 
   // Determine if the Accept button should be enabled or disabled
-  const isAcceptable = deliveryDetails.delivery.status === 'P' && !acceptLoading;
+  const isAcceptable = deliveryDetails.delivery.status === "P" && !acceptLoading;
+  const isEditable = deliveryDetails.delivery.status !== "S"; // Disable editing for status "S"
 
   return (
     <div
@@ -112,7 +113,7 @@ const ViewDeliveryModal = ({ deliveryId, onClose }) => {
         <div>
           <p><strong>Delivery ID:</strong> {deliveryDetails.delivery.delivery_id}</p>
           <p><strong>Purchase Order ID:</strong> {deliveryDetails.delivery.purchase_order_id}</p>
-          <p><strong>Employee Assigned:</strong> {deliveryDetails.user.name || 'N/A'}</p>
+          <p><strong>Employee Assigned:</strong> {deliveryDetails.user.name || "N/A"}</p>
           <p>
             <strong>Status:</strong>
             {deliveryDetails?.delivery?.status ? (
@@ -136,7 +137,7 @@ const ViewDeliveryModal = ({ deliveryId, onClose }) => {
             )}
           </p>
           <p><strong>Created:</strong> {deliveryDetails.delivery.created_at}</p>
-          <p><strong>Notes:</strong> {deliveryDetails.delivery.notes || 'No comment'}</p>
+          <p><strong>Notes:</strong> {deliveryDetails.delivery.notes || "No comment"}</p>
         </div>
 
         {/* Display Images */}
@@ -145,7 +146,10 @@ const ViewDeliveryModal = ({ deliveryId, onClose }) => {
             <h3 className="text-lg font-bold">Images</h3>
             <div className="grid grid-cols-2 gap-4 mt-2">
               {deliveryDetails.images.map((image) => (
-                <div key={image.id} className="flex flex-col justify-center items-center border rounded-lg shadow-md overflow-hidden">
+                <div
+                  key={image.id}
+                  className="flex flex-col justify-center items-center border rounded-lg shadow-md overflow-hidden"
+                >
                   <img
                     src={`${image.url}`}
                     alt={`Delivery Image ${image.id}`}
@@ -166,39 +170,45 @@ const ViewDeliveryModal = ({ deliveryId, onClose }) => {
         {deliveryDetails.products && deliveryDetails.products.length > 0 ? (
           <div className="mt-4">
             <h3 className="text-lg font-bold">Product List</h3>
-            <table className="table-auto w-full mt-2 border-collapse border border-gray-300">
-              <thead>
-                <tr>
-                  <th className="border px-4 py-2 text-sm">Status</th>
-                  <th className="border px-4 py-2 text-sm">Product ID</th>
-                  <th className="border px-4 py-2 text-sm">Product Name</th>
-                  <th className="border px-4 py-2 text-sm">Quantity Delivered</th>
-                  <th className="border px-4 py-2 text-sm">No. of Damages</th>
-                  <th className="border px-4 py-2 text-sm">Intact Quantity</th>
-                </tr>
-              </thead>
-              <tbody>
-                {deliveryDetails.products.map((product, index) => (
-                  <tr key={index}>
-                  <td className="border px-2 py-2 text-center">
-                    <div className="flex justify-center items-center h-full">
-                      {(deliveryDetails.delivery.status === 'OD' && (product.return_status === 'NR' || product.return_status === 'P')) && (
-                        <FaShippingFast className="text-blue-500 text-lg" />
-                      )}
-                      {(deliveryDetails.delivery.status === 'P' && (product.return_status === 'S' || product.return_status === 'NR')) && (
-                        <FaCheckCircle className="text-green-500 text-lg" />
-                      )}
-                    </div>
-                  </td>
-                    <td className="border px-2 py-2 text-xs text-center">{product.product_id}</td>
-                    <td className="border px-1 py-1 text-xs text-center">{product.product_name}</td>
-                    <td className="border px-4 py-2 text-xs text-center text-red-500 font-bold">{product.quantity_delivered}</td>
-                    <td className="border px-4 py-2 text-xs text-center">{product.no_of_damages || '-'}</td>
-                    <td className="border px-4 py-2 text-xs text-center">{product.intact_quantity || '-'}</td>
+            <div className="overflow-y-auto max-h-60 border border-gray-300 rounded-lg">
+              <table className="table-auto w-full border-collapse border">
+                <thead>
+                  <tr>
+                    <th className="border px-4 py-2 text-sm">Status</th>
+                    <th className="border px-4 py-2 text-sm">Product ID</th>
+                    <th className="border px-4 py-2 text-sm">Product Name</th>
+                    <th className="border px-4 py-2 text-sm">Quantity Delivered</th>
+                    <th className="border px-4 py-2 text-sm">No. of Damages</th>
+                    <th className="border px-4 py-2 text-sm">Intact Quantity</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {deliveryDetails.products.map((product, index) => (
+                    <tr key={index}>
+                      <td className="border px-2 py-2 text-center">
+                        <div className="flex justify-center items-center h-full">
+                          {(deliveryDetails.delivery.status === "OD" &&
+                            (product.return_status === "NR" || product.return_status === "P")) && (
+                            <FaShippingFast className="text-blue-500 text-lg" />
+                          )}
+                          {(deliveryDetails.delivery.status === "P" &&
+                            (product.return_status === "S" || product.return_status === "NR")) && (
+                            <FaCheckCircle className="text-green-500 text-lg" />
+                          )}
+                        </div>
+                      </td>
+                      <td className="border px-2 py-2 text-xs text-center">{product.product_id}</td>
+                      <td className="border px-1 py-1 text-xs text-center">{product.product_name}</td>
+                      <td className="border px-4 py-2 text-xs text-center text-red-500 font-bold">
+                        {product.quantity_delivered}
+                      </td>
+                      <td className="border px-4 py-2 text-xs text-center">{product.no_of_damages || "-"}</td>
+                      <td className="border px-4 py-2 text-xs text-center">{product.intact_quantity || "-"}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
         ) : (
           <p className="mt-4 text-gray-600">No products reported for this delivery.</p>
@@ -207,20 +217,20 @@ const ViewDeliveryModal = ({ deliveryId, onClose }) => {
         <div className="flex justify-end item-center w-full p-3">
           <button
             onClick={onClose}
-            className="px-4 py-2 bg-transparent hover:bg-blue-500 text-blue-500 hover:text-white px-4 py-2 border border-blue-500 hover:border-transparent rounded-lg"
+            className="px-4 py-2 bg-transparent hover:bg-blue-500 text-blue-500 hover:text-white border border-blue-500 hover:border-transparent rounded-lg"
           >
             Close
           </button>
           <button
             onClick={handleAccept}
             className={`ml-5 p-2 rounded text-white font-bold shadow-md duration-200 ${
-              isAcceptable
+              isAcceptable && isEditable
                 ? "w-32 bg-blue-500 hover:bg-white hover:text-blue-500"
                 : "w-32 bg-gray-400 cursor-not-allowed"
             }`}
-            disabled={!isAcceptable}
+            disabled={!isAcceptable || !isEditable}
           >
-            {acceptLoading ? 'Accepting...' : 'Accept'}
+            {acceptLoading ? "Accepting..." : "Accept"}
           </button>
         </div>
       </div>
