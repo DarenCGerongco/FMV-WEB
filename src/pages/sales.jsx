@@ -133,7 +133,7 @@ function Sales() {
           ].map((item, index) => (
             <div
               key={index}
-              className="flex flex-col bg-white shadow-lg shadow-gray-400 my-5 p-5 border rounded-lg w-11/12 space-y-2"
+              className="flex flex-col bg-white shadow-lg shadow-gray-400 my-5 p-5 rounded-lg w-11/12 space-y-2"
             >
               <div className="flex items-center justify-start space-x-2 w-full">
                 <img
