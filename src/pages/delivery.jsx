@@ -128,10 +128,10 @@ function Delivery() {
       <Navbar />
       <QuickButtons />
       <div className="flex flex-col w-full bg-white">
-        <div className="w-4/5 mx-auto bg-white p-6 m-3 rounded-lg shadow-lg mb-6">
+        <div className="w-4/5 mx-auto bg-white p-6 m-3 rounded-lg bg-white shadow-lg shadow-gray-400 mb-6">
           <h2 className="text-1xl font-bold">MANAGEMENT SYSTEM DELIVERY</h2>
         </div>
-        <div className="w-4/5 mx-auto bg-white p-3 rounded-lg shadow-lg">
+        <div className="w-4/5 mx-auto bg-white p-3 rounded-lg bg-white shadow-lg shadow-gray-400">
           <div className="flex items-center w-full px-4 py-3 border border-gray-300 rounded-md shadow-md relative h-12">
             <span className="font-bold text-black-500 whitespace-nowrap">
               DELIVERY
@@ -162,7 +162,7 @@ function Delivery() {
             ))}
           </div>
         </div>
-        <div className="w-4/5 mx-auto mt-2 p-3 rounded-lg bg-white shadow-lg">
+        <div className="w-4/5 mx-auto mt-2 p-3 rounded-lg bg-white shadow-lg shadow-gray-400">
           <div className="grid grid-cols-8 text-sm font-bold rounded-md">
             <div className="col-span-1">Delivery ID#</div>
             <div className="col-span-1">Purchase Order ID#</div>
@@ -231,7 +231,7 @@ function Delivery() {
                 </div>
 
                 {/* Actions */}
-                <div className="col-span-1 text-center relative">
+                <div className="col-span-1 text-center relative ">
                   <button
                     className="bg-blue-500 text-white font-bold px-3 py-1 rounded-md hover:bg-blue-600 hover:text-white duration-200 w-full"
                     onClick={() => toggleDropdown(delivery.delivery_id)}
