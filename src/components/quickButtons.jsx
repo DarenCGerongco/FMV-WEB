@@ -1,6 +1,7 @@
 import React, { useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom'; // Import useNavigate
-import WalkinIcon from '../assets/Floating-Button/cart.png';
+import WalkinIcon from '../assets/Floating-Button/shopping-bag.ico';
+import PurchaseOrderIcon from '../assets/Floating-Button/delivery.ico';
 import WalkInOrderModal from '../pages/order/pages/CreateWalkInOrderModal';
 
 const Walkin = () => {
@@ -25,7 +26,7 @@ const Walkin = () => {
       >
         <img
           className="w-5 h-5 hover:scale-125 duration-200"
-          src={WalkinIcon}
+          src={PurchaseOrderIcon}
           alt="Walk-in Icon"
         />
       </button>
