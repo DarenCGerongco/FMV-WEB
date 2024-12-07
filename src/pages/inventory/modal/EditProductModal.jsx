@@ -37,6 +37,15 @@ const EditProductModal = ({ product, onClose, onEditSuccess }) => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
+
+    // Handle specific validation for price and quantity
+    if (name === "original_price" && value && !/^\d*(\.\d{0,2})?$/.test(value)) {
+      return; // Prevent invalid price input
+    }
+    if (name === "quantity" && value && !/^\d*$/.test(value)) {
+      return; // Prevent non-numeric input for quantity
+    }
+
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
@@ -79,6 +88,7 @@ const EditProductModal = ({ product, onClose, onEditSuccess }) => {
             type="text"
             id="product_name"
             name="product_name"
+            placeholder="Enter Product Name"
             value={formData.product_name}
             onChange={handleChange}
             className="w-full px-3 py-2 border border-gray-300 rounded-md"
@@ -132,11 +142,12 @@ const EditProductModal = ({ product, onClose, onEditSuccess }) => {
             Price:
           </label>
           <input
-            type="number"
+            type="text"
             id="original_price"
             name="original_price"
             value={formData.original_price}
             onChange={handleChange}
+            placeholder="Enter price"
             className="w-full px-3 py-2 border border-gray-300 rounded-md"
           />
           {errors.original_price && (
@@ -150,11 +161,12 @@ const EditProductModal = ({ product, onClose, onEditSuccess }) => {
             Quantity:
           </label>
           <input
-            type="number"
+            type="text"
             id="quantity"
             name="quantity"
             value={formData.quantity}
             onChange={handleChange}
+            placeholder="Enter quantity"
             className="w-full px-3 py-2 border border-gray-300 rounded-md"
           />
           {errors.quantity && (

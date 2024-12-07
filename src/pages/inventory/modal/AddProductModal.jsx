@@ -38,9 +38,9 @@ const AddProductModal = ({ onClose, fetchProducts }) => {
     if (!categoryId) newErrors.categoryId = "Category is required.";
     if (!productName) newErrors.productName = "Product name is required.";
     if (!originalPrice || isNaN(originalPrice) || originalPrice <= 0)
-      newErrors.originalPrice = "Valid price is required.";
+      newErrors.originalPrice = "Price is required.";
     if (!quantity || quantity <= 0)
-      newErrors.quantity = "Quantity missing and must be greater than zero.";
+      newErrors.quantity = "Quantity missing and quantity must be greater than zero.";
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
