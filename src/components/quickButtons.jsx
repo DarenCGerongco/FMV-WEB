@@ -27,7 +27,7 @@ const Walkin = () => {
         <img
           className="w-5 h-5 hover:scale-125 duration-200"
           src={PurchaseOrderIcon}
-          alt="Walk-in Icon"
+          alt="Purchase Order Icon"
         />
       </button>
 
