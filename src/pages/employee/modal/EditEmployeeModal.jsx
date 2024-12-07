@@ -7,7 +7,7 @@ const EditEmployeeModal = ({
   closeEditModal
 }) => {
   return (
-    <div className="bg-white p-6 rounded-lg shadow-2xl w-1/3">
+    <div className="fixed justify-center top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white p-6 rounded-lg shadow-2xl w-1/3">
       <h3 className="text-lg font-bold mb-4">Edit Employee</h3>
       <div className="mb-4">
         <label htmlFor="name" className="block text-gray-700">Name:</label>
@@ -20,7 +20,7 @@ const EditEmployeeModal = ({
           className="w-full px-3 py-2 border border-gray-300 rounded-md"
         />
       </div>
-      <div className="mb-4">
+      <div className="mb-4 ">
         <label htmlFor="username" className="block text-gray-700">Username:</label>
         <input
           type="text"
