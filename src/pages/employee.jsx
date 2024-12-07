@@ -150,7 +150,7 @@ function Employee() {
 
   const submitEditModal = async () => {
     try {
-      const response = await axios.put(`${url}/api/users/${editDeliveryMan.id}`, {
+      const response = await axios.put(`${url}/api/user/${editDeliveryMan.id}/update`, {
         user_type_id: editDeliveryMan.usertype,
         name: editDeliveryMan.name,
         username: editDeliveryMan.username,
