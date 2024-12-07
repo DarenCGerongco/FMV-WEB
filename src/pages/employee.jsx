@@ -91,8 +91,8 @@ function Employee() {
 
   const closeAddModal = () => setAddModalOpen(false);
 
-  const openEditModal = (name) => {
-    const deliveryMan = deliveryMen.find((man) => man.name === name);
+  const openEditModal = (id) => {
+    const deliveryMan = deliveryMen.find((man) => man.id === id); // Find by unique ID
     if (deliveryMan) {
       setEditModalOpen(true);
       setEditDeliveryMan({
@@ -103,8 +103,11 @@ function Employee() {
         email: deliveryMan.email || "",
         number: deliveryMan.number || "",
       });
+    } else {
+      console.error(`No delivery man found with ID: ${id}`);
     }
   };
+  
 
   const closeEditModal = () => setEditModalOpen(false);
 
@@ -233,7 +236,7 @@ function Employee() {
                     src="./src/assets/edit.png"
                     alt="Edit"
                     className="w-5 h-5 cursor-pointer"
-                    onClick={() => openEditModal(deliveryMan.name)}
+                    onClick={() => openEditModal(deliveryMan.id)} // Pass ID instead of name
                   />
                   <img
                     src="./src/assets/delete.png"
