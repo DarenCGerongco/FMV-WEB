@@ -12,6 +12,8 @@ const CreateEmployee = ({
   const [userTypes, setUserTypes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [errors, setErrors] = useState({}); // State for error messages
+  const [showPassword, setShowPassword] = useState(false); // Toggle for password visibility
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false); // Toggle for confirm password visibility
 
   // Fetch user types inside the modal
   useEffect(() => {
@@ -53,6 +55,22 @@ const CreateEmployee = ({
   const handleSubmit = () => {
     if (validateForm()) {
       submitAddModal(); // Proceed with submission if form is valid
+    }
+  };
+
+  // Handle phone number input (allow only numbers, spaces, +, -, and parentheses)
+  const handlePhoneNumberChange = (e) => {
+    const { value } = e.target;
+    if (/^[\d\s()+-]*$/.test(value)) {
+      handleAddDeliveryManChange(e);
+    }
+  };
+
+  // Handle name input (allow only letters)
+  const handleNameChange = (e) => {
+    const { value } = e.target;
+    if (/^[A-Za-z\s]*$/.test(value)) {
+      handleAddDeliveryManChange(e);
     }
   };
 
@@ -98,7 +116,7 @@ const CreateEmployee = ({
             name="name"
             className="w-full px-3 py-2 border border-gray-300 rounded-md"
             value={newDeliveryMan.name}
-            onChange={handleAddDeliveryManChange}
+            onChange={handleNameChange} // Changed to handle name change
             placeholder="Enter the name"
           />
           {errors.name && <p className="text-red-500 text-sm">{errors.name}</p>}
@@ -147,7 +165,7 @@ const CreateEmployee = ({
             name="number"
             className="w-full px-3 py-2 border border-gray-300 rounded-md"
             value={newDeliveryMan.number}
-            onChange={handleAddDeliveryManChange}
+            onChange={handlePhoneNumberChange} // Changed to handle phone number change
             placeholder="Enter the phone number"
           />
           {errors.number && <p className="text-red-500 text-sm">{errors.number}</p>}
@@ -158,14 +176,23 @@ const CreateEmployee = ({
           <label htmlFor="password" className="block text-gray-700">
             Password:
           </label>
-          <input
-            type="password"
-            id="password"
-            name="password"
-            className="w-full px-3 py-2 border border-gray-300 rounded-md"
-            value={newDeliveryMan.password}
-            onChange={handleAddDeliveryManChange}
-          />
+          <div className="relative">
+            <input
+              type={showPassword ? "text" : "password"}
+              id="password"
+              name="password"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md"
+              value={newDeliveryMan.password}
+              onChange={handleAddDeliveryManChange}
+            />
+            <button
+              type="button"
+              className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500"
+              onClick={() => setShowPassword(!showPassword)}
+            >
+              {showPassword ? "Hide" : "Show"}
+            </button>
+          </div>
           {errors.password && <p className="text-red-500 text-sm">{errors.password}</p>}
         </div>
 
@@ -174,14 +201,23 @@ const CreateEmployee = ({
           <label htmlFor="confirmPassword" className="block text-gray-700">
             Confirm Password:
           </label>
-          <input
-            type="password"
-            id="confirmPassword"
-            name="confirmPassword"
-            className="w-full px-3 py-2 border border-gray-300 rounded-md"
-            value={newDeliveryMan.confirmPassword}
-            onChange={handleAddDeliveryManChange}
-          />
+          <div className="relative">
+            <input
+              type={showConfirmPassword ? "text" : "password"}
+              id="confirmPassword"
+              name="confirmPassword"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md"
+              value={newDeliveryMan.confirmPassword}
+              onChange={handleAddDeliveryManChange}
+            />
+            <button
+              type="button"
+              className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500"
+              onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+            >
+              {showConfirmPassword ? "Hide" : "Show"}
+            </button>
+          </div>
           {errors.confirmPassword && <p className="text-red-500 text-sm">{errors.confirmPassword}</p>}
         </div>
 
@@ -195,7 +231,7 @@ const CreateEmployee = ({
           </button>
           <button
             className="w-32 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700"
-            onClick={handleSubmit} // Submit function is triggered here
+            onClick={handleSubmit} // Trigger form validation on submit
           >
             Create
           </button>
