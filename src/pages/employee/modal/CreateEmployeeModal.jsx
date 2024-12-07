@@ -11,6 +11,7 @@ const CreateEmployee = ({
 
   const [userTypes, setUserTypes] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [errors, setErrors] = useState({}); // State for error messages
 
   // Fetch user types inside the modal
   useEffect(() => {
@@ -33,6 +34,27 @@ const CreateEmployee = ({
 
     fetchUserTypes();
   }, []);
+
+  // Validate the form fields
+  const validateForm = () => {
+    let formErrors = {};
+    if (!newDeliveryMan.usertype) formErrors.usertype = "Usertype is required";
+    if (!newDeliveryMan.name) formErrors.name = "Name is required";
+    if (!newDeliveryMan.username) formErrors.username = "Username is required";
+    if (!newDeliveryMan.email && newDeliveryMan.email !== "") formErrors.email = "Email is required";
+    if (!newDeliveryMan.number) formErrors.number = "Phone number is required";
+    if (!newDeliveryMan.password) formErrors.password = "Password is required";
+    if (newDeliveryMan.password !== newDeliveryMan.confirmPassword) formErrors.confirmPassword = "Passwords do not match";
+    setErrors(formErrors);
+    return Object.keys(formErrors).length === 0;
+  };
+
+  // Handle form submission
+  const handleSubmit = () => {
+    if (validateForm()) {
+      submitAddModal(); // Proceed with submission if form is valid
+    }
+  };
 
   return (
     <div className="fixed top-0 left-0 w-full h-full bg-gray-800 bg-opacity-50 flex justify-center items-center z-50">
@@ -62,6 +84,7 @@ const CreateEmployee = ({
               ))
             )}
           </select>
+          {errors.usertype && <p className="text-red-500 text-sm">{errors.usertype}</p>}
         </div>
 
         {/* Name Field */}
@@ -78,6 +101,7 @@ const CreateEmployee = ({
             onChange={handleAddDeliveryManChange}
             placeholder="Enter the name"
           />
+          {errors.name && <p className="text-red-500 text-sm">{errors.name}</p>}
         </div>
 
         {/* Username Field */}
@@ -93,6 +117,7 @@ const CreateEmployee = ({
             value={newDeliveryMan.username}
             onChange={handleAddDeliveryManChange}
           />
+          {errors.username && <p className="text-red-500 text-sm">{errors.username}</p>}
         </div>
 
         {/* Email Field */}
@@ -108,6 +133,7 @@ const CreateEmployee = ({
             value={newDeliveryMan.email}
             onChange={handleAddDeliveryManChange}
           />
+          {errors.email && <p className="text-red-500 text-sm">{errors.email}</p>}
         </div>
 
         {/* Number Field */}
@@ -124,6 +150,7 @@ const CreateEmployee = ({
             onChange={handleAddDeliveryManChange}
             placeholder="Enter the phone number"
           />
+          {errors.number && <p className="text-red-500 text-sm">{errors.number}</p>}
         </div>
 
         {/* Password Field */}
@@ -139,6 +166,7 @@ const CreateEmployee = ({
             value={newDeliveryMan.password}
             onChange={handleAddDeliveryManChange}
           />
+          {errors.password && <p className="text-red-500 text-sm">{errors.password}</p>}
         </div>
 
         {/* Confirm Password Field */}
@@ -154,6 +182,7 @@ const CreateEmployee = ({
             value={newDeliveryMan.confirmPassword}
             onChange={handleAddDeliveryManChange}
           />
+          {errors.confirmPassword && <p className="text-red-500 text-sm">{errors.confirmPassword}</p>}
         </div>
 
         {/* Buttons */}
@@ -166,7 +195,7 @@ const CreateEmployee = ({
           </button>
           <button
             className="w-32 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700"
-            onClick={submitAddModal} // Call the submit function passed as a prop
+            onClick={handleSubmit} // Submit function is triggered here
           >
             Create
           </button>
