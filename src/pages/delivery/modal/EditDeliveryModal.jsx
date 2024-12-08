@@ -147,7 +147,7 @@ const EditDeliveryModal = ({
         </div>
         <div className="flex justify-end space-x-2">
           <button
-            className="px-4 py-2 bg-gray-300 text-black rounded"
+            className="px-4 py-2 bg-transparent hover:bg-blue-500 text-blue-500 hover:text-white border border-blue-500 hover:border-transparent rounded-lg"
             onClick={onClose}
           >
             Cancel
@@ -155,8 +155,8 @@ const EditDeliveryModal = ({
           <button
             className={`px-4 py-2 rounded ${
               isSaveDisabled
-                ? "bg-gray-400 text-gray-600 cursor-not-allowed"
-                : "bg-blue-500 text-white hover:bg-blue-600"
+                ? "w-32 bg-gray-400 text-gray-600 cursor-not-allowed"
+                : "w-32 bg-blue-500 text-white hover:bg-blue-600"
             }`}
             onClick={handleSave}
             disabled={isSaveDisabled}
