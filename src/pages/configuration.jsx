@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import Navbar from './../components/navbar';
-import QuickButtons from './../components/quickButtons';
+import Navbar from '../components/navbar';
+import QuickButtons from '../components/quickButtons';
 import axios from 'axios';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -12,7 +12,7 @@ import EditUsertypeModal from './settings/usertype/modal/EditUsertypeModal';
 import CreateSaleTypeModal from './settings/saletype/modal/CreateSaleTypeModal';
 import EditSaleTypeModal from './settings/saletype/modal/EditSaleTypeModal';
 
-function Settings() {
+function Configuration() {
   const url = import.meta.env.VITE_API_URL;
   const usertypeApi = '/api/user-type';
   const categoriesApi = '/api/categories';
@@ -156,7 +156,7 @@ function Settings() {
                         Edit
                       </button>
                       <button
-                        className="w-32 border rounded p-1 bg-red-500 text-white hover:bg-red-600 rounded-lg"
+                        className="w-32 border  p-1 bg-red-500 text-white hover:bg-red-600 rounded-lg"
                         onClick={() => handleSoftDelete(usertypeApi, user.id, fetchUsertype, 'User Type')}
                       >
                         Delete
@@ -285,4 +285,4 @@ function Settings() {
   );
 }
 
-export default Settings;
+export default Configuration;

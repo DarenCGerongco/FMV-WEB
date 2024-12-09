@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload and POST Excel Data</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        table, th, td {
+            border: 1px solid black;
+        }
+        th, td {
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+</head>
+<body>
+    <h1>Upload and POST Excel Data</h1>
+    <form id="excelForm">
+        <label for="file">Upload Excel File:</label>
+        <input type="file" id="file" accept=".xlsx, .xls">
+    </form>
+
+    <div id="output"></div>
+
+    <script>
+        const fileInput = document.getElementById('file');
+        const outputDiv = document.getElementById('output');
+        const API_URL = "http://192.168.1.13:3000/api/products"; // Use HTTP if HTTPS is not available
+
+        fileInput.addEventListener('change', async (event) => {
+            const file = event.target.files[0];
+
+            if (file) {
+                const reader = new FileReader();
+
+                reader.onload = async (e) => {
+                    const data = new Uint8Array(e.target.result);
+                    const workbook = XLSX.read(data, { type: 'array' });
+
+                    // Assuming the first sheet is the one we want
+                    const sheetName = workbook.SheetNames[0];
+                    const sheet = workbook.Sheets[sheetName];
+
+                    // Convert the sheet data to JSON
+                    const jsonData = XLSX.utils.sheet_to_json(sheet, { header: 1 });
+
+                    // Generate random values for `quantity` and `original_price`
+                    jsonData.forEach((row, index) => {
+                        if (index !== 0) { // Skip header row
+                            row[2] = Math.floor(Math.random() * 500) + 1; // Random price between 1 and 500
+                            row[3] = Math.floor(Math.random() * 1000) + 1; // Random quantity between 1 and 1000
+                        }
+                    });
+
+                    // Generate an HTML table to display data
+                    let table = '<table>';
+                    jsonData.forEach((row, index) => {
+                        table += '<tr>';
+                        row.forEach(cell => {
+                            if (index === 0) {
+                                table += `<th>${cell}</th>`; // Table headers
+                            } else {
+                                table += `<td>${cell}</td>`; // Table data
+                            }
+                        });
+                        table += '</tr>';
+                    });
+                    table += '</table>';
+                    outputDiv.innerHTML = table;
+
+                    // Send POST requests for each row (skip header row)
+                    for (let i = 1; i < jsonData.length; i++) {
+                        const row = jsonData[i];
+
+                        // Ensure row data matches your API fields
+                        const payload = {
+                            category_id: parseInt(row[1]) || 0, // Ensure it's an integer
+                            product_name: row[0], // Ensure it's a string
+                            original_price: parseFloat(row[2]) || 0, // Ensure it's a float
+                            quantity: parseInt(row[3]) || 0 // Ensure it's an integer
+                        };
+
+                        // Skip rows with invalid category_id or empty product_name
+                        if (payload.category_id <= 0) {
+                            console.warn(`Skipping row ${i}: Invalid category_id.`);
+                            continue;
+                        }
+                        if (!payload.product_name) {
+                            console.warn(`Skipping row ${i}: Missing product_name.`);
+                            continue;
+                        }
+
+                        try {
+                            const response = await fetch(API_URL, {
+                                method: "POST",
+                                headers: {
+                                    "Content-Type": "application/json",
+                                },
+                                body: JSON.stringify(payload),
+                            });
+
+                            if (response.ok) {
+                                const responseData = await response.json();
+                                console.log(`Row ${i} uploaded successfully:`, responseData);
+                            } else {
+                                const error = await response.text();
+                                console.error(`Error uploading row ${i}:`, error);
+                            }
+                        } catch (error) {
+                            console.error(`Network error uploading row ${i}:`, error);
+                        }
+                    }
+                };
+
+                reader.readAsArrayBuffer(file);
+            }
+        });
+    </script>
+</body>
+</html>

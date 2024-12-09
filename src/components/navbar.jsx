@@ -148,13 +148,13 @@ const Navbar = () => {
             </li>
             <div className="h-[0.5px] w-full bg-white"></div>
 
-            <li className={`my-3 flex items-center transition pl-2 md:pl-5 group ${isActive('/settings') ? 'bg-white text-black rounded' : 'hover:bg-white hover:text-black rounded'}`}>
+            <li className={`my-3 flex items-center transition pl-2 md:pl-5 group ${isActive('/configuration') ? 'bg-white text-black rounded' : 'hover:bg-white hover:text-black rounded'}`}>
               <img
                 src={settingsImage}
                 alt="Settings Icon"
-                className={`w-6 h-6 mr-2 transition group-hover:invert-0 ${isActive('/settings') ? 'invert-0' : 'invert'}`}
+                className={`w-6 h-6 mr-2 transition group-hover:invert-0 ${isActive('/configuration') ? 'invert-0' : 'invert'}`}
               />
-              <Link to="/settings" className={`text-base md:text-xl ${isActive('/settings') ? 'text-black' : 'text-white group-hover:text-black'}`}>CONFIGURATION</Link>
+              <Link to="/configuration" className={`text-base md:text-xl ${isActive('/configuration') ? 'text-black' : 'text-white group-hover:text-black'}`}>CONFIGURATION</Link>
             </li>
 
             {/* <li className={`my-3 flex items-center transition pl-2 md:pl-5 group ${isActive('/logs') ? 'bg-white text-black rounded' : 'hover:bg-white hover:text-black rounded'}`}>

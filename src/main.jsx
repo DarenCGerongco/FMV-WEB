@@ -16,7 +16,8 @@ import Order from './pages/order.jsx';
 import CreatePurchaseOrder from './pages/order/pages/CreatePurchaseOrderDelivery.jsx';
 import PurchaseOrderEdit from './pages/order/Edit/PurchaseOrderEdit.jsx'; // Import the component
 
-import Settings from './pages/settings.jsx';
+import Configuration from './pages/configuration.jsx';
+
 
 const root = createRoot(document.getElementById('root'));
 
@@ -32,7 +33,7 @@ root.render(
           <Route path="/delivery" element={<Delivery />} />
           <Route path="/overview" element={<Overview />} />
           <Route path="/order" element={<Order />} />
-          <Route path="/settings" element={<Settings />} />
+          <Route path="/configuration" element={<Configuration />} />
           <Route path="/order/create-delivery" element={<CreatePurchaseOrder />} />
           <Route path="/order/edit/:purchaseOrderId" element={<PurchaseOrderEdit />} /> {/* Add the route */}
         </Routes>

@@ -9,6 +9,10 @@ import ViewDeliveriesModal from './order/modals/viewdeliveriesmodal';
 import ItemsOrderedModal from './order/modals/viewitemsorderedmodal';
 import QuickButtons from '../components/quickButtons';
 
+import DeliveriesTab from './order/components/deliveriesTab';
+import WalkinTab from './order/components/WalkinTab';
+
+
 function Order() {
   const navigate = useNavigate(); // Initialize navigate
   const url = import.meta.env.VITE_API_URL;
@@ -29,9 +33,16 @@ function Order() {
   const [paginationInfo, setPaginationInfo] = useState({});
   const [statusFilter, setStatusFilter] = useState("");
 
-  const [confirmEditModalOpen, setConfirmEditModalOpen] = useState(false);
-  const [purchaseOrderToEdit, setPurchaseOrderToEdit] = useState(null);
+
+  const [deliveriesData, setDeliveriesData] = useState([]);
+  const [deliveriesPagination, setDeliveriesPagination] = useState({});
+  const [walkinsData, setWalkinsData] = useState([]);
+  const [walkinsPagination, setWalkinsPagination] = useState({});
+  const [walkinsSearchInput, setWalkinsSearchInput] = useState('');
+  const [walkinsSearchResults, setWalkinsSearchResults] = useState([]);
   
+  // Tabs
+  const [activeTab, setActiveTab] = useState('Deliveries');
 
   const [purchaseOrderDetails, setPurchaseOrderDetails] = useState({
     customer_name: '',
@@ -69,60 +80,119 @@ function Order() {
 
   // Fetch purchase orders with a delay
   useEffect(() => {
-    const fetchOrders = async () => {
-      setLoading(true);
-      try {
-        const response = await axios.get(`${url}/api/purchase-orders-delivery?page=${currentPage}`);
-        const data = response.data;
-        const combinedData = data.orders.map(order => ({
-          purchase_order_id: order.purchase_order_id,
-          customer_name: order.customer_name,
-          status: order.status === 'P' ? 'Pending' : order.status === 'F' ? 'Failed' : 'Success',
-          street: order.address.street,
-          city: order.address.city,
-          barangay: order.address.barangay,
-          province: order.address.province,
-          created_at: order.created_at,
-        }));
-        setPurchaseOrderData(combinedData);
-        setSearchResults(combinedData);
-        setPaginationInfo(data.pagination);
+// Fetch Deliveries
+const fetchOrders = async () => {
+  setLoading(true);
+  try {
+    const response = await axios.get(`${url}/api/purchase-orders-delivery?page=${currentPage}`);
+    const data = response.data;
+    const combinedData = data.orders.map(order => ({
+      purchase_order_id: order.purchase_order_id,
+      customer_name: order.customer_name,
+      status: order.status === 'P' ? 'Pending' : order.status === 'F' ? 'Failed' : 'Success',
+      street: order.address.street,
+      city: order.address.city,
+      barangay: order.address.barangay,
+      province: order.address.province,
+      created_at: order.created_at,
+    }));
+    setDeliveriesData(combinedData);
+    setSearchResults(combinedData); // Deliveries-specific search
+    setDeliveriesPagination(data.pagination);
+    setLoading(false);
+  } catch (error) {
+    console.error('Error fetching deliveries:', error);
+    setLoading(false);
+  }
+};
 
-        setTimeout(() => setLoading(false), 20); // Delay display for a smoother transition
-      } catch (error) {
-        console.error('Error fetching orders:', error);
-        setLoading(false);
-      }
+// Fetch Walk-ins
+const fetchWalkins = async (page = 1) => {
+  setLoading(true);
+  try {
+    const response = await axios.get(`${url}/api/purchase-orders/walk-in?page=${page}`);
+    const data = response.data;
+    console.log(data);
+    const combinedData = data.data.map(order => ({
+      purchase_order_id: order.id,
+      customer_name: order.customer_name,
+      status: order.status === 'P' ? 'Pending' : order.status === 'F' ? 'Failed' : 'Success',
+      street: order.street,
+      city: order.city,
+      barangay: order.barangay,
+      province: order.province,
+      created_at: order.created_at,
+    }));
+    setWalkinsData(combinedData);
+    setWalkinsSearchResults(combinedData); // Walk-in-specific search
+    setWalkinsPagination({
+      currentPage: data.current_page,
+      lastPage: data.last_page,
+      perPage: data.per_page,
+      total: data.total,
+    });
+    setLoading(false);
+  } catch (error) {
+    console.error('Error fetching walk-in orders:', error);
+    setLoading(false);
+  }
+};
+
+    
+    // Add a pagination handler for Walk-in
+    const handleWalkinPageChange = (page) => {
+      fetchWalkins(page);
     };
+    
 
+    fetchWalkins();
     fetchOrders();
   }, [url, currentPage]);
+// Deliveries Pagination
+const handleDeliveriesPageChange = (page) => {
+  setCurrentPage(page); // For Deliveries
+  fetchOrders(page);
+};
+
+// Walk-ins Pagination
+const handleWalkinsPageChange = (page) => {
+  fetchWalkins(page); // For Walk-ins
+};
 
   const handlePageChange = (page) => {
     setCurrentPage(page);
   };
 
-  const handleSearchChange = (event) => {
-    const input = event.target.value;
-    setSearchInput(input);
+// Search for Deliveries
+const handleSearchChange = (event) => {
+  const input = event.target.value;
+  setSearchInput(input);
 
-    if (input.trim() === "") {
-      setSearchResults(purchaseOrderData);
-      setPaginationInfo((prev) => ({
-        ...prev,
-        lastPage: Math.ceil(purchaseOrderData.length / prev.perPage),
-      }));
-    } else {
-      const filteredResults = purchaseOrderData.filter((order) =>
-        order.customer_name.toLowerCase().includes(input.toLowerCase())
-      );
-      setSearchResults(filteredResults);
-      setPaginationInfo((prev) => ({
-        ...prev,
-        lastPage: Math.ceil(filteredResults.length / prev.perPage),
-      }));
-    }
-  };
+  if (input.trim() === "") {
+    setSearchResults(deliveriesData);
+  } else {
+    const filteredResults = deliveriesData.filter((order) =>
+      order.customer_name.toLowerCase().includes(input.toLowerCase())
+    );
+    setSearchResults(filteredResults);
+  }
+};
+
+// Search for Walk-ins
+const handleWalkinsSearchChange = (event) => {
+  const input = event.target.value;
+  setWalkinsSearchInput(input);
+
+  if (input.trim() === "") {
+    setWalkinsSearchResults(walkinsData);
+  } else {
+    const filteredResults = walkinsData.filter((order) =>
+      order.customer_name.toLowerCase().includes(input.toLowerCase())
+    );
+    setWalkinsSearchResults(filteredResults);
+  }
+};
+
 
   const openItemsOrderedModal = (purchaseOrderId) => {
     setSelectedItemsOrderId(purchaseOrderId);
@@ -179,240 +249,50 @@ function Order() {
         <div className="w-4/5 mx-auto p-6 m-3 rounded-lg mb-6 bg-white shadow-lg shadow-gray-400">
           <h2 className="text-1xl font-bold">MANAGEMENT SYSTEM ORDER</h2>
         </div>
-        <div className="w-4/5 mx-auto p-3 rounded-lg bg-white shadow-lg shadow-gray-400">
-          <div className="relative flex items-center space-x-4">
-            <div className="flex items-center w-full px-4 border border-gray-300 rounded-md shadow-md focus-within:border-blue-500 relative h-12">
-              <span className="text-black-500 font-bold whitespace-nowrap">ORDER</span>
-              <div className="border-l border-gray-300 h-10 mx-2"></div>
-              <input
-                type="text"
-                className="flex-grow focus:outline-none px-4 py-2 rounded-md sm:text-sm border-gray-300 focus:ring-blue-500 focus:border-blue-500 block w-full"
-                placeholder="Search for Ongoing Order"
-                value={searchInput}
-                onChange={handleSearchChange}
-              />
-            </div>
-            <button
-              className="w-[15%] font-bold px-4 py-2 bg-blue-500 hover:bg-blue-700 rounded-lg text-white"
-              onClick={createDeliveryPage}
-            >
-              Create Order
-            </button>
-          </div>
-          <div className="flex mt-4">
-            <span className="mx-1 font-bold py-1 px-3 text-blue-500 rounded">Filter:</span>
-            <button
-              className={`mx-1 font-bold py-1 px-3 ${
-                statusFilter === "" ? "bg-blue-500 text-white" : "bg-white text-black"
-              } rounded shadow-md hover:bg-blue-500 hover:text-white duration-200`}
-              onClick={() => handleFilterChange("")}
-            >
-              All
-            </button>
-            <button
-              className={`mx-1 font-bold py-1 px-3 ${
-                statusFilter === "Pending" ? "bg-blue-500 text-white" : "bg-white text-black"
-              } rounded shadow-md hover:bg-blue-500 hover:text-white duration-200`}
-              onClick={() => handleFilterChange("Pending")}
-            >
-              Pending
-            </button>
-            <button
-              className={`mx-1 font-bold py-1 px-3 ${
-                statusFilter === "Failed" ? "bg-blue-500 text-white" : "bg-white text-black"
-              } rounded shadow-md hover:bg-blue-500 hover:text-white duration-200`}
-              onClick={() => handleFilterChange("Failed")}
-            >
-              Failed
-            </button>
-            <button
-              className={`mx-1 font-bold py-1 px-3 ${
-                statusFilter === "Success" ? "bg-blue-500 text-white" : "bg-white text-black"
-              } rounded shadow-md hover:bg-blue-500 hover:text-white duration-200`}
-              onClick={() => handleFilterChange("Success")}
-            >
-              Success
-            </button>
-          </div>
+        {/* Tabs */}
+        <div className="w-4/5 mx-auto flex justify-center border-b">
+          <button
+            className={`p-2 font-bold ${
+              activeTab === 'Deliveries' ? 'border-b-2 border-blue-500 text-blue-500' : ''
+            }`}
+            onClick={() => setActiveTab('Deliveries')}
+          >
+            Deliveries
+          </button>
+          <button
+            className={`p-2 font-bold ${
+              activeTab === 'Walk-in' ? 'border-b-2 border-blue-500 text-blue-500' : ''
+            }`}
+            onClick={() => setActiveTab('Walk-in')}
+          >
+            Walk-in
+          </button>
         </div>
-        <div className="w-4/5 mx-auto mt-6">
-          <div className="bg-white shadow-lg shadow-gray-400 rounded-lg">
-            <div className="grid grid-cols-11 font-bold px-2 text-sm py-3 border-b border-gray-300">
-              <p className="col-span-1 text-left">POID</p>
-              <p className="col-span-2 text-left">Customer's Name</p>
-              <p className="col-span-1 text-left">Status</p>
-              <p className="col-span-3 px-1 text-left">Address</p>
-              <p className="col-span-2 text-left">Date</p>
-              <p className="col-span-2 text-center">Actions</p>
-            </div>
-
-            {loading ? (
-              <div className="flex justify-center py-5">
-                <h2>Loading...</h2>
-                <div className="spinner"></div>
-              </div>
-            ) : (
-              searchResults.map((customerData, index) => (
-                <div
-                  key={index}
-                  className="grid grid-cols-11 px-2 py-2 items-center bg-white text-sm border-b border-gray-200 hover:bg-blue-50 duration-300"
-                >
-                  <p className="col-span-1 font-bold text-left">{customerData.purchase_order_id}</p>
-                  <p className="col-span-2 font-bold text-left">{customerData.customer_name}</p>
-                  <p
-                    className={`col-span-1 font-bold text-left ${
-                      customerData.status === 'Failed' ? 'text-red-500 ' :
-                      customerData.status === 'Success' ? 'text-green-500' :
-                      customerData.status === 'Pending' ? 'text-yellow-500' :
-                      'text-gray-900'
-                    }`}
-                  >
-                    {customerData.status}
-                  </p>             
-                  <div className="col-span-3 text-left font-bold text-xs px-1">
-                    <p>{`${customerData.street}, ${customerData.barangay}, ${customerData.province}, ${customerData.city}`}</p>
-                  </div>
-                  <p className="col-span-2 text-left text-sm text-gray-700">{customerData.created_at}</p>
-                  <div className="col-span-2 flex space-x-2 justify-center">
-                    <button
-                      className="bg-blue-500 p-1 text-white hover:bg-blue-700 rounded-lg font-bold duration-300 w-[150px]"
-                      onClick={() => openCreateDeliveryModal(customerData.purchase_order_id)}
-                    >
-                      Create Deliveries
-                    </button>
-                    <button
-                      className="bg-blue-500 p-1 text-white hover:bg-blue-700 rounded-lg font-bold w-[75px]"
-                      onClick={() => toggleDropDown(customerData.purchase_order_id)}
-                    >
-                      More
-                    </button>
-
-                    {openDropDowns[customerData.purchase_order_id] && (
-                      <div
-                        ref={dropDownRef}
-                        className="absolute mt-0 w-1/8 bg-white border border-gray-300 right-[10px] rounded shadow-lg z-50"
-                        >
-                        <ul className="py-1">
-                          <li
-                            className="px-4 p-1 hover:bg-blue-500 hover:text-white font-bold duration-300 cursor-pointer"
-                            onClick={() => {
-                              openItemsOrderedModal(customerData.purchase_order_id);
-                              setOpenDropDowns({ ...openDropDowns, [customerData.purchase_order_id]: false });
-                            }}
-                          >
-                            View Items Ordered
-                          </li>
-                          <li
-                            className="px-4 p-1 hover:bg-blue-500 hover:text-white font-bold duration-300 cursor-pointer"
-                            onClick={() => {
-                              openViewDeliveriesModal(customerData.purchase_order_id);
-                              setOpenDropDowns({ ...openDropDowns, [customerData.purchase_order_id]: false });
-                            }}
-                          >
-                            View Deliveries
-                          </li>
-                          <li
-                            className="px-4 p-1 bg-white text-red-500 font-bold hover:bg-red-500 hover:text-white duration-300 cursor-pointer"
-                            onClick={() => {
-                              setPurchaseOrderToEdit(customerData.purchase_order_id);
-                              setConfirmEditModalOpen(true);
-                              setOpenDropDowns({ ...openDropDowns, [customerData.purchase_order_id]: false });
-                            }}
-                          >
-                            Edit
-                          </li>
-
-                          <li
-                            className="px-4 p-1 bg-white text-red-500 font-bold hover:bg-red-500 hover:text-white duration-300 cursor-pointer"
-                            onClick={() => {
-                              openViewDeliveriesModal(customerData.purchase_order_id);
-                              setOpenDropDowns({ ...openDropDowns, [customerData.purchase_order_id]: false });
-                            }}
-                          >
-                            Cancel Order
-                          </li>
-                        </ul>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              ))
-            )}
-          </div>
-        </div>
-        {confirmEditModalOpen && (
-            <div className="fixed inset-0 flex justify-center items-center bg-black bg-opacity-50 z-50">
-              <div className="bg-white p-6 rounded-md shadow-lg w-1/3">
-                <div className="flex flex-row">
-                <h3 className="text-lg font-bold mb-4 mr-1">Confirm Edit </h3>
-                </div>
-                <p className="text-gray-700 mb-4">
-                  Are you sure you want to edit purchase order ID: {purchaseOrderToEdit}? Please note that if a delivery has already been made or deductions have been applied, the purchase order can no longer be edited.
-                </p>
-                <p className="text-red-700 mb-4 font-bold ">
-                  Note: Please double check the Purchase Order Issued before proceeding.
-                </p>
-
-                <div className="flex justify-end space-x-4">
-                  <button
-                    className="px-4 py-2 bg-transparent hover:bg-red-500 text-red-500 hover:text-white px-4 py-2 border border-red-500 hover:border-transparent rounded-lg"
-                    onClick={() => setConfirmEditModalOpen(false)}
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    className="px-4 py-2 bg-red-500  text-white rounded-md hover:bg-white hover:text-red-500 shadow-md border font-bold duration-200"
-                    onClick={() => {
-                      setConfirmEditModalOpen(false);
-                      navigate(`/order/edit/${purchaseOrderToEdit}`);
-                    }}
-                  >
-                    Proceed
-                  </button>
-                </div>
-              </div>
-            </div>
+        {/* Tabs */}
+          <div className="mt-6">
+          {activeTab === 'Deliveries' && (
+            <DeliveriesTab
+              loading={loading}
+              searchInput={searchInput}
+              handleSearchChange={handleSearchChange}
+              searchResults={searchResults}
+              paginationInfo={deliveriesPagination}
+              handlePageChange={handleDeliveriesPageChange}
+              // Other props...
+            />
           )}
-        {/* Pagination Controls */}
-        <div className="flex justify-center w-full space-x-2 my-7">
-          <button
-            onClick={() => handlePageChange(1)}
-            disabled={paginationInfo.currentPage === 1}
-            className="font-bold px-3 py-1 bg-white hover:bg-blue-500 hover:text-white duration-200 shadow-md cursor-pointer rounded"
-          >
-            First
-          </button>
-          <button
-            onClick={() => handlePageChange(paginationInfo.currentPage - 1)}
-            disabled={paginationInfo.currentPage === 1}
-            className="font-bold px-3 py-1 bg-white hover:bg-blue-500 hover:text-white duration-200 shadow-md cursor-pointer rounded"
-          >
-            Previous
-          </button>
-          {Array.from({ length: paginationInfo.lastPage }, (_, i) => (
-            <button
-              key={i + 1}
-              onClick={() => handlePageChange(i + 1)}
-              className={`font-bold px-3 py-1 rounded cursor-pointer duration-100 shadow-md ${paginationInfo.currentPage === i + 1 ? 'bg-blue-500 text-white' : 'bg-white hover:bg-blue-500 shadow-md hover:text-white'}`}
-            >
-              {i + 1}
-            </button>
-          ))}
-          <button
-            onClick={() => handlePageChange(paginationInfo.currentPage + 1)}
-            disabled={paginationInfo.currentPage === paginationInfo.lastPage}
-            className="font-bold px-3 py-1 bg-white hover:bg-blue-500 hover:text-white duration-200 shadow-md cursor-pointer rounded"
-          >
-            Next
-          </button>
-          <button
-            onClick={() => handlePageChange(paginationInfo.lastPage)}
-            disabled={paginationInfo.currentPage === paginationInfo.lastPage}
-            className="font-bold px-3 py-1 bg-white hover:bg-blue-500 hover:text-white duration-200 shadow-md cursor-pointer rounded"
-          >
-            Last
-          </button>
-        </div>
+          {activeTab === 'Walk-in' && (
+            <WalkinTab
+              loading={loading}
+              searchInput={walkinsSearchInput}
+              handleSearchChange={handleWalkinsSearchChange}
+              searchResults={walkinsSearchResults}
+              paginationInfo={walkinsPagination}
+              handlePageChange={handleWalkinsPageChange}
+              // Other props...
+            />
+          )}
+          </div>
       </div>
 
       {/* View Items Ordered Modal */}
@@ -440,6 +320,8 @@ function Order() {
         viewDeliveriesModalOpen={viewDeliveriesModalOpen}
         purchaseOrderId={selectedPurchaseOrderId}
       />
+
+
     </div>
   );
 }

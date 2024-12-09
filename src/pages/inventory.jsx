@@ -3,7 +3,7 @@ import Navbar from "../components/navbar";
 import axios from "axios";
 import AddProductModal from "./inventory/modal/AddProductModal";
 import RestockModal from "./inventory/modal/RestockModal";
-import EditProductModal from "./inventory/modal/EditProductModal"; 
+import EditProductModal from "./inventory/modal/EditProductModal";
 
 import QuickButtons from "../components/quickButtons";
 
@@ -26,7 +26,7 @@ function Inventory() {
   const [showRestockModal, setShowRestockModal] = useState(false);
   const [restockProduct, setRestockProduct] = useState(null);
   const [showEditProductModal, setShowEditProductModal] = useState(false);
-  const [editProduct, setEditProduct] = useState(null); 
+  const [editProduct, setEditProduct] = useState(null);
 
   // Fetch categories
   const fetchCategories = async () => {
@@ -49,9 +49,11 @@ function Inventory() {
         },
       });
       const fetchedItems = response.data.products || [];
+      console.log("Fetched Products:", fetchedItems); // Debugging
+
       setItems(fetchedItems);
       setFilteredItems(fetchedItems); // Initialize filtered items
-      setTotalAssets(response.data.totalValue);
+      setTotalAssets(response.data.totalValue || 0);
       setPagination(response.data.pagination || { currentPage: 1, lastPage: 1 });
     } catch (error) {
       console.error("Error fetching products:", error);
@@ -107,26 +109,24 @@ function Inventory() {
     setEditProduct({ ...product, category_name: product.category_name }); // Pass the category_name
     setShowEditProductModal(true);
   };
-  
-  
 
   return (
     <div className="flex w-full bg-white">
-      <Navbar/>
-      <QuickButtons/>
+      <Navbar />
+      <QuickButtons />
       <div className="flex flex-col w-full bg-white">
-        <div className="w-4/5 mx-auto bg-white p-6 m-3 rounded-lg  shadow-lg shadow-gray-400 mb-6 ">
+        <div className="w-4/5 mx-auto bg-white p-6 m-3 rounded-lg shadow-lg shadow-gray-400 mb-6 ">
           <h2 className="text-1xl font-bold">MANAGEMENT SYSTEM INVENTORY</h2>
         </div>
 
         {/* Searchbar and Filters */}
-        <div className="w-4/5 mx-auto bg-white p-3 m-3 rounded-lg  shadow-lg shadow-gray-400">
+        <div className="w-4/5 mx-auto bg-white p-3 m-3 rounded-lg shadow-lg shadow-gray-400">
           <div className="flex flex-row">
-          <div className="flex flex-row items-center w-full px-2 py-2 mr-1 border border-gray-300 rounded-md shadow-md focus-within:border-blue-500 relative h-12">
-            <span className="font-bold text-black-500 whitespace-nowrap">
-              INVENTORY
-            </span>
-            <div className="border-l border-gray-300 h-10 mx-2"></div>
+            <div className="flex flex-row items-center w-full px-2 py-2 mr-1 border border-gray-300 rounded-md shadow-md focus-within:border-blue-500 relative h-12">
+              <span className="font-bold text-black-500 whitespace-nowrap">
+                INVENTORY
+              </span>
+              <div className="border-l border-gray-300 h-10 mx-2"></div>
               <input
                 type="text"
                 value={searchInput}
@@ -134,14 +134,12 @@ function Inventory() {
                 placeholder="Search for items"
                 className="flex-grow focus:outline-none px-4 py-2 rounded-md sm:text-sm border-gray-300 focus:ring-blue-500 focus:border-blue-500 block w-full"
               />
-          </div>
+            </div>
             <button
               className="w-40 r-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700 rounded-lg font-bold"
               onClick={() => setShowAddProductModal(true)}
             >
-              <h1 className="text-center text-md">
-                Add Product
-              </h1>
+              <h1 className="text-center text-md">Add Product</h1>
             </button>
           </div>
 
@@ -192,24 +190,12 @@ function Inventory() {
           </div>
         </div>
 
-        {/* <div className="flex flex-col ml-[10%] bg-white">
-          <div className="w-[12rem] font-bold h-[10rem] text-black hover:bg-green-400 duration-200 rounded-lg p-2 bg-blue-500 flex flex-col shadow-md justify-center items-center">
-            <span className="text-sm font-bold text-white mt-2 ">
-              Total Value of Assets:
-            </span>
-            <span className="text-2xl font-bold text-white mt-2">
-              ₱{totalAssets}
-            </span>
-          </div>
-        </div> */}
-
         {/* Inventory List */}
         <div className="w-4/5 mx-auto p-5 m-3 rounded-lg bg-white shadow-lg shadow-gray-400">
           {loading ? (
             <div className="spinner text-center"></div>
-          ) : (
+          ) : filteredItems.length > 0 ? (
             <>
-              {/* Header */}
               <div className="grid grid-cols-8 text-sm font-bold border-b py-2">
                 <div className="col-span-1">Product ID</div>
                 <div className="col-span-2">Product Name</div>
@@ -219,11 +205,10 @@ function Inventory() {
                 <div>Actions</div>
               </div>
 
-              {/* Items */}
               {filteredItems.map((item, index) => (
                 <div
                   key={index}
-                  className={` grid text-sm grid-cols-8 shadow-lg shadow-gray-400 ${
+                  className={`grid text-sm grid-cols-8 shadow-lg shadow-gray-400 ${
                     item.quantity <= 100
                       ? "bg-[#C6C6C6] text-white shadow-md"
                       : "hover:bg-blue-50 shadow-md"
@@ -251,10 +236,12 @@ function Inventory() {
                 </div>
               ))}
             </>
+          ) : (
+            <div>No products found.</div>
           )}
         </div>
 
-        {/* Add Product Modal */}
+        {/* Modals */}
         {showAddProductModal && (
           <AddProductModal
             onClose={() => setShowAddProductModal(false)}
@@ -262,7 +249,6 @@ function Inventory() {
           />
         )}
 
-        {/* Restock Modal */}
         {showRestockModal && restockProduct && (
           <RestockModal
             productId={restockProduct.id}
@@ -272,16 +258,13 @@ function Inventory() {
           />
         )}
 
-        {/* Edit Product Modal */}
         {showEditProductModal && editProduct && (
           <EditProductModal
-            product={editProduct} // Pass product to be edited
+            product={editProduct}
             onClose={() => setShowEditProductModal(false)}
             onEditSuccess={() => fetchProducts(pagination.currentPage)}
           />
         )}
-
-
 
         {/* Pagination */}
         <div className="flex justify-center w-full space-x-2 my-10">
@@ -304,21 +287,58 @@ function Inventory() {
           >
             Previous
           </button>
-          {[...Array(pagination.lastPage)].map((_, i) => (
-            <button
-              key={i + 1}
-              onClick={() =>
-                setPagination((prev) => ({ ...prev, currentPage: i + 1 }))
-              }
-              className={`px-3 py-1 rounded ${
-                pagination.currentPage === i + 1
-                  ? "bg-blue-500 text-white"
-                  : "bg-gray-300"
-              }`}
-            >
-              {i + 1}
-            </button>
-          ))}
+
+          {(() => {
+            const totalPages = pagination.lastPage;
+            const currentPage = pagination.currentPage;
+            const maxVisiblePages = 10;
+            const pageButtons = [];
+
+            const startPage = Math.max(
+              1,
+              currentPage - Math.floor(maxVisiblePages / 2)
+            );
+            const endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+
+            const adjustedStartPage = Math.max(1, endPage - maxVisiblePages + 1);
+
+            if (adjustedStartPage > 1) {
+              pageButtons.push(
+                <span key="start-ellipsis" className="px-3 py-1">
+                  ...
+                </span>
+              );
+            }
+
+            for (let i = adjustedStartPage; i <= endPage; i++) {
+              pageButtons.push(
+                <button
+                  key={i}
+                  onClick={() =>
+                    setPagination((prev) => ({ ...prev, currentPage: i }))
+                  }
+                  className={`px-3 py-1 rounded ${
+                    pagination.currentPage === i
+                      ? "bg-blue-500 text-white"
+                      : "bg-gray-300"
+                  }`}
+                >
+                  {i}
+                </button>
+              );
+            }
+
+            if (endPage < totalPages) {
+              pageButtons.push(
+                <span key="end-ellipsis" className="px-3 py-1">
+                  ...
+                </span>
+              );
+            }
+
+            return pageButtons;
+          })()}
+
           <button
             onClick={() =>
               setPagination((prev) => ({
