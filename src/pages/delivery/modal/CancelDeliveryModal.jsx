@@ -66,7 +66,7 @@ const CancelDeliveryModal = ({
           <button
             className={`px-4 py-2 rounded ${
               isCancelable
-                ? "bg-red-500 text-white font-bold shadow-md hover:bg-red-500"
+                ? "bg-red-500 text-white font-bold shadow-md hover:bg-red-800 duration-500"
                 : "bg-red-900 text-gray-600 font-bold shadow-md cursor-not-allowed"
             }`}
             onClick={handleCancelDelivery}

@@ -43,7 +43,8 @@ const ViewDeliveriesModal = ({ onClose, viewDeliveriesModalOpen, purchaseOrderId
     'S': 'Refunded',
     'P': 'Awaiting Refund',
     'NR': 'No Refunds',
-    'default': 'On Delivery' // Default status if no returns
+    'default': 'On Delivery', // Default status if no returns
+    'F': 'Failed', // Add "Failed" status
   };
 
   return (
@@ -119,8 +120,10 @@ const ViewDeliveriesModal = ({ onClose, viewDeliveriesModalOpen, purchaseOrderId
                     <p className="col-span-1 font-bold pl-4 text-sm">{product.product_name}</p>
                     <p className="col-span-1 font-bold pl-4 text-sm">x{product.quantity}</p>
                     <p className="col-span-1 font-bold pl-4 text-sm">{product.no_of_damages}</p>
-                    <div className="col-span-1 text-sm text-gray-700">
-                      {product.returns.length > 0 ? (
+                    <div className="col-span-1 text-sm text-green-600">
+                      {delivery.delivery_status === 'F' ? (
+                        <p className="font-bold text-red-500">{statusLabels['F']}</p>
+                      ) : product.returns.length > 0 ? (
                         getUniqueStatuses(product.returns).map((status, idx) => (
                           <p key={idx} className="font-bold">{statusLabels[status]}</p>
                         ))

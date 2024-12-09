@@ -4,7 +4,6 @@ import axios from "axios";
 import AddProductModal from "./inventory/modal/AddProductModal";
 import RestockModal from "./inventory/modal/RestockModal";
 import EditProductModal from "./inventory/modal/EditProductModal";
-
 import QuickButtons from "../components/quickButtons";
 
 function Inventory() {
@@ -13,7 +12,6 @@ function Inventory() {
   // State management
   const [categories, setCategories] = useState([]);
   const [items, setItems] = useState([]);
-  const [filteredItems, setFilteredItems] = useState([]);
   const [searchInput, setSearchInput] = useState("");
   const [selectedCategories, setSelectedCategories] = useState([]);
   const [pagination, setPagination] = useState({
@@ -28,6 +26,9 @@ function Inventory() {
   const [showEditProductModal, setShowEditProductModal] = useState(false);
   const [editProduct, setEditProduct] = useState(null);
 
+  const [sortBy, setSortBy] = useState("product_id"); // Default sorting column
+  const [sortOrder, setSortOrder] = useState("asc"); // Default sorting order
+  
   // Fetch categories
   const fetchCategories = async () => {
     try {
@@ -46,13 +47,13 @@ function Inventory() {
         params: {
           page,
           categories: selectedCategories,
-          search: searchInput, // Pass the search term to the backend
+          search: searchInput,
+          sort_by: sortBy, // Use state to determine sorting column
+          sort_order: sortOrder, // Use state to determine sorting order
         },
       });
-  
-      const fetchedItems = response.data.products || [];
-      setItems(fetchedItems);
-      setFilteredItems(fetchedItems); // Initialize filtered items
+
+      setItems(response.data.products || []);
       setTotalAssets(response.data.totalValue || 0);
       setPagination(response.data.pagination || { currentPage: 1, lastPage: 1 });
     } catch (error) {
@@ -61,21 +62,22 @@ function Inventory() {
       setLoading(false);
     }
   };
-  
 
-  // Fetch data on initial load
+  // Initial load and re-fetch when dependencies change
   useEffect(() => {
     fetchCategories();
     fetchProducts(pagination.currentPage);
-  }, [pagination.currentPage, selectedCategories]);
+  }, [pagination.currentPage, selectedCategories, sortOrder]);
 
+  // Search handling
   const handleSearchChange = (e) => {
     const input = e.target.value;
     setSearchInput(input);
+    setPagination((prev) => ({ ...prev, currentPage: 1 }));
     fetchProducts(1); // Always fetch from the first page
   };
-  
-  // Handle category selection toggle
+
+  // Handle category toggle
   const handleCategoryToggle = (category) => {
     setSelectedCategories((prev) =>
       prev.includes(category)
@@ -85,13 +87,11 @@ function Inventory() {
     setPagination((prev) => ({ ...prev, currentPage: 1 }));
   };
 
-  // Clear filters
   const clearFilters = () => {
     setSelectedCategories([]);
     setPagination((prev) => ({ ...prev, currentPage: 1 }));
   };
 
-  // Handle Restock button click
   const handleRestockClick = (product) => {
     setRestockProduct({
       id: product.product_id,
@@ -101,8 +101,14 @@ function Inventory() {
   };
 
   const handleEditClick = (product) => {
-    setEditProduct({ ...product, category_name: product.category_name }); // Pass the category_name
+    setEditProduct({ ...product, category_name: product.category_name });
     setShowEditProductModal(true);
+  };
+
+  const handleSortByColumn = (column) => {
+    const newSortOrder = sortBy === column && sortOrder === "asc" ? "desc" : "asc";
+    setSortBy(column);
+    setSortOrder(newSortOrder);
   };
 
   return (
@@ -110,7 +116,7 @@ function Inventory() {
       <Navbar />
       <QuickButtons />
       <div className="flex flex-col w-full bg-white">
-        <div className="w-4/5 mx-auto bg-white p-6 m-3 rounded-lg shadow-lg shadow-gray-400 mb-6 ">
+        <div className="w-4/5 mx-auto bg-white p-6 m-3 rounded-lg shadow-lg shadow-gray-400 mb-6">
           <h2 className="text-1xl font-bold">MANAGEMENT SYSTEM INVENTORY</h2>
         </div>
 
@@ -137,70 +143,33 @@ function Inventory() {
               <h1 className="text-center text-md">Add Product</h1>
             </button>
           </div>
-
-          <div className="flex flex-wrap gap-2 mt-4">
-            <span className="font-bold my-auto text-xs text-blue-500">
-              Filter:
-            </span>
-            <button
-              className={`px-2 text-xs py-1 rounded-md shadow-md font-bold ${
-                selectedCategories.length === 0
-                  ? "bg-white text-blue-500 hover:bg-blue-500 hover:text-white duration-200"
-                  : "bg-blue-500 text-white hover:bg-white hover:text-blue-500 duration-200"
-              }`}
-              onClick={clearFilters}
-            >
-              All Categories
-            </button>
-            {categories.map((category, index) => (
-              <button
-                key={index}
-                className={`px-2 text-xs py-1 rounded-md shadow-md font-bold ${
-                  selectedCategories.includes(category.category_name)
-                    ? "bg-white text-blue-500 hover:bg-blue-500 hover:text-white duration-200"
-                    : "bg-blue-500 text-white hover:bg-white hover:text-blue-500 duration-200"
-                }`}
-                onClick={() => handleCategoryToggle(category.category_name)}
-              >
-                {category.category_name}
-              </button>
-            ))}
-          </div>
-          <div className="mt-4">
-            <span className="font-bold text-xs text-blue-500">Selected: </span>
-            {selectedCategories.length > 0 ? (
-              selectedCategories.map((category, index) => (
-                <span
-                  key={index}
-                  className="px-2 text-xs py-1 rounded-md bg-blue-500 text-white font-semibold mr-2 shadow-sm"
-                >
-                  {category}
-                </span>
-              ))
-            ) : (
-              <span className="px-2 text-xs py-1 rounded-md bg-blue-500 text-white font-semibold mr-2 shadow-sm">
-                All Categories
-              </span>
-            )}
-          </div>
         </div>
 
         {/* Inventory List */}
         <div className="w-4/5 mx-auto p-5 m-3 rounded-lg bg-white shadow-lg shadow-gray-400">
           {loading ? (
             <div className="spinner text-center"></div>
-          ) : filteredItems.length > 0 ? (
+          ) : items.length > 0 ? (
             <>
               <div className="grid grid-cols-8 text-sm font-bold border-b py-2">
-                <div className="col-span-1">Product ID</div>
+                <div
+                  className="col-span-1 cursor-pointer"
+                  onClick={() => handleSortByColumn("product_id")}
+                >
+                  Product ID {sortBy === "product_id" && (sortOrder === "asc" ? "↑" : "↓")}
+                </div>
                 <div className="col-span-2">Product Name</div>
                 <div className="col-span-2">Category</div>
                 <div>Price</div>
-                <div>Quantity</div>
+                <div
+                  className="cursor-pointer flex items-center"
+                  onClick={() => handleSortByColumn("quantity")}
+                >
+                  Quantity {sortBy === "quantity" && (sortOrder === "asc" ? "↑" : "↓")}
+                </div>
                 <div>Actions</div>
               </div>
-
-              {filteredItems.map((item, index) => (
+              {items.map((item, index) => (
                 <div
                   key={index}
                   className={`grid text-sm grid-cols-8 shadow-lg shadow-gray-400 ${
@@ -236,31 +205,6 @@ function Inventory() {
           )}
         </div>
 
-        {/* Modals */}
-        {showAddProductModal && (
-          <AddProductModal
-            onClose={() => setShowAddProductModal(false)}
-            fetchProducts={() => fetchProducts(pagination.currentPage)}
-          />
-        )}
-
-        {showRestockModal && restockProduct && (
-          <RestockModal
-            productId={restockProduct.id}
-            productName={restockProduct.name}
-            onClose={() => setShowRestockModal(false)}
-            onRestockSuccess={() => fetchProducts(pagination.currentPage)}
-          />
-        )}
-
-        {showEditProductModal && editProduct && (
-          <EditProductModal
-            product={editProduct}
-            onClose={() => setShowEditProductModal(false)}
-            onEditSuccess={() => fetchProducts(pagination.currentPage)}
-          />
-        )}
-
         {/* Pagination */}
         <div className="flex justify-center w-full space-x-2 my-10">
           <button
@@ -282,7 +226,7 @@ function Inventory() {
           >
             Previous
           </button>
-
+          {/* Dynamic Pagination */}
           {(() => {
             const totalPages = pagination.lastPage;
             const currentPage = pagination.currentPage;
@@ -333,7 +277,6 @@ function Inventory() {
 
             return pageButtons;
           })()}
-
           <button
             onClick={() =>
               setPagination((prev) => ({
@@ -359,6 +302,29 @@ function Inventory() {
             Last
           </button>
         </div>
+
+        {/* Modals */}
+        {showAddProductModal && (
+          <AddProductModal
+            onClose={() => setShowAddProductModal(false)}
+            fetchProducts={() => fetchProducts(pagination.currentPage)}
+          />
+        )}
+        {showRestockModal && restockProduct && (
+          <RestockModal
+            productId={restockProduct.id}
+            productName={restockProduct.name}
+            onClose={() => setShowRestockModal(false)}
+            onRestockSuccess={() => fetchProducts(pagination.currentPage)}
+          />
+        )}
+        {showEditProductModal && editProduct && (
+          <EditProductModal
+            product={editProduct}
+            onClose={() => setShowEditProductModal(false)}
+            onEditSuccess={() => fetchProducts(pagination.currentPage)}
+          />
+        )}
       </div>
     </div>
   );

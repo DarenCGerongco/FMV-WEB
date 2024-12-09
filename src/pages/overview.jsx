@@ -22,6 +22,13 @@ function Overview() {
   const [chartData, setChartData] = useState(null);
   const [availableYears, setAvailableYears] = useState([]);
   const monthlyRecordsUrl = `${import.meta.env.VITE_API_URL}/api/Insights/Monthly-Records`;
+  const [deliveriesCounts, setDeliveriesCounts] = useState({
+    success: 0,
+    on_delivery: 0,
+    pending: 0,
+    failed: 0
+  });
+
 
   // sales fetching
   useEffect(() => {
@@ -63,12 +70,6 @@ function Overview() {
     }
   };
 
-  // Debugging - log the `id` and `userName` values
-  useEffect(() => {
-    console.log("Global Context ID:", id);
-    console.log("Global Context userName:", userName);
-  }, [id, userName]);
-
   // Fetch order data
   const fetchOrderData = async () => {
     try {
@@ -77,6 +78,16 @@ function Overview() {
       setOrders(response.data);  // Set the fetched orders correctly
     } catch (error) {
       console.error('Error fetching order data:', error);
+    }
+  };
+
+  // Fetch deliveries count
+  const fetchDeliveryCounts = async () => {
+    try {
+      const response = await axios.get(`${url}/api/deliveries/overview`);
+      setDeliveriesCounts(response.data);
+    } catch (error) {
+      console.error('Error fetching delivery counts:', error);
     }
   };
 
@@ -104,10 +115,11 @@ function Overview() {
     fetchUserNames(); // Fetch initial user names
     fetchInventoryData(); // Fetch initial inventory data
     fetchOrderData();  // Fetch initial order data
+    fetchDeliveryCounts(); // Ensure to fetch delivery counts
     setTimeout(() => {
       setLoading(false); // Set loading to false after 2 seconds
     }, 500); // Show spinner for 2 seconds
-  }, []);
+  }, []); // This will run once when the component mounts
 
   const fetchUserNames = async () => {
     try {
@@ -130,8 +142,6 @@ function Overview() {
       console.error('Error fetching user names:', error);
     }
   };
-
-
 
   const handleInventoryClick = () => {
     navigate('/inventory'); // Redirect to inventory page
@@ -248,15 +258,15 @@ function Overview() {
               <h3 className="text-lg font-bold mb-4">DELIVERY</h3>
               <div className="bg-white shadow-lg shadow-gray-400 p-4 rounded-lg mt-4 flex justify-between items-center">
                 <span className="text-gray-700 text-sm">Confirm Delivery:</span>
-                <span className="text-gray-700 text-sm">2</span>
+                <span className="text-gray-700 text-sm">{deliveriesCounts.success}</span>
               </div>
               <div className="bg-white shadow-lg shadow-gray-400 p-4 rounded-lg mt-4 flex justify-between items-center">
                 <span className="text-gray-700 text-sm">On-Delivery:</span>
-                <span className="text-gray-700 text-sm">2</span>
+                <span className="text-gray-700 text-sm">{deliveriesCounts.on_delivery}</span>
               </div>
               <div className="bg-white shadow-lg shadow-gray-400 p-4 rounded-lg mt-4 flex justify-between items-center">
-                <span className="text-gray-700 text-sm">Delivered:</span>
-                <span className="text-gray-700 text-sm">2</span>
+                <span className="text-gray-700 text-sm">Failed:</span>
+                <span className="text-gray-700 text-sm">{deliveriesCounts.failed}</span>
               </div>
             </div>
 
