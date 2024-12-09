@@ -1,7 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
+import { GlobalContext } from '../../../../GlobalContext';
+import { toast, ToastContainer } from 'react-toastify'; // Import toast and ToastContainer
+import 'react-toastify/dist/ReactToastify.css'; // Import styles for toast
 
 const CreateWalkInOrderModal = ({ isOpen, onClose }) => {
+  const { id, userName } = useContext(GlobalContext);
   const [products, setProducts] = useState([]);
   const [filteredProducts, setFilteredProducts] = useState([]);
   const [chosenProducts, setChosenProducts] = useState({});
@@ -13,7 +17,6 @@ const CreateWalkInOrderModal = ({ isOpen, onClose }) => {
   const url = import.meta.env.VITE_API_URL;
 
   useEffect(() => {
-    // Fetch products from API based on current page
     const fetchProducts = async () => {
       setIsLoading(true);
       try {
@@ -39,7 +42,6 @@ const CreateWalkInOrderModal = ({ isOpen, onClose }) => {
     }
   };
 
-  // Calculate the visible page numbers for the sliding window
   const getPageNumbers = () => {
     const maxPageNumbersToShow = 15;
     let startPage = 1;
@@ -61,7 +63,6 @@ const CreateWalkInOrderModal = ({ isOpen, onClose }) => {
     return Array.from({ length: endPage - startPage + 1 }, (_, i) => startPage + i);
   };
 
-  // Handler for adding/removing a product from the chosen list
   const handleProductClick = (product) => {
     setChosenProducts((prev) => {
       const newChosenProducts = { ...prev };
@@ -102,7 +103,7 @@ const CreateWalkInOrderModal = ({ isOpen, onClose }) => {
 
   const handleSubmit = async () => {
     const orderData = {
-      user_id: 1,
+      user_id: id,
       sale_type_id: 2,
       customer_name: customerName || 'John Doe',
       product_details: Object.keys(chosenProducts).map((productId) => ({
@@ -114,11 +115,14 @@ const CreateWalkInOrderModal = ({ isOpen, onClose }) => {
 
     try {
       await axios.post(`${url}/api/purchase-orders/create/walk-in`, orderData);
-      alert('Walk-in order created successfully!');
+      toast.success('Walk-in order created successfully!');
       onClose();
     } catch (error) {
       console.error('Error creating walk-in order:', error);
-      alert('Failed to create walk-in order.');
+      const errorMessage =
+        error.response?.data?.error ||
+        'Failed to create walk-in order. Please try again later.';
+      toast.error(errorMessage);
     }
   };
 
@@ -214,9 +218,71 @@ const CreateWalkInOrderModal = ({ isOpen, onClose }) => {
             className="w-full p-2 border rounded text-black"
             placeholder="Customer Name"
           />
-          {/* Render selected products */}
+          <div className="mt-4">
+            <h5 className="font-semibold mb-2">Selected Products:</h5>
+            {Object.keys(chosenProducts).length === 0 ? (
+              <p className="text-gray-500">No products selected.</p>
+            ) : (
+              <ul className="space-y-2">
+                {Object.keys(chosenProducts).map((productId) => {
+                  const product = chosenProducts[productId];
+                  return (
+                    <li key={productId} className="flex flex-col p-2 border rounded">
+                      <div className="flex justify-between items-center">
+                        <span className="font-medium">{product.product_name}</span>
+                        <button
+                          onClick={() => handleProductClick(product)}
+                          className="text-red-500 font-bold hover:text-red-700"
+                        >
+                          Remove
+                        </button>
+                      </div>
+                      <div className="flex items-center justify-between text-sm mt-1">
+                        <span
+                          className={`${
+                            product.quantity <= 200 ? 'text-red-600' : 'text-green-600'
+                          }`}
+                        >
+                          {product.quantity} left in stock
+                        </span>
+                        <div className="flex items-center">
+                          <label htmlFor={`quantity-${productId}`} className="mr-2">Qty:</label>
+                          <input
+                            id={`quantity-${productId}`}
+                            type="number"
+                            value={product.orderQuantity}
+                            onChange={(e) => handleQuantityChange(productId, e.target.value)}
+                            className="w-16 p-1 text-right border rounded"
+                            placeholder="Qty"
+                            min="1"
+                            max={product.quantity} // Enforce max quantity
+                          />
+                        </div>
+                      </div>
+                    </li>
+                  );
+                })}
+              </ul>
+            )}
+          </div>
+
+          <div className=" bottom-0 left-0 right-0 p-4 bg-white flex justify-end space-x-4">
+            <button
+              onClick={onClose}
+              className="px-4 py-2 bg-gray-300 hover:bg-gray-400 text-black font-bold rounded"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={handleSubmit}
+              className="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white font-bold rounded"
+            >
+              Submit Order
+            </button>
+          </div>
         </div>
       </div>
+      <ToastContainer position="bottom-right" autoClose={5000} hideProgressBar={true} />
     </div>
   );
 };
