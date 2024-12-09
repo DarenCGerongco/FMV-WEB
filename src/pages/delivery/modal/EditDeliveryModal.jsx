@@ -145,6 +145,11 @@ const EditDeliveryModal = ({
             ))}
           </select>
         </div>
+        <div className="">
+          <h1 className="text-xs text-red-500 font-bold">
+            Note: You can only edit who will deliver it, if you wish to edit the delivery and its products, you must cancel it.
+          </h1>
+        </div>
         <div className="flex justify-end space-x-2">
           <button
             className="px-4 py-2 bg-gray-300 text-black rounded"

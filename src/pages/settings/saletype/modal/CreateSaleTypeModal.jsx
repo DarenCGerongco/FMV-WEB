@@ -5,7 +5,7 @@ import 'react-toastify/dist/ReactToastify.css';
 
 const CreateSaleTypeModal = ({ isOpen, onClose, onSaleTypeCreated }) => {
   const url = import.meta.env.VITE_API_URL;
-  const saletypesApi = '/api/sale-types';
+  const saletypesApi = '/api/sale-type';
 
   const [saleTypeName, setSaleTypeName] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);

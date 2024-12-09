@@ -46,11 +46,11 @@ function Inventory() {
         params: {
           page,
           categories: selectedCategories,
+          search: searchInput, // Pass the search term to the backend
         },
       });
+  
       const fetchedItems = response.data.products || [];
-      console.log("Fetched Products:", fetchedItems); // Debugging
-
       setItems(fetchedItems);
       setFilteredItems(fetchedItems); // Initialize filtered items
       setTotalAssets(response.data.totalValue || 0);
@@ -61,6 +61,7 @@ function Inventory() {
       setLoading(false);
     }
   };
+  
 
   // Fetch data on initial load
   useEffect(() => {
@@ -68,18 +69,12 @@ function Inventory() {
     fetchProducts(pagination.currentPage);
   }, [pagination.currentPage, selectedCategories]);
 
-  // Handle search input
   const handleSearchChange = (e) => {
     const input = e.target.value;
     setSearchInput(input);
-
-    // Live search functionality
-    const filtered = items.filter((item) =>
-      item.product_name.toLowerCase().includes(input.toLowerCase())
-    );
-    setFilteredItems(filtered);
+    fetchProducts(1); // Always fetch from the first page
   };
-
+  
   // Handle category selection toggle
   const handleCategoryToggle = (category) => {
     setSelectedCategories((prev) =>

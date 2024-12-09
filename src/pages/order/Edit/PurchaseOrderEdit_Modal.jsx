@@ -13,28 +13,41 @@ const PurchaseOrderEdit_Modal = ({ isOpen, onClose, addProductToList, existingPr
   const fetchProducts = async (page, term = '') => {
     setIsLoading(true);
     try {
-      const response = await axios.get(`${url}/api/products?page=${page}&search=${term}`);
+      // Properly pass the search term to the API
+      const response = await axios.get(`${url}/api/products`, {
+        params: {
+          page,
+          search: term, // Ensure the search term is passed correctly
+        },
+      });
       setProducts(response.data.products);
       setTotalPages(response.data.pagination.lastPage);
-      setIsLoading(false);
     } catch (error) {
       console.error('Error fetching products:', error);
+    } finally {
       setIsLoading(false);
     }
   };
-
+  
+  // Call fetchProducts when searchTerm or currentPage changes
   useEffect(() => {
     if (isOpen) {
       fetchProducts(currentPage, searchTerm);
     }
   }, [isOpen, currentPage, searchTerm]);
+  
+  const handleSearch = (e) => {
+    setSearchTerm(e.target.value);
+    setCurrentPage(1); // Reset to page 1 when searching
+  };
+  
 
   const handleSelectProduct = (product) => {
     const newSelection = { ...selectedProducts };
     if (newSelection[product.product_id]) {
       delete newSelection[product.product_id];
     } else {
-      newSelection[product.product_id] = { ...product, isEditable: true }; // Mark newly added products as editable
+      newSelection[product.product_id] = { ...product, isEditable: true };
     }
     setSelectedProducts(newSelection);
   };
@@ -49,14 +62,12 @@ const PurchaseOrderEdit_Modal = ({ isOpen, onClose, addProductToList, existingPr
     return existingProducts.some((product) => product.product_id === productId);
   };
 
-  const handleSearch = (e) => {
-    setSearchTerm(e.target.value);
-    setCurrentPage(1); // Reset to page 1 when searching
-  };
-
   const renderPageNumbers = () => {
     const pages = [];
-    for (let i = 1; i <= totalPages; i++) {
+    const startPage = Math.max(1, currentPage - Math.floor(15 / 2));
+    const endPage = Math.min(totalPages, startPage + 14);
+
+    for (let i = startPage; i <= endPage; i++) {
       pages.push(
         <button
           key={i}
@@ -69,6 +80,7 @@ const PurchaseOrderEdit_Modal = ({ isOpen, onClose, addProductToList, existingPr
         </button>
       );
     }
+
     return pages;
   };
 

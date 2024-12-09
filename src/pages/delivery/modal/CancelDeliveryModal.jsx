@@ -11,8 +11,12 @@ const CancelDeliveryModal = ({
   const [loading, setLoading] = useState(false);
 
   // Check if cancellation is allowed
+  // Previously: isCancelable = deliveryStatus === "OD" && returnStatus === "NR"
+  // Now also check that it's not "F"
   const isCancelable =
-    deliveryStatus === "OD" && returnStatus === "NR";
+    deliveryStatus === "OD" &&
+    returnStatus === "NR" &&
+    deliveryStatus !== "F";
 
   const handleCancelDelivery = async () => {
     if (!isCancelable) return; // Ensure cancellation is blocked if conditions aren't met
@@ -47,12 +51,13 @@ const CancelDeliveryModal = ({
         <p className="mb-4">
           {isCancelable
             ? `Are you sure you want to cancel Delivery ID ${deliveryId}?`
-            : `This delivery cannot be canceled because of its current status:
-                Delivery Status: ${deliveryStatus}, Return Status: ${returnStatus}.`}
+            : `This delivery cannot be canceled due to its current status:
+               Delivery Status: ${deliveryStatus}, Return Status: ${returnStatus}. 
+               If the delivery status is 'F', it can no longer be edited or canceled.`}
         </p>
         <div className="flex justify-end space-x-4">
           <button
-            className="px-4 py-2 bg-gray-300 text-black rounded"
+            className="px-4 py-2 bg-blue-500 font-bold text-white hover:bg-white hover:text-blue-500 shadow-md duration-200 rounded"
             onClick={onClose}
             disabled={loading}
           >
@@ -61,8 +66,8 @@ const CancelDeliveryModal = ({
           <button
             className={`px-4 py-2 rounded ${
               isCancelable
-                ? "bg-red-500 text-white hover:bg-red-600"
-                : "bg-gray-400 text-gray-600 cursor-not-allowed"
+                ? "bg-red-500 text-white font-bold shadow-md hover:bg-red-500"
+                : "bg-red-900 text-gray-600 font-bold shadow-md cursor-not-allowed"
             }`}
             onClick={handleCancelDelivery}
             disabled={!isCancelable || loading}

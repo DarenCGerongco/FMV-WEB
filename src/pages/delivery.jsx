@@ -135,10 +135,10 @@ function Delivery() {
       <Navbar />
       <QuickButtons />
       <div className="flex flex-col w-full bg-white">
-        <div className="w-4/5 mx-auto bg-white p-6 m-3 rounded-lg bg-white shadow-lg shadow-gray-400 mb-6">
+        <div className="w-4/5 mx-auto  p-6 m-3 rounded-lg bg-white shadow-lg shadow-gray-400 mb-6">
           <h2 className="text-1xl font-bold">MANAGEMENT SYSTEM DELIVERY</h2>
         </div>
-        <div className="w-4/5 mx-auto bg-white p-3 rounded-lg bg-white shadow-lg shadow-gray-400">
+        <div className="w-4/5 mx-auto  p-3 rounded-lg bg-white shadow-lg shadow-gray-400">
           <div className="flex items-center w-full px-4 py-3 border border-gray-300 rounded-md shadow-md relative h-12">
             <span className="font-bold text-black-500 whitespace-nowrap">
               DELIVERY
