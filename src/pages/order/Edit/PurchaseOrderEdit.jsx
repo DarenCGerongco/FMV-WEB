@@ -225,21 +225,21 @@ const PurchaseOrderEdit = () => {
             </div>
           ))}
 
-          <div className="flex justify-end mt-5 items-end">
+          <div className="flex justify-end mt-5 items-end gap-x-3">
           <button
-              className="mr-4 bg-red-500 text-white px-4 py-2 rounded hover:bg-red-400"
+              className="mr-4 text-blue-500 px-4 py-2 hover:text-red-700 underline"
               onClick={() => window.history.back()}
             >
               Cancel
             </button>
           <button
-            className="mr-4 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-400"
+            className="w-32 r-4 bg-transparent hover:bg-blue-500 text-blue-700 hover:text-white px-4 py-2 border border-blue-500 hover:border-transparent rounded-lg"
             onClick={toggleModal}
           >
             Add Product
           </button>
             <button
-              className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-400"
+              className="bg-blue-500 px-4 py-2 hover:bg-blue-700 rounded-lg text-white"
               onClick={openConfirmationModal}
             >
               Save Changes
