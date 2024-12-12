@@ -155,13 +155,13 @@ const PurchaseOrderEdit = () => {
                 onChange={(e) => {
                   const value = e.target.value;
 
-                  // Validation for `customer_name`: allow only letters
-                  if (field === "customer_name" && /[0-9]/.test(value)) {
-                    return; // Prevent updating if numbers are detected
+                  // Validation for `customer_name`: allow only letters, dots, and spaces
+                  if (field === "customer_name" && /[^a-zA-Z. ]/.test(value)) {
+                    return; // Prevent updating if the value contains characters other than letters, dots, or spaces
                   }
 
                   // Validation for `zipcode`: allow only numbers
-                  if (field === "zipcode" && /[^\d]/.test(value)) {
+                  if (field === "zipcode" && /[^0-9]/.test(value)) {
                     return; // Prevent updating if non-numeric characters are detected
                   }
 
