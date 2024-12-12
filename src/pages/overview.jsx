@@ -334,7 +334,7 @@ function Overview() {
               {inventoryItems.length > 0 ? (
                 inventoryItems.map((item, index) => (
                   <div key={index} className="mt-4">
-                    <div className="bg-white shadow-lg shadow-gray-400 p-4 rounded-lg shadow-lg flex justify-between items-center">
+                    <div className="bg-white shadow-gray-400 p-4 rounded-lg shadow-lg flex justify-between items-center">
                       {/* Item Details */}
                       <div className="w-1/4 text-left">
                         <div className="">{item.id}</div>
