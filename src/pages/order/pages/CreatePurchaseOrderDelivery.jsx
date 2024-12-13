@@ -170,13 +170,13 @@ const CreatePurchaseOrder = () => {
                     const { name, value } = e.target;
 
                     // Validation for customer_name: allow only letters
-                    if (name === 'customer_name' && /[0-9]/.test(value)) {
-                      return;
+                    if (name === 'customer_name' && /[^a-zA-Z. ]/.test(value)) {
+                      return; // If the value contains characters other than letters, dots, or spaces, don't update
                     }
-
+                  
                     // Validation for zipcode: allow only numbers
-                    if (name === 'zipcode' && /[^\d]/.test(value)) {
-                      return;
+                    if (name === 'zipcode' && /[^0-9]/.test(value)) {
+                      return; // If the value contains anything other than numbers, don't update
                     }
 
                     handleChange(e);
