@@ -7,6 +7,10 @@ import CancelDeliveryModal from "./delivery/modal/CancelDeliveryModal";
 
 import QuickButtons from "../components/quickButtons";
 
+import loading from '../pages/delivery/images/hourglass.png'
+import warrantCheck from '../pages/delivery/images/warranty.png'
+
+
 function Delivery() {
   const url = import.meta.env.VITE_API_URL;
   const [selectedDeliveryManName, setSelectedDeliveryManName] = useState("");
@@ -115,7 +119,7 @@ function Delivery() {
       OD: "On-Delivery",
       P: "Pending",
       F: "Failed",
-      S: "Successful",
+      S: "Delivered",
     };
     return statuses[status] || "Unknown";
   };
@@ -124,7 +128,7 @@ function Delivery() {
     const statuses = {
       NR: "No Returns",
       P: "Pending",
-      S: "Success",
+      S: "Refunded",
     };
     return statuses[return_status] || "Unknown";
   };
@@ -170,12 +174,13 @@ function Delivery() {
           </div>
         </div>
         <div className="w-4/5 mx-auto mt-2 p-3 rounded-lg bg-white shadow-lg shadow-gray-400">
-          <div className="grid grid-cols-8 text-sm font-bold rounded-md">
+          <div className="grid grid-cols-9 text-sm font-bold rounded-md">
             <div className="col-span-1">Delivery ID#</div>
             <div className="col-span-1">Purchase Order ID#</div>
             <div className="col-span-2">Delivery man</div>
-            <div className="col-span-1 text-center ">Delivery Status</div>
-            <div className="col-span-1 text-center ">Return Status</div>
+            <div className="col-span-1 text-center">Warranty Status</div>
+            <div className="col-span-1 text-center">Delivery Status</div>
+            <div className="col-span-1 text-center">Return Status</div>
             <div className="col-span-1 text-center">Delivery Created (24hrs)</div>
             <div className="col-span-1 text-center">Actions</div>
           </div>
@@ -183,7 +188,7 @@ function Delivery() {
             filteredDeliveries.map((delivery) => (
               <div
                 key={delivery.delivery_id}
-                className="hover:bg-blue-50 duration-200 grid grid-cols-8 gap-2 rounded my-2 bg-white shadow-md p-3 items-center"
+                className="hover:bg-blue-50 duration-200 grid grid-cols-9 gap-2 rounded my-2 bg-white shadow-md p-3 items-center"
               >
                 {/* Delivery ID */}
                 <div className="col-span-1 text-sm font-medium text-left truncate">
@@ -199,6 +204,22 @@ function Delivery() {
                 <div className="col-span-2 text-sm font-medium truncate">
                   {delivery.delivery_man.name}
                 </div>
+
+                {/* Warranty */}
+                <div className="col-span-1 text-center">
+                  <div
+                    className={`inline-block p-2 rounded-full shadow-md ${
+                      delivery.time_exceeded === "yes" ? "bg-green-100" : "bg-red-100"
+                    }`}
+                  >
+                    <img
+                      src={delivery.time_exceeded === "yes" ? warrantCheck : loading}
+                      alt={delivery.time_exceeded === "yes" ? "Warranty Active" : "Warranty Pending"}
+                      className="h-6 w-6"
+                    />
+                  </div>
+                </div>
+
 
                 {/* Delivery Status */}
                 <div
@@ -238,7 +259,7 @@ function Delivery() {
                 </div>
 
                 {/* Actions */}
-                <div className="col-span-1 text-center relative ">
+                <div className="col-span-1 text-center relative">
                   <button
                     className="bg-blue-500 text-white font-bold px-3 py-1 rounded-md hover:bg-blue-600 hover:text-white duration-200 w-full"
                     onClick={() => toggleDropdown(delivery.delivery_id)}
@@ -252,13 +273,13 @@ function Delivery() {
                       onClick={(e) => e.stopPropagation()}
                     >
                       <button
-                        className="block w-full px-4 py-2 text-left  font-bold text-blue-500 hover:bg-blue-100 duration-200"
+                        className="block w-full px-4 py-2 text-left font-bold text-blue-500 hover:bg-blue-100 duration-200"
                         onClick={() => handleDeliveryClick(delivery.delivery_id)}
                       >
                         View Details
                       </button>
                       <button
-                        className="block w-full px-4 py-2 text-left  font-bold text-blue-500 hover:bg-blue-100 duration-200"
+                        className="block w-full px-4 py-2 text-left font-bold text-blue-500 hover:bg-blue-100 duration-200"
                         onClick={() => handleEditDelivery(delivery)}
                       >
                         Edit Delivery
@@ -283,6 +304,7 @@ function Delivery() {
             <div className="text-center p-4 text-sm font-medium">No deliveries found.</div>
           )}
         </div>
+
         <div className="flex justify-center w-full space-x-2 my-7">
           <button
             onClick={() => handlePageChange(1)}

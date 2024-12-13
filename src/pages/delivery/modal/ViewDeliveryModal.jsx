@@ -12,9 +12,24 @@ const getStatusDisplayName = (status) => {
     case "F":
       return "Failed";
     case "S":
-      return "Successful";
+      return "Delivered";
     default:
       return "Unknown Status";
+  }
+};
+// Determine warranty status based on the delivery status
+const getWarrantyMessage = (status, timeExceeded) => {
+  switch (status) {
+    case "OD":
+      return "Awaiting Delivery";
+    case "P":
+      return timeExceeded
+        ? "Warranty Period has Ended (7 Days passed)."
+        : "Under Warranty Period (7 Days).";
+    case "S":
+      return "Warranty Period has Ended";
+    default:
+      return "Unknown Warranty Status";
   }
 };
 
@@ -67,10 +82,7 @@ const ViewDeliveryModal = ({ deliveryId, onClose }) => {
   if (!deliveryId) return null; // Don't render if no delivery ID is provided
   if (loading) {
     return (
-      <div
-        className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
-        onClick={(e) => e.stopPropagation()}
-      >
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
         <div className="bg-white rounded-lg shadow-lg p-6">
           <p>Loading delivery details...</p>
         </div>
@@ -80,65 +92,84 @@ const ViewDeliveryModal = ({ deliveryId, onClose }) => {
 
   if (!deliveryDetails) {
     return (
-      <div
-        className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
-        onClick={onClose}
-      >
-        <div
-          className="bg-white rounded-lg shadow-lg p-6"
-          onClick={(e) => e.stopPropagation()}
-        >
-          <p>Error Data; Contact admin</p>
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div className="bg-white rounded-lg shadow-lg p-6">
+          <p>Error: Data not available. Please contact the administrator.</p>
         </div>
       </div>
     );
   }
 
   // Determine if the Accept button should be enabled or disabled
-  const isAcceptable = deliveryDetails.delivery.status === "P" && !acceptLoading;
+  const isAcceptable =
+    deliveryDetails.delivery.status === "P" &&
+    (deliveryDetails.time_exceeded === true || deliveryDetails.time_exceeded === "yes") &&
+    !acceptLoading;
   const isEditable = deliveryDetails.delivery.status !== "S"; // Disable editing for status "S"
 
+  // Determine warranty status
+  const warrantyMessage = getWarrantyMessage(
+    deliveryDetails.delivery.status,
+    deliveryDetails.time_exceeded
+  );
+
   return (
-    <div
-      className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
-      onClick={onClose}
-    >
-      <div
-        className="bg-white rounded-lg shadow-lg p-6 w-[90%] md:w-1/2"
-        onClick={(e) => e.stopPropagation()}
-      >
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div className="bg-white rounded-lg shadow-lg p-6 w-[90%] md:w-1/2">
         <h2 className="text-xl font-bold mb-4">Delivery Details</h2>
 
         {/* Delivery Information */}
         <div>
-          <p><strong>Delivery ID:</strong> {deliveryDetails.delivery.delivery_id}</p>
-          <p><strong>Purchase Order ID:</strong> {deliveryDetails.delivery.purchase_order_id}</p>
-          <p><strong>Employee Assigned:</strong> {deliveryDetails.user.name || "N/A"}</p>
+          <p>
+            <strong>Delivery ID:</strong> {deliveryDetails.delivery.delivery_id}
+          </p>
+          <p>
+            <strong>Purchase Order ID:</strong> {deliveryDetails.delivery.purchase_order_id}
+          </p>
+          <p>
+            <strong>Employee Assigned:</strong> {deliveryDetails.user.name || "N/A"}
+          </p>
           <p>
             <strong>Status:</strong>
-            {deliveryDetails?.delivery?.status ? (
-              <span
-                className={`px-2 font-bold text-center rounded-full ml-2 ${
-                  deliveryDetails.delivery.status === "OD"
-                    ? "bg-green-200 border border-green-500 text-green-500"
-                    : deliveryDetails.delivery.status === "P"
-                    ? "bg-pink-200 border border-pink-500 text-pink-500"
-                    : deliveryDetails.delivery.status === "F"
-                    ? "bg-red-500 text-white"
-                    : deliveryDetails.delivery.status === "S"
-                    ? "bg-green-400 text-black"
-                    : "bg-gray-500 text-white"
-                }`}
-              >
-                {getStatusDisplayName(deliveryDetails.delivery.status)}
-              </span>
-            ) : (
-              <span className="text-gray-500 ml-2">No Status</span>
-            )}
+            <span
+              className={`px-2 font-bold text-center rounded-full ml-2 ${
+                deliveryDetails.delivery.status === "OD"
+                  ? "bg-green-200 border border-green-500 text-green-500"
+                  : deliveryDetails.delivery.status === "P"
+                  ? "bg-pink-200 border border-pink-500 text-pink-500"
+                  : deliveryDetails.delivery.status === "F"
+                  ? "bg-red-500 text-white"
+                  : deliveryDetails.delivery.status === "S"
+                  ? "bg-green-400 text-black"
+                  : "bg-gray-500 text-white"
+              }`}
+            >
+              {getStatusDisplayName(deliveryDetails.delivery.status)}
+            </span>
           </p>
-          <p><strong>Created:</strong> {deliveryDetails.delivery.created_at}</p>
-          <p><strong>Notes:</strong> {deliveryDetails.delivery.notes || "No comment"}</p>
+          <p>
+            <strong>Created:</strong> {deliveryDetails.delivery.created_at}
+          </p>
+
         </div>
+        <h1 className="mt-5 text-xl font-bold text-blue-500">
+          Report:
+        </h1>
+        <p>
+          <strong>Warranty Status:</strong>{" "}
+          <span
+            className={`font-bold ml-2 ${
+              deliveryDetails.delivery.status === "P" && !deliveryDetails.time_exceeded
+                ? "text-green-500"
+                : "text-red-500"
+            }`}
+          >
+            {warrantyMessage}
+          </span>
+        </p>
+          <p>
+            <strong>Notes:</strong> {deliveryDetails.delivery.notes || "No comment"}
+          </p>
 
         {/* Display Images */}
         {deliveryDetails.images && deliveryDetails.images.length > 0 ? (

@@ -137,7 +137,7 @@ function Inventory() {
               />
             </div>
             <button
-              className="w-40 r-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700 rounded-lg font-bold"
+              className="w-40 r-4 px-4 py-2 bg-blue-500 text-white hover:bg-blue-700 rounded-lg font-bold"
               onClick={() => setShowAddProductModal(true)}
             >
               <h1 className="text-center text-md">Add Product</h1>

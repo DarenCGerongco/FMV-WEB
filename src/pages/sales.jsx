@@ -48,7 +48,7 @@ function Sales() {
         labels: data.map((item) => item.month || "Unknown"),
         datasets: [
           {
-            label: "Total Revenue (Php)",
+            label: "Total Sales (Php)",
             backgroundColor: "#4caf50",
             borderRadius: 10,
             data: data.map((item) =>
@@ -107,19 +107,19 @@ function Sales() {
           <div className="w-4/5 mx-auto bg-white rounded-lg flex justify-between items-stretch gap-x-4">
           {[
             {
-              title: "Total Revenue",
+              title: "Total Sales",
               value: `Php ${monthlyData.TotalRevenueOfPurchaseOrder || "0.00"}`,
               leftImage: "up.png",
               rightImage: "upt.ico",
             },
             {
-              title: "This Month's Revenue",
+              title: "This Month's Sales",
               value: `Php ${monthlyData.CurrentPurchaseOrderRevenue || "0.00"}`,
               leftImage: "up.png",
               rightImage: "upt.ico",
             },
             {
-              title: "Last Month's Revenue",
+              title: "Last Month's Sales",
               value: `Php ${monthlyData.PreviousMonthRevenue || "0.00"}`,
               leftImage: "up.png",
               rightImage: "upt.ico",
@@ -177,7 +177,7 @@ function Sales() {
                 responsive: true,
                 plugins: {
                   legend: { position: "top" },
-                  title: { display: true, text: `Revenue and Damages (Php) for ${year}` },
+                  title: { display: true, text: `Sales and Damages (Php) for ${year}` },
                 },
               }}
             />
