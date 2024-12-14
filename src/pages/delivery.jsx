@@ -133,7 +133,6 @@ function Delivery() {
     return statuses[return_status] || "Unknown";
   };
 
-
   return (
     <div className="flex w-full bg-white-100">
       <Navbar />
@@ -173,8 +172,8 @@ function Delivery() {
             ))}
           </div>
         </div>
-        <div className="w-4/5 mx-auto mt-2 p-3 rounded-lg bg-white shadow-lg shadow-gray-400">
-          <div className="grid grid-cols-9 text-sm font-bold rounded-md">
+        <div className="w-4/5 mx-auto mt-2 py-1 rounded-lg bg-white shadow-lg shadow-gray-400">
+          <div className="grid grid-cols-9 px-2 text-sm font-bold rounded-md">
             <div className="col-span-1">Delivery ID#</div>
             <div className="col-span-1">Purchase Order ID#</div>
             <div className="col-span-2">Delivery man</div>
@@ -188,7 +187,7 @@ function Delivery() {
             filteredDeliveries.map((delivery) => (
               <div
                 key={delivery.delivery_id}
-                className="hover:bg-blue-50 duration-200 grid grid-cols-9 gap-2 rounded my-2 bg-white shadow-md p-3 items-center"
+                className="hover:bg-blue-50 duration-200 grid grid-cols-9 gap-2 rounded my-1 bg-white shadow-md p-3 items-center"
               >
                 {/* Delivery ID */}
                 <div className="col-span-1 text-sm font-medium text-left truncate">

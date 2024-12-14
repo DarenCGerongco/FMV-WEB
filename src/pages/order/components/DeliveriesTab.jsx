@@ -148,8 +148,7 @@ const DeliveriesTab = () => {
 
   return (
     <div className="w-full">
-      {/* Search and Filter Section */}
-      <div className="w-4/5 mx-auto p-3 rounded-lg bg-white shadow-lg shadow-gray-400 mt-6">
+      <div className="w-4/5 mx-auto p-3 rounded-lg bg-white shadow-lg shadow-gray-400">
         <div className="flex items-center w-full px-4 py-3 border border-gray-300 rounded-md shadow-md relative h-12">
           <span className="font-bold text-black-500 whitespace-nowrap">ORDER</span>
           <div className="border-l border-gray-300 h-10 mx-2"></div>
@@ -168,8 +167,6 @@ const DeliveriesTab = () => {
             Create Order
           </button>
         </div>
-
-        {/* Filter Section */}
         <div className="flex mt-4 items-center">
           <span className="mx-1 font-bold py-1 px-3 text-blue-500 rounded">Order Status:</span>
           {['All', 'Pending', 'Failed', 'Success'].map((status) => (
@@ -187,8 +184,6 @@ const DeliveriesTab = () => {
           ))}
         </div>
       </div>
-
-      {/* Table Section */}
       <div className="w-4/5 mx-auto mt-6">
         <div className="bg-white shadow-lg shadow-gray-400 rounded-lg">
           <div className="grid grid-cols-11 font-bold px-2 text-sm py-3 border-b border-gray-300">
@@ -196,7 +191,7 @@ const DeliveriesTab = () => {
             <p className="col-span-2 text-left">Customer's Name</p>
             <p className="col-span-1 text-left">Status</p>
             <p className="col-span-3 px-1 text-left">Address</p>
-            <p className="col-span-2 text-left">Date</p>
+            <p className="col-span-2 text-center">Date</p>
             <p className="col-span-2 text-center">Actions</p>
           </div>
 
@@ -226,9 +221,10 @@ const DeliveriesTab = () => {
                 <div className="col-span-3 text-left font-bold text-xs px-1">
                   <p>{`${customerData.street || ''}, ${customerData.barangay || ''}, ${
                     customerData.province || ''
-                  }, ${customerData.city || ''}`}</p>
+                  }, ${customerData.city || ''}`}
+                  </p>
                 </div>
-                <p className="col-span-2 text-left text-sm text-gray-700">{customerData.created_at || 'N/A'}</p>
+                <p className="col-span-2 text-center text-sm text-gray-700 ">{customerData.created_at || 'N/A'}</p>
                 <div className="col-span-2 flex justify-center relative">
                   <button
                     className="bg-blue-500 px-3 py-1 duration-200 text-white hover:bg-white shadow-md hover:text-blue-500 rounded-lg font-bold mr-2"
@@ -288,8 +284,6 @@ const DeliveriesTab = () => {
           )}
         </div>
       </div>
-
-      {/* Warning Modal */}
       {showWarningModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
           <div className="bg-white p-6 rounded-lg shadow-lg w-1/3">

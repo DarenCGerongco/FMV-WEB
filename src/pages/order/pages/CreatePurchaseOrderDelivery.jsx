@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '../../../components/navbar';
-import Modal from './CreatePurchaseOrderDelivery_Modal'; 
+import Modal from './CreatePurchaseOrderDelivery_Modal';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -23,28 +23,32 @@ const CreatePurchaseOrder = () => {
 
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false); // For confirmation modal
   const [totalCost, setTotalCost] = useState(0); // Store total cost before confirm
+  const [globalDiscount, setGlobalDiscount] = useState(0); // Global discount percentage
 
   const url = import.meta.env.VITE_API_URL;
 
   const toggleModal = useCallback(() => {
-    setIsModalOpen(prev => !prev);
+    setIsModalOpen((prev) => !prev);
   }, []);
 
   const addProductToList = useCallback((selectedProducts) => {
     setProductsListed(selectedProducts);
     const inputs = {};
-    selectedProducts.forEach(product => {
+    selectedProducts.forEach((product) => {
       inputs[product.product_id] = {
-        bidPrice: product.bid_price || '',
-        quantity: ''
+        bidPrice: product.original_price || '',
+        quantity: '',
+        isManuallyUpdated: false, // Track if manually updated
       };
     });
     setProductInputs(inputs);
   }, []);
 
   const removeProductFromList = useCallback((productId) => {
-    setProductsListed(currentProducts => currentProducts.filter(p => p.product_id !== productId));
-    setProductInputs(currentInputs => {
+    setProductsListed((currentProducts) =>
+      currentProducts.filter((p) => p.product_id !== productId)
+    );
+    setProductInputs((currentInputs) => {
       const newInputs = { ...currentInputs };
       delete newInputs[productId];
       return newInputs;
@@ -53,21 +57,39 @@ const CreatePurchaseOrder = () => {
 
   const handleChange = useCallback((event) => {
     const { name, value } = event.target;
-    setPurchaseOrderDetails(prevDetails => ({
+    setPurchaseOrderDetails((prevDetails) => ({
       ...prevDetails,
-      [name]: value
+      [name]: value,
     }));
   }, []);
 
   const handleInputChange = (productId, field, value) => {
-    setProductInputs(prev => {
+    setProductInputs((prev) => {
       const updatedInputs = {
         ...prev,
         [productId]: {
           ...prev[productId],
-          [field]: value === '' ? prev[productId].original_price : value,
-        }
+          [field]: value,
+        },
       };
+      if (field === 'bidPrice') {
+        updatedInputs[productId].isManuallyUpdated = true; // Mark as manually updated
+      }
+      return updatedInputs;
+    });
+  };
+
+  const handleGlobalDiscountChange = (percentage) => {
+    setGlobalDiscount(percentage);
+    setProductInputs((prevInputs) => {
+      const updatedInputs = { ...prevInputs };
+      productsListed.forEach((product) => {
+        if (!updatedInputs[product.product_id].isManuallyUpdated) {
+          const discountedPrice =
+            product.original_price - (product.original_price * percentage) / 100;
+          updatedInputs[product.product_id].bidPrice = discountedPrice.toFixed(2);
+        }
+      });
       return updatedInputs;
     });
   };
@@ -75,7 +97,7 @@ const CreatePurchaseOrder = () => {
   const createOrder = async () => {
     const admin_id = localStorage.getItem('userID');
     if (!admin_id) {
-      alert('User ID is missing.');
+      toast.error('User ID is missing.');
       return;
     }
   
@@ -91,41 +113,39 @@ const CreatePurchaseOrder = () => {
         province: purchaseOrderDetails.province,
         zip_code: purchaseOrderDetails.zipcode,
       },
-      product_details: productsListed.map(product => ({
+      product_details: productsListed.map((product) => ({
         product_id: product.product_id,
         price: productInputs[product.product_id].bidPrice || product.original_price,
-        quantity: productInputs[product.product_id].quantity
+        quantity: productInputs[product.product_id].quantity,
       })),
     };
   
     setIsSubmitting(true);
     try {
       await axios.post(`${url}/api/purchase-orders-delivery`, orderData);
-      toast.success("Order created successfully!", {
+      toast.success('Order created successfully!', {
         onClose: () => {
           setIsSubmitting(false);
-          navigate("/order");
+          navigate('/order');
         },
       });
     } catch (error) {
-      toast.error("Error creating order. Please check your inputs.", {
+      const errorMessage =
+        error.response?.data?.error || 'Error creating order. Please check your inputs.';
+      toast.error(errorMessage, {
         onClose: () => setIsSubmitting(false),
       });
-      console.error("Error creating order:", error);
+      console.error('Error creating order:', errorMessage);
     }
   };
-
-  // Handle submit with confirmation modal
   const handleSubmit = () => {
-    // Calculate total cost
     let cost = 0;
-    productsListed.forEach(product => {
+    productsListed.forEach((product) => {
       const price = parseFloat(productInputs[product.product_id].bidPrice || product.original_price);
       const quantity = parseInt(productInputs[product.product_id].quantity, 10) || 0;
       cost += price * quantity;
     });
     setTotalCost(cost);
-    // Open confirmation modal
     setIsConfirmModalOpen(true);
   };
 
@@ -136,7 +156,6 @@ const CreatePurchaseOrder = () => {
 
   const cancelOrder = () => {
     setIsConfirmModalOpen(false);
-    // Do nothing, just close the modal
   };
 
   return (
@@ -146,17 +165,14 @@ const CreatePurchaseOrder = () => {
         <div className="w-11/12 mx-auto bg-white p-6 m-3 rounded-lg drop-shadow-md mb-6 border">
           <h3 className="text-1xl font-bold">CREATE PURCHASE ORDER</h3>
         </div>
-        <div className="w-11/12 mx-auto bg-white p-6 m-3 rounded-lg drop-shadow-md mb-6 border">
+        <div className="w-11/12  mx-auto bg-white p-6 m-3 rounded-lg drop-shadow-md mb-6 border">
           <h1 className="text-xl font-bold">Customer's Details:</h1>
           <hr className="h-px my-8 bg-gray-500 border-0 shadow-md"></hr>
           <div className="grid grid-cols-2 gap-4">
             {['customer_name', 'street', 'barangay', 'city', 'province', 'zipcode'].map((field, index) => (
               <div key={index}>
                 <label className="block text-sm font-bold">
-                  {field
-                    .split('_')
-                    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-                    .join(' ')}
+                  {field.split('_').map((word) => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')}
                   :
                   <span className="text-red-500">*</span>
                 </label>
@@ -166,102 +182,111 @@ const CreatePurchaseOrder = () => {
                   id={field}
                   name={field}
                   value={purchaseOrderDetails[field]}
-                  onChange={(e) => {
-                    const { name, value } = e.target;
-
-                    // Validation for customer_name: allow only letters
-                    if (name === 'customer_name' && /[^a-zA-Z. ]/.test(value)) {
-                      return; // If the value contains characters other than letters, dots, or spaces, don't update
-                    }
-                  
-                    // Validation for zipcode: allow only numbers
-                    if (name === 'zipcode' && /[^0-9]/.test(value)) {
-                      return; // If the value contains anything other than numbers, don't update
-                    }
-
-                    handleChange(e);
-                  }}
+                  onChange={handleChange}
                 />
               </div>
             ))}
           </div>
 
-
           <hr className="h-px my-8 bg-gray-500 border-0 shadow-md"></hr>
+          <h1 className="text-xl font-bold">Apply Global Discount:</h1>
+          <select
+            className="p-2 rounded border mb-4"
+            value={globalDiscount}
+            onChange={(e) => handleGlobalDiscountChange(parseFloat(e.target.value))}
+          >
+            <option value="0">No Discount</option>
+            <option value="1">1% Discount</option>
+            <option value="2">2% Discount</option>
+            <option value="3">3% Discount</option>
+            <option value="4">3% Discount</option>
+            <option value="5">5% Discount</option>
+            <option value="10">10% Discount</option>
+          </select>
+
           <h1 className="text-xl font-bold">Product Listed:</h1>
-          <div className="grid grid-cols-10 bg-gray-300 p-2 rounded">
+          <div className="grid grid-cols-11 bg-gray-300 p-2 gap-2 rounded">
             <span className="col-span-1 font-bold">ID</span>
             <span className="col-span-2 font-bold">Product Name</span>
             <span className="col-span-2 font-bold">Category</span>
             <span className="col-span-1 font-bold">Original Price</span>
-            <span className="col-span-1 font-bold text-red-600">Avail. Qty</span>
-            <span className="col-span-1 font-bold text-red-500 text-center">Reduced Price</span>
-            <span className="col-span-1 font-bold text-red-500 text-center">Units to buy</span>
-            <span className="col-span-1 font-bold text-red-500 text-center">Option</span>
+            <span className="col-span-1 font-bold">Avail. Qty</span>
+            <span className="col-span-1 font-bold">Discount</span>
+            <span className="col-span-1 font-bold text-center">Actual Price</span>
+            <span className="col-span-1 font-bold text-center">Quantity</span>
+            <span className="col-span-1 font-bold text-center">Option</span>
           </div>
           {productsListed.length > 0 ? (
-            productsListed.map((product, index) => (
-              <div key={index} className="grid grid-cols-10 items-center p-2 border-b">
-                <span className="col-span-1">{product.product_id}</span>
-                <span className="col-span-2">{product.product_name}</span>
-                <span className="col-span-2">{product.category_name}</span>
-                <span className="col-span-1">₱ {product.original_price}</span>
-                <span className="col-span-1 text-red-600">{product.quantity}</span>
-                <input
-                  type="number"
-                  value={productInputs[product.product_id]?.bidPrice || ''}
-                  onChange={(e) => handleInputChange(product.product_id, 'bidPrice', e.target.value)}
-                  className="col-span-1 p-1 rounded text-center border m-1"
-                />
-                <input
-                  type="text"
-                  value={productInputs[product.product_id].quantity}
-                  onChange={(e) => handleInputChange(product.product_id, 'quantity', e.target.value)}
-                  className="col-span-1 p-1 rounded text-center border"
-                />
-                <button
-                  onClick={() => removeProductFromList(product.product_id)}
-                  className="col-span-1 text-red-600 hover:text-red-400"
-                >
-                  Remove
-                </button>
-              </div>
-            ))
+            productsListed.map((product, index) => {
+              const discount = product.original_price - (productInputs[product.product_id]?.bidPrice || product.original_price);
+
+              return (
+                <div key={index} className="grid grid-cols-11 gap-1 items-center p-2 border-b">
+                  <span className="col-span-1">{product.product_id}</span>
+                  <span className="col-span-2">{product.product_name}</span>
+                  <span className="col-span-2">{product.category_name}</span>
+                  <span className="col-span-1">₱ {product.original_price}</span>
+                  <span className="col-span-1">{product.quantity}</span>
+                  <span className="col-span-1 text-sm text-green-500 font-bold">
+                    - ₱ {discount > 0 ? discount.toFixed(2) : '0.00'}
+                  </span>
+                  <input
+                    type="number"
+                    value={productInputs[product.product_id]?.bidPrice || ''}
+                    onChange={(e) => handleInputChange(product.product_id, 'bidPrice', e.target.value)}
+                    className="col-span-1 p-1 rounded text-center border"
+                  />
+                  <input
+                    type="number"
+                    value={productInputs[product.product_id]?.quantity || ''}
+                    onChange={(e) => handleInputChange(product.product_id, 'quantity', e.target.value)}
+                    className="col-span-1 p-1 rounded text-center border"
+                  />
+                  <button
+                    onClick={() => removeProductFromList(product.product_id)}
+                    className="col-span-1 text-red-600 hover:text-red-400"
+                  >
+                    Remove
+                  </button>
+                </div>
+              );
+            })
           ) : (
             <p className="text-center mt-6">No products added yet.</p>
           )}
-          <hr className="h-px my-2 bg-gray-500 border-0 shadow-md"></hr>
-          <div className="flex justify-end mt-5 items-end">
-            <button
-              className="mr-4 text-blue-500 px-4 py-2 hover:text-red-700 underline"
-              onClick={() => window.history.back()}
-            >
-              Cancel
-            </button>
 
-            <div className="flex gap-x-4">
-              <button
-                className="w-32 r-4 bg-transparent hover:bg-blue-500 text-blue-700 hover:text-white px-4 py-2 border border-blue-500 hover:border-transparent rounded-lg"
-                onClick={toggleModal}
-              >
-                Select
-              </button>
-              <button
-                className={`${
-                  isSubmitting
-                    ? "bg-gray-400 cursor-not-allowed"
-                    : "bg-blue-500 hover:bg-blue-700 rounded-lg text-white"
-                } w-32 text-white px-4 py-2`}
-                onClick={handleSubmit} 
-                disabled={isSubmitting}
-              >
-                {isSubmitting ? "Loading..." : "Submit"}
-              </button>
-            </div>
+        </div>
+
+        <div className="flex justify-end mt-5 items-end">
+          <button
+            className="mr-4 text-blue-500 px-4 py-2 hover:text-red-700 underline"
+            onClick={() => window.history.back()}
+          >
+            Cancel
+          </button>
+
+          <div className="flex gap-x-4">
+            <button
+              className="w-32 r-4 bg-transparent hover:bg-blue-500 text-blue-700 hover:text-white px-4 py-2 border border-blue-500 hover:border-transparent rounded-lg"
+              onClick={toggleModal}
+            >
+              Select
+            </button>
+            <button
+              className={`${
+                isSubmitting
+                  ? 'bg-gray-400 cursor-not-allowed'
+                  : 'bg-blue-500 hover:bg-blue-700 rounded-lg text-white'
+              } w-32 text-white px-4 py-2`}
+              onClick={handleSubmit}
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? 'Loading...' : 'Submit'}
+            </button>
           </div>
         </div>
-        <Modal isOpen={isModalOpen} onClose={toggleModal} addProductToList={addProductToList} />
       </div>
+      <Modal isOpen={isModalOpen} onClose={toggleModal} addProductToList={addProductToList} />
       <ToastContainer />
 
       {/* Confirmation Modal */}
@@ -269,7 +294,9 @@ const CreatePurchaseOrder = () => {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
           <div className="bg-white p-6 rounded-lg shadow-lg w-[30%] max-h-[40vh] overflow-y-auto">
             <h3 className="text-lg font-bold mb-4">Confirm Order</h3>
-            <p>The total cost is: <span className="font-bold">₱{totalCost.toFixed(2)}</span></p>
+            <p>
+              The total cost is: <span className="font-bold">₱{totalCost.toFixed(2)}</span>
+            </p>
             <p>Do you want to proceed?</p>
             <div className="flex justify-end mt-4 space-x-2">
               <button

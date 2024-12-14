@@ -68,7 +68,7 @@ function Order() {
         {/* Tabs */}
         <div className="w-4/5 mx-auto flex justify-center border-b">
           <button
-            className={`p-2 font-bold ${activeTab === 'Deliveries' ? 'border-b-2 border-blue-500 text-blue-500' : ''}`}
+            className={` p-2 font-bold ${activeTab === 'Deliveries' ? 'border-b-2 border-blue-500 text-blue-500' : ''}`}
             onClick={() => setActiveTab('Deliveries')}
           >
             Deliveries

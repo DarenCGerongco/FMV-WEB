@@ -102,10 +102,14 @@ const ViewDeliveryModal = ({ deliveryId, onClose }) => {
 
   // Determine if the Accept button should be enabled or disabled
   const isAcceptable =
-    deliveryDetails.delivery.status === "P" &&
-    (deliveryDetails.time_exceeded === true || deliveryDetails.time_exceeded === "yes") &&
-    !acceptLoading;
+  deliveryDetails.delivery.status === "P" &&
+  deliveryDetails.products.every(
+    (product) => product.return_status === "NR" || product.return_status === "S"
+  ) &&
+  !acceptLoading;
+
   const isEditable = deliveryDetails.delivery.status !== "S"; // Disable editing for status "S"
+
 
   // Determine warranty status
   const warrantyMessage = getWarrantyMessage(

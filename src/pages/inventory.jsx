@@ -5,9 +5,12 @@ import AddProductModal from "./inventory/modal/AddProductModal";
 import RestockModal from "./inventory/modal/RestockModal";
 import EditProductModal from "./inventory/modal/EditProductModal";
 import QuickButtons from "../components/quickButtons";
+import { useNavigate } from 'react-router-dom';
+
 
 function Inventory() {
   const url = import.meta.env.VITE_API_URL;
+  const navigate = useNavigate();
 
   // State management
   const [categories, setCategories] = useState([]);
@@ -26,9 +29,11 @@ function Inventory() {
   const [showEditProductModal, setShowEditProductModal] = useState(false);
   const [editProduct, setEditProduct] = useState(null);
 
-  const [sortBy, setSortBy] = useState("product_id"); // Default sorting column
-  const [sortOrder, setSortOrder] = useState("asc"); // Default sorting order
-  
+  const [sortBy, setSortBy] = useState("product_id");
+  const [sortOrder, setSortOrder] = useState("asc");
+
+  const [openDropdowns, setOpenDropdowns] = useState({});
+
   // Fetch categories
   const fetchCategories = async () => {
     try {
@@ -48,8 +53,8 @@ function Inventory() {
           page,
           categories: selectedCategories,
           search: searchInput,
-          sort_by: sortBy, // Use state to determine sorting column
-          sort_order: sortOrder, // Use state to determine sorting order
+          sort_by: sortBy,
+          sort_order: sortOrder,
         },
       });
 
@@ -69,15 +74,13 @@ function Inventory() {
     fetchProducts(pagination.currentPage);
   }, [pagination.currentPage, selectedCategories, sortOrder]);
 
-  // Search handling
   const handleSearchChange = (e) => {
     const input = e.target.value;
     setSearchInput(input);
     setPagination((prev) => ({ ...prev, currentPage: 1 }));
-    fetchProducts(1); // Always fetch from the first page
+    fetchProducts(1);
   };
 
-  // Handle category toggle
   const handleCategoryToggle = (category) => {
     setSelectedCategories((prev) =>
       prev.includes(category)
@@ -111,6 +114,34 @@ function Inventory() {
     setSortOrder(newSortOrder);
   };
 
+  const toggleDropdown = (productId) => {
+    setOpenDropdowns((prev) => ({
+      [productId]: !prev[productId],
+    }));
+  };
+
+  // Add event listener for outside click
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      const dropdowns = document.querySelectorAll(".dropdown-menu");
+      let isClickInside = false;
+
+      dropdowns.forEach((dropdown) => {
+        if (dropdown.contains(event.target)) {
+          isClickInside = true;
+        }
+      });
+
+      if (!isClickInside) {
+        setOpenDropdowns({});
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
   return (
     <div className="flex w-full bg-white">
       <Navbar />
@@ -169,33 +200,47 @@ function Inventory() {
                 </div>
                 <div>Actions</div>
               </div>
-              {items.map((item, index) => (
+              {items.map((item) => (
                 <div
-                  key={index}
-                  className={`grid text-sm grid-cols-8 shadow-lg shadow-gray-400 ${
-                    item.quantity <= 100
-                      ? "bg-[#C6C6C6] text-white shadow-md"
-                      : "hover:bg-blue-50 shadow-md"
-                  } rounded my-1 border-gray-300 p-1 items-center`}
+                  key={item.product_id}
+                  className="grid text-sm grid-cols-8 shadow-md shadow-gray-400 hover:bg-blue-50 rounded my-1 border-gray-300 p-1 items-center"
                 >
                   <div className="col-span-1">{item.product_id}</div>
                   <div className="col-span-2">{item.product_name}</div>
                   <div className="col-span-2">{item.category_name}</div>
                   <div>₱ {item.original_price}</div>
                   <div>{item.quantity}</div>
-                  <div className="flex gap-x-1">
+                  <div className="relative">
                     <button
-                      className="bg-blue-500 text-white hover:bg-blue-700 rounded-lg px-3 py-1"
-                      onClick={() => handleRestockClick(item)}
+                      className="bg-blue-500 text-center hover:bg-white hover:text-blue-500 text-white font-bold rounded-lg px-4 py-1 shadow-md"
+                      onClick={() => toggleDropdown(item.product_id)}
                     >
-                      Restock
+                      More
                     </button>
-                    <button
-                      className="bg-transparent hover:bg-blue-500 text-blue-500 hover:text-white border border-blue-500 hover:border-transparent px-3 py-1 rounded-md"
-                      onClick={() => handleEditClick(item)}
-                    >
-                      Edit
-                    </button>
+                    {openDropdowns[item.product_id] && (
+                      <div className="absolute dropdown-menu right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-10">
+                        <ul>
+                          <li
+                            className="px-4 py-2 font-bold hover:bg-blue-500 duration-100 hover:text-white cursor-pointer"
+                            onClick={() => handleRestockClick(item)}
+                          >
+                            Restock
+                          </li>
+                          <li
+                            className="px-4 py-2 font-bold hover:bg-blue-500 duration-100 hover:text-white cursor-pointer"
+                            onClick={() => navigate(`/inventory/product/${item.product_id}/details`)}
+                          >
+                            Details
+                          </li>
+                          <li
+                            className="px-4 py-2 font-bold hover:bg-red-500 duration-100 hover:text-white cursor-pointer"
+                            onClick={() => handleEditClick(item)}
+                          >
+                            Edit
+                          </li>
+                        </ul>
+                      </div>
+                    )}
                   </div>
                 </div>
               ))}
