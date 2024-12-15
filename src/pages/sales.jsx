@@ -36,7 +36,7 @@ function Sales() {
         params: { year },
       });
   
-      console.log("Monthly Records Response (Bar Graph):", response.data);
+      console.log("Annual Records Response (Bar Graph):", response.data);
   
       const data = response.data.data || [];
       
@@ -157,7 +157,7 @@ function Sales() {
 
         <div className="w-4/5 mx-auto bg-white shadow-lg shadow-gray-400 p-3 rounded-lg">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-bold">Monthly Records</h3>
+            <h3 className="text-lg font-bold">Annual Records</h3>
             <select
               className="border rounded"
               value={year}

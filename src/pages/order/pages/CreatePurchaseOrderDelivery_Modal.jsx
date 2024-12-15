@@ -3,6 +3,8 @@ import axios from "axios";
 
 const CreatePurchaseOrderModal = ({ isOpen, onClose, addProductToList }) => {
   const [products, setProducts] = useState([]);
+  const [categories, setCategories] = useState([]); // Categories for filter
+  const [selectedCategories, setSelectedCategories] = useState([]); // Selected categories for filter
   const [selectedProducts, setSelectedProducts] = useState({});
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
@@ -10,8 +12,10 @@ const CreatePurchaseOrderModal = ({ isOpen, onClose, addProductToList }) => {
   const [searchInput, setSearchInput] = useState("");
   const [sortBy, setSortBy] = useState("id");
   const [sortOrder, setSortOrder] = useState("asc");
+  const [isFilterOpen, setIsFilterOpen] = useState(false); // Track dropdown state
   const url = import.meta.env.VITE_API_URL;
 
+  // Fetch products when modal is open
   useEffect(() => {
     const fetchProducts = async (page) => {
       setIsLoading(true);
@@ -22,6 +26,7 @@ const CreatePurchaseOrderModal = ({ isOpen, onClose, addProductToList }) => {
             search: searchInput.trim() || null,
             sort_by: sortBy,
             sort_order: sortOrder,
+            categories: selectedCategories.length > 0 ? selectedCategories.join(",") : null,
           },
         });
 
@@ -37,7 +42,23 @@ const CreatePurchaseOrderModal = ({ isOpen, onClose, addProductToList }) => {
     if (isOpen) {
       fetchProducts(currentPage);
     }
-  }, [isOpen, currentPage, sortBy, sortOrder, searchInput]);
+  }, [isOpen, currentPage, sortBy, sortOrder, searchInput, selectedCategories]);
+
+  // Fetch categories when modal is open
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await axios.get(`${url}/api/categories`);
+        setCategories(response.data.data || []); // Populate the categories dynamically
+      } catch (error) {
+        console.error("Error fetching categories:", error);
+      }
+    };
+
+    if (isOpen) {
+      fetchCategories();
+    }
+  }, [isOpen]);
 
   const handleSelectProduct = (event, product) => {
     event.stopPropagation();
@@ -71,10 +92,23 @@ const CreatePurchaseOrderModal = ({ isOpen, onClose, addProductToList }) => {
     }
   };
 
+  const handleCategoryToggle = (category) => {
+    setSelectedCategories((prev) =>
+      prev.includes(category)
+        ? prev.filter((c) => c !== category) // Remove if already selected
+        : [...prev, category] // Add if not selected
+    );
+  };
+
+  const handleApplyFilters = () => {
+    setCurrentPage(1); // Reset to the first page
+    setIsFilterOpen(false); // Close the dropdown
+  };
+
   const pageNumbers = [];
   let startPage = Math.max(1, currentPage - 7);
   let endPage = Math.min(totalPages, currentPage + 7);
-  
+
   if (endPage - startPage < 14) {
     if (startPage === 1) {
       endPage = Math.min(15, totalPages);
@@ -82,11 +116,10 @@ const CreatePurchaseOrderModal = ({ isOpen, onClose, addProductToList }) => {
       startPage = Math.max(1, totalPages - 14);
     }
   }
-  
+
   for (let i = startPage; i <= endPage; i++) {
     pageNumbers.push(i);
   }
-  
 
   return (
     <div className={`${isOpen ? "fixed inset-0 z-40 flex items-center justify-center" : "hidden"}`}>
@@ -94,10 +127,46 @@ const CreatePurchaseOrderModal = ({ isOpen, onClose, addProductToList }) => {
       <div className="bg-white p-6 rounded-lg shadow-lg overflow-hidden min-h-[47rem] w-[70%] relative">
         <h3 className="text-lg font-bold mb-4">Select a Product for Delivery Order</h3>
 
-        {/* Searchbar */}
+        {/* Searchbar and Filter */}
         <div className="flex mb-4 items-center">
           <div className="flex items-center w-full px-2 py-2 mr-1 border rounded-md shadow-md">
-            <span className="font-bold">PRODUCTS</span>
+            {/* Filter Dropdown */}
+            <div className="relative">
+              <button
+                className="font-bold px-4 py-2 bg-gray-300 rounded-md hover:bg-gray-400 mr-4"
+                onClick={() => setIsFilterOpen((prev) => !prev)}
+              >
+                Filter by Category ↓
+              </button> 
+              {isFilterOpen && (
+                <div className="absolute mt-2 bg-white border rounded-lg shadow-lg z-10 w-48">
+                  <div className="p-2">
+                    <p className="font-bold mb-2">Filter by Category</p>
+                    <div className="space-y-2 ">
+                      {categories.map((category) => (
+                        <label
+                          key={category.id}
+                          className="flex text-sm items-center hover:bg-blue-500 hover:text-white font-bold rounded  space-x-2 cursor-pointer"
+                        > 
+                          <input
+                            type="checkbox"
+                            checked={selectedCategories.includes(category.category_name)}
+                            onChange={() => handleCategoryToggle(category.category_name)}
+                          />
+                          <span>{category.category_name}</span>
+                        </label>
+                      ))}
+                    </div>
+                  </div>
+                  <button
+                    className="w-full px-4 py-2 mt-2 bg-blue-500 text-white font-bold hover:bg-blue-600"
+                    onClick={handleApplyFilters}
+                  >
+                    Apply Filters
+                  </button>
+                </div>
+              )}
+            </div>
             <input
               type="text"
               value={searchInput}
@@ -121,7 +190,7 @@ const CreatePurchaseOrderModal = ({ isOpen, onClose, addProductToList }) => {
             <div className="flex justify-center items-center h-full">Loading...</div>
           ) : (
             <>
-              {/* Header Row with Sorting */}
+              {/* Header Row */}
               <div className="grid grid-cols-8 border-b bg-gray-400 text-white font-bold rounded p-1">
                 <div className="col-span-1 text-center">Select</div>
                 <div
@@ -209,7 +278,9 @@ const CreatePurchaseOrderModal = ({ isOpen, onClose, addProductToList }) => {
               key={pageNum}
               onClick={() => setCurrentPage(pageNum)}
               className={`px-2 py-1 mx-1 rounded font-bold duration-100 shadow-md ${
-                currentPage === pageNum ? "bg-blue-500 text-white" : "bg-gray-300 hover:bg-blue-500 hover:text-white"
+                currentPage === pageNum
+                  ? "bg-blue-500 text-white"
+                  : "bg-gray-300 hover:bg-blue-500 hover:text-white"
               }`}
             >
               {pageNum}

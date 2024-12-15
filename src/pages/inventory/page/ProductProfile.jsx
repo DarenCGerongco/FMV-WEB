@@ -29,6 +29,7 @@ const InventoryDetails = () => {
       });
 
       const {
+        product_id,
         product_name,
         product_created_date,
         remaining_quantity,
@@ -37,6 +38,7 @@ const InventoryDetails = () => {
       } = response.data;
 
       setProductDetails({
+        product_id,
         product_name,
         product_created_date,
         remaining_quantity,
@@ -85,7 +87,7 @@ const InventoryDetails = () => {
   };
 
   return (
-    <div className="flex w-full bg-gray-100 min-h-screen">
+    <div className="flex w-full min-h-screen">
       <Navbar />
       <div className="w-4/5 mx-auto bg-white p-6 mt-4 rounded-lg shadow-lg">
         {loading ? (
@@ -97,7 +99,7 @@ const InventoryDetails = () => {
             {/* Product Details */}
             <div className="mb-6 flex justify-between items-center">
               <div>
-                <h1 className="text-2xl font-bold mb-2">{productDetails.product_name}</h1>
+                <h1 className="text-2xl font-bold mb-2">Product ID: {productDetails.product_id} - {productDetails.product_name}</h1>
                 <p>
                   <strong>Created On:</strong>{" "}
                   {formatDateSteamStyle(productDetails.product_created_date)}
@@ -117,7 +119,7 @@ const InventoryDetails = () => {
 
             {/* Notifications */}
             <div>
-              <h2 className="text-xl font-semibold mb-3">Transactions:</h2>
+              <h2 className="text-xl font-semibold mb-3">Transactions Logs</h2>
               {transactions.length === 0 ? (
                 <p>No transactions found for this product.</p>
               ) : (
@@ -133,34 +135,34 @@ const InventoryDetails = () => {
                     >
                       {transaction.type === "IN" ? (
                         <div>
-                          <p className="text-lg font-bold text-black">
+                          <p className="text-sm font-bold text-black">
                             {formatDateSteamStyle(transaction.date)}
                           </p>
-                          <p className="font-bold">Restocked</p>
-                          <p>
+                          <p className="font-bold text-sm">Restocked</p>
+                          <p className="text-sm">
                             <strong>Quantity:</strong> {transaction.quantity}
                           </p>
-                          <p>
-                            <strong>Total Value:</strong> ₱{transaction.total_value}
+                          <p className="text-red-500 text-sm font-bold">
+                            Paid:  ₱{transaction.total_value} (-)
                           </p>
                         </div>
                       ) : (
                         <div>
-                          <p className="text-lg font-bold text-black">
+                          <p className="text-sm font-bold text-black">
                             {formatDateSteamStyle(transaction.date)}
                           </p>
-                          <p className="font-bold">Delivered</p>
-                          <p>
+                          <p className="font-bold text-sm">Delivered</p>
+                          <p className="text-sm">
                             <strong>Delivery ID:</strong> {transaction.delivery_id}
                           </p>
-                          <p>
+                          <p className="text-sm">
                             <strong>Quantity:</strong> {transaction.quantity}
                           </p>
-                          <p>
-                            <strong>Total Value:</strong> ₱{transaction.total_value}
+                          <p className="text-green-600 text-sm font-bold">
+                            Gain: ₱{transaction.total_value} +
                           </p>
-                          <p>
-                            <strong>Damages:</strong> {transaction.no_of_damages}
+                          <p className="text-sm">
+                            Damages: {transaction.no_of_damages}
                           </p>
                         </div>
                       )}

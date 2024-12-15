@@ -5,8 +5,7 @@ import AddProductModal from "./inventory/modal/AddProductModal";
 import RestockModal from "./inventory/modal/RestockModal";
 import EditProductModal from "./inventory/modal/EditProductModal";
 import QuickButtons from "../components/quickButtons";
-import { useNavigate } from 'react-router-dom';
-
+import { useNavigate } from "react-router-dom";
 
 function Inventory() {
   const url = import.meta.env.VITE_API_URL;
@@ -28,11 +27,10 @@ function Inventory() {
   const [restockProduct, setRestockProduct] = useState(null);
   const [showEditProductModal, setShowEditProductModal] = useState(false);
   const [editProduct, setEditProduct] = useState(null);
-
   const [sortBy, setSortBy] = useState("product_id");
   const [sortOrder, setSortOrder] = useState("asc");
-
-  const [openDropdowns, setOpenDropdowns] = useState({});
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const [openDropdowns, setOpenDropdowns] = useState({}); // State for dropdowns
 
   // Fetch categories
   const fetchCategories = async () => {
@@ -51,7 +49,7 @@ function Inventory() {
       const response = await axios.get(`${url}/api/products`, {
         params: {
           page,
-          categories: selectedCategories,
+          categories: selectedCategories.length > 0 ? selectedCategories.join(",") : null,
           search: searchInput,
           sort_by: sortBy,
           sort_order: sortOrder,
@@ -81,11 +79,11 @@ function Inventory() {
     fetchProducts(1);
   };
 
-  const handleCategoryToggle = (category) => {
+  const handleCategoryToggle = (categoryName) => {
     setSelectedCategories((prev) =>
-      prev.includes(category)
-        ? prev.filter((c) => c !== category)
-        : [...prev, category]
+      prev.includes(categoryName)
+        ? prev.filter((c) => c !== categoryName)
+        : [...prev, categoryName]
     );
     setPagination((prev) => ({ ...prev, currentPage: 1 }));
   };
@@ -114,34 +112,37 @@ function Inventory() {
     setSortOrder(newSortOrder);
   };
 
-  const toggleDropdown = (productId) => {
-    setOpenDropdowns((prev) => ({
-      [productId]: !prev[productId],
-    }));
-  };
-
-  // Add event listener for outside click
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      const dropdowns = document.querySelectorAll(".dropdown-menu");
-      let isClickInside = false;
-
-      dropdowns.forEach((dropdown) => {
-        if (dropdown.contains(event.target)) {
-          isClickInside = true;
+    // Toggle dropdown for a specific product
+    const toggleDropdown = (productId) => {
+      setOpenDropdowns((prev) => ({
+        ...prev,
+        [productId]: !prev[productId], // Toggle visibility for the clicked product
+      }));
+    };
+  
+    // Close dropdown when clicking outside
+    useEffect(() => {
+      const handleClickOutside = (event) => {
+        const dropdowns = document.querySelectorAll(".dropdown-menu");
+        let isClickInside = false;
+  
+        dropdowns.forEach((dropdown) => {
+          if (dropdown.contains(event.target)) {
+            isClickInside = true;
+          }
+        });
+  
+        if (!isClickInside) {
+          setOpenDropdowns({}); // Close all dropdowns
         }
-      });
+      };
+  
+      document.addEventListener("mousedown", handleClickOutside);
+      return () => {
+        document.removeEventListener("mousedown", handleClickOutside);
+      };
+    }, []);
 
-      if (!isClickInside) {
-        setOpenDropdowns({});
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, []);
   return (
     <div className="flex w-full bg-white">
       <Navbar />
@@ -174,6 +175,52 @@ function Inventory() {
               <h1 className="text-center text-md">Add Product</h1>
             </button>
           </div>
+
+          {/* Category Filter */}
+          <div className="mt-4">
+            <div className="relative">
+              <button
+                className="px-4 py-2 bg-gray-300 text-black rounded-lg font-bold"
+                onClick={() => setIsFilterOpen((prev) => !prev)}
+              >
+                Filter by Category
+              </button>
+              {isFilterOpen && (
+                <div className="absolute mt-2 bg-white border rounded-lg shadow-lg z-10 w-48">
+                  <div className="p-2">
+                    <div className="font-bold mb-2">Category Filter</div>
+                    <div className="space-y-2">
+                      {categories.map((category) => (
+                        <label
+                          key={category.id}
+                          className="flex items-center space-x-2 cursor-pointer"
+                        >
+                          <input
+                            type="checkbox"
+                            checked={selectedCategories.includes(category.category_name)}
+                            onChange={() => handleCategoryToggle(category.category_name)}
+                          />
+                          <span>{category.category_name}</span>
+                        </label>
+                      ))}
+                    </div>
+                    <button
+                      className="w-full mt-4 px-4 py-2 bg-blue-500 text-white font-bold rounded-lg"
+                      onClick={() => setIsFilterOpen(false)}
+                    >
+                      Apply Filters
+                    </button>
+                    {/* <button
+                      className="ml-4 px-4 py-2 bg-red-500 text-white font-bold rounded-lg"
+                      onClick={clearFilters}
+                    >
+                      Clear Filters
+                    </button> */}
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
         </div>
 
         {/* Inventory List */}
@@ -182,6 +229,7 @@ function Inventory() {
             <div className="spinner text-center"></div>
           ) : items.length > 0 ? (
             <>
+              {/* Table Headers */}
               <div className="grid grid-cols-8 text-sm font-bold border-b py-2">
                 <div
                   className="col-span-1 cursor-pointer"
@@ -200,6 +248,7 @@ function Inventory() {
                 </div>
                 <div>Actions</div>
               </div>
+              {/* Table Rows */}
               {items.map((item) => (
                 <div
                   key={item.product_id}
@@ -211,29 +260,32 @@ function Inventory() {
                   <div>₱ {item.original_price}</div>
                   <div>{item.quantity}</div>
                   <div className="relative">
+                    {/* Dropdown Button */}
                     <button
-                      className="bg-blue-500 text-center hover:bg-white hover:text-blue-500 text-white font-bold rounded-lg px-4 py-1 shadow-md"
+                      className="px-2 py-1 bg-blue-500 text-white font-bold rounded-lg"
                       onClick={() => toggleDropdown(item.product_id)}
                     >
                       More
                     </button>
+
+                    {/* Dropdown Menu */}
                     {openDropdowns[item.product_id] && (
-                      <div className="absolute dropdown-menu right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-10">
+                      <div className="absolute dropdown-menu right-0 mt-2 w-40 bg-white border rounded-lg shadow-lg z-10">
                         <ul>
                           <li
-                            className="px-4 py-2 font-bold hover:bg-blue-500 duration-100 hover:text-white cursor-pointer"
+                            className="px-4 py-2 hover:bg-blue-500 hover:text-white cursor-pointer font-bold"
                             onClick={() => handleRestockClick(item)}
                           >
                             Restock
                           </li>
                           <li
-                            className="px-4 py-2 font-bold hover:bg-blue-500 duration-100 hover:text-white cursor-pointer"
+                            className="px-4 py-2 hover:bg-blue-500 hover:text-white cursor-pointer font-bold"
                             onClick={() => navigate(`/inventory/product/${item.product_id}/details`)}
                           >
                             Details
                           </li>
                           <li
-                            className="px-4 py-2 font-bold hover:bg-red-500 duration-100 hover:text-white cursor-pointer"
+                            className="px-4 py-2 hover:bg-red-500 hover:text-white cursor-pointer font-bold"
                             onClick={() => handleEditClick(item)}
                           >
                             Edit
@@ -244,108 +296,11 @@ function Inventory() {
                   </div>
                 </div>
               ))}
+
             </>
           ) : (
             <div>No products found.</div>
           )}
-        </div>
-
-        {/* Pagination */}
-        <div className="flex justify-center w-full space-x-2 my-10">
-          <button
-            onClick={() => setPagination((prev) => ({ ...prev, currentPage: 1 }))}
-            disabled={pagination.currentPage === 1}
-            className="px-3 py-1 hover:bg-white hover:text-blue-500 duration-200 font-bold bg-blue-500 text-white rounded disabled:opacity-50"
-          >
-            First
-          </button>
-          <button
-            onClick={() =>
-              setPagination((prev) => ({
-                ...prev,
-                currentPage: pagination.currentPage - 1,
-              }))
-            }
-            disabled={pagination.currentPage === 1}
-            className="px-3 py-1 hover:bg-white hover:text-blue-500 duration-200 font-bold bg-blue-500 text-white rounded disabled:opacity-50"
-          >
-            Previous
-          </button>
-          {/* Dynamic Pagination */}
-          {(() => {
-            const totalPages = pagination.lastPage;
-            const currentPage = pagination.currentPage;
-            const maxVisiblePages = 10;
-            const pageButtons = [];
-
-            const startPage = Math.max(
-              1,
-              currentPage - Math.floor(maxVisiblePages / 2)
-            );
-            const endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
-
-            const adjustedStartPage = Math.max(1, endPage - maxVisiblePages + 1);
-
-            if (adjustedStartPage > 1) {
-              pageButtons.push(
-                <span key="start-ellipsis" className="px-3 py-1">
-                  ...
-                </span>
-              );
-            }
-
-            for (let i = adjustedStartPage; i <= endPage; i++) {
-              pageButtons.push(
-                <button
-                  key={i}
-                  onClick={() =>
-                    setPagination((prev) => ({ ...prev, currentPage: i }))
-                  }
-                  className={`px-3 py-1 rounded ${
-                    pagination.currentPage === i
-                      ? "bg-blue-500 text-white"
-                      : "bg-gray-300"
-                  }`}
-                >
-                  {i}
-                </button>
-              );
-            }
-
-            if (endPage < totalPages) {
-              pageButtons.push(
-                <span key="end-ellipsis" className="px-3 py-1">
-                  ...
-                </span>
-              );
-            }
-
-            return pageButtons;
-          })()}
-          <button
-            onClick={() =>
-              setPagination((prev) => ({
-                ...prev,
-                currentPage: pagination.currentPage + 1,
-              }))
-            }
-            disabled={pagination.currentPage === pagination.lastPage}
-            className="px-3 py-1 hover:bg-white hover:text-blue-500 duration-200 font-bold bg-blue-500 text-white rounded disabled:opacity-50"
-          >
-            Next
-          </button>
-          <button
-            onClick={() =>
-              setPagination((prev) => ({
-                ...prev,
-                currentPage: pagination.lastPage,
-              }))
-            }
-            disabled={pagination.currentPage === pagination.lastPage}
-            className="px-3 py-1 hover:bg-white hover:text-blue-500 duration-200 font-bold bg-blue-500 text-white rounded disabled:opacity-50"
-          >
-            Last
-          </button>
         </div>
 
         {/* Modals */}

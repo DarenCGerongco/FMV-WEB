@@ -9,6 +9,7 @@ import Index from './pages/index.jsx';
 import Employee from './pages/employee.jsx';
 import Inventory from './pages/inventory.jsx';
 import InventoryDetails from './pages/inventory/page/ProductProfile.jsx';
+import Reorder from './pages/reorder.jsx';
 
 import Sales from './pages/sales.jsx';
 import Delivery from './pages/delivery.jsx';
@@ -32,6 +33,7 @@ root.render(
           <Route path="/employee" element={<Employee />} />
           <Route path="/inventory" element={<Inventory />} />
           <Route path="/inventory" element={<Inventory />} />
+          <Route path="/inventory/reorder" element={<Reorder/>} />
           <Route path="/inventory/product/:productID/details" element={<InventoryDetails />} />
           <Route path="/sales" element={<Sales />} />
           <Route path="/delivery" element={<Delivery />} />

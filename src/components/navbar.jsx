@@ -1,24 +1,42 @@
-import { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import companyImage from './../assets/Logo.png';
-import dashboardImage from './../assets/dashboard.png'; // Add dashboard image
-import overviewImage from './../assets/overview.png'; // Add overview image
-import orderImage from './../assets/order.png'; // Add order image
-import deliveryImage from './../assets/delivery.png'; // Add delviery image
-import salesImage from './../assets/sales.png'; // Add sales image
-import inventoryImage from './../assets/inventory.png'; // Add inventory image
-import employeeImage from './../assets/employee.png'; // Add employee image
-import settingsImage from './../assets/settings.png'; // Add settings image
-import logoutImage from './../assets/logout.png'; // Add logout image
+import dashboardImage from './../assets/dashboard.png';
+import overviewImage from './../assets/overview.png';
+import orderImage from './../assets/order.png';
+import deliveryImage from './../assets/delivery.png';
+import salesImage from './../assets/sales.png';
+import inventoryImage from './../assets/inventory.png';
+import employeeImage from './../assets/employee.png';
+import settingsImage from './../assets/settings.png';
+import logoutImage from './../assets/logout.png';
 
 const Navbar = () => {
   const url = import.meta.env.VITE_API_URL;
   const navigate = useNavigate();
   const location = useLocation();
+
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [message, setMessage] = useState('');
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
+  const [reorderCount, setReorderCount] = useState(0);
+
+  // Fetch reorder count
+  const fetchReorderCount = async () => {
+    try {
+      const response = await axios.get(`${url}/api/products`);
+      const products = response.data.products || [];
+      const count = products.filter((product) => product.needs_reorder).length;
+      setReorderCount(count);
+    } catch (error) {
+      console.error('Error fetching reorder count:', error);
+    }
+  };
+
+  useEffect(() => {
+    fetchReorderCount();
+  }, []);
 
   const handleLogout = async () => {
     try {
@@ -28,18 +46,13 @@ const Navbar = () => {
         setShowSuccessMessage(true);
         return;
       }
-      
       const response = await axios.post(`${url}/api/logout`, {}, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { Authorization: `Bearer ${token}` },
       });
-
       if (response.data.success) {
         setMessage('Logout successfully');
         setShowSuccessMessage(true);
         localStorage.removeItem('token');
-        
         setTimeout(() => {
           setShowSuccessMessage(false);
           setMessage('');
@@ -55,21 +68,9 @@ const Navbar = () => {
     }
   };
 
-  const openModal = () => {
-    setIsModalOpen(true);
-  };
-
-  const closeModal = () => {
-    setIsModalOpen(false);
-  };
-
-  const confirmLogout = () => {
-    handleLogout();
-    closeModal();
-  };
-
+  const openModal = () => setIsModalOpen(true);
+  const closeModal = () => setIsModalOpen(false);
   const isActive = (path) => location.pathname === path;
-
   return (
     <nav className="shadow-[20px] sticky top-0 left-0 w-72 h-screen bg-custom-blue p-4 flex flex-col justify-between items-center z-10">
       <div className="flex flex-col items-center md:items-start w-full">
@@ -165,6 +166,16 @@ const Navbar = () => {
         </div>
       </div>
       <div className="w-full">
+        <li className={`my-3 flex items-center pl-2 md:pl-5 group relative ${isActive('/inventory/reorder') ? 'bg-white text-black rounded' : 'hover:bg-white hover:text-black rounded'}`}>
+          <Link to="/inventory/reorder" className={`text-base md:text-xl ${isActive('/inventory/reorder') ? 'text-black' : 'text-white group-hover:text-black'}`}>
+            REORDER ITEMS
+            {reorderCount > 0 && (
+              <span className="absolute -top-2 right-6 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full">
+                {reorderCount}
+              </span>
+            )}
+          </Link>
+        </li>
         <li className="my-3 flex items-center transition duration-300 group hover:bg-white hover:text-black rounded pl-2 md:pl-5">
         <img
             src={logoutImage}
