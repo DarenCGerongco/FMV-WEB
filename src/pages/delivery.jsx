@@ -36,21 +36,55 @@ function Delivery() {
 
   const dropdownRefs = useRef({});
 
+  const [selectedTimeExceeded, setSelectedTimeExceeded] = useState(null);
+
+  const [sortColumn, setSortColumn] = useState("created_at");
+  const [sortDirection, setSortDirection] = useState("asc");
+
+  const handleSort = (column) => {
+    const newDirection = sortColumn === column && sortDirection === "asc" ? "desc" : "asc";
+    setSortColumn(column);
+    setSortDirection(newDirection);
+  
+    const columnMap = {
+      delivery_id: "id", // Map frontend 'delivery_id' to backend 'id'
+      purchase_order_id: "purchase_order_id",
+      status: "status",
+      return_status: "return_status",
+      created_at: "created_at",
+      delivery_man: "delivery_man",
+    };
+  
+    fetchDeliveries(columnMap[column] || column, newDirection);
+  };
+  
+
   // Define fetchDeliveries outside useEffect
-  const fetchDeliveries = async () => {
+  const fetchDeliveries = async (column = sortColumn, direction = sortDirection) => {
     try {
-      const response = await axios.get(`${url}/api/deliveries/index`, {
-        params: { status: statusFilter, page: currentPage },
-      });
+      const params = {
+        sort_column: column !== "return_status" ? column : "id", // Default to "id" if "return_status"
+        sort_direction: direction,
+        page: currentPage,
+      };
+  
+      if (statusFilter) params.status = statusFilter;
+  
+      console.log("Fetching deliveries with params:", params); // Debug log
+  
+      const response = await axios.get(`${url}/api/deliveries/index`, { params });
       setDeliveries(response.data.deliveries || []);
       setTotalPages(response.data.pagination?.lastPage || 1);
       setFilteredDeliveries(response.data.deliveries || []);
     } catch (error) {
-      console.error("Error fetching deliveries:", error);
-      setDeliveries([]);
-      setFilteredDeliveries([]);
+      console.error("Error fetching deliveries:", error.message);
     }
   };
+  
+  // Trigger re-fetch when the page or filters change
+  useEffect(() => {
+    fetchDeliveries();
+  }, [currentPage]);
 
   // Fetch deliveries when filters change
   useEffect(() => {
@@ -155,32 +189,31 @@ function Delivery() {
               onChange={handleSearchChange}
             />
           </div>
-          <div className="flex mt-4">
-            <span className="mx-1 font-bold py-1 px-3 text-blue-500 rounded">
-              Delivery Status:
-            </span>
-            {["", "P", "OD", "F", "S"].map((status) => (
-              <button
-                key={status}
-                className={`mx-1 font-bold py-1 px-3 ${
-                  statusFilter === status ? "bg-blue-500 text-white" : ""
-                } rounded shadow-md hover:bg-blue-500 hover:text-white duration-200`}
-                onClick={() => handleFilterChange(status)}
-              >
-                {status ? getStatusDisplayName(status) : "All"}
-              </button>
-            ))}
-          </div>
         </div>
         <div className="w-4/5 mx-auto mt-2 py-1 rounded-lg bg-white shadow-lg shadow-gray-400">
-          <div className="grid grid-cols-9 px-2 text-sm font-bold rounded-md">
-            <div className="col-span-1">Delivery ID#</div>
-            <div className="col-span-1">Purchase Order ID#</div>
-            <div className="col-span-2">Delivery man</div>
-            <div className="col-span-1 text-center">Warranty Status</div>
-            <div className="col-span-1 text-center">Delivery Status</div>
-            <div className="col-span-1 text-center">Return Status</div>
-            <div className="col-span-1 text-center">Delivery Created (24hrs)</div>
+          <div className="grid grid-cols-9 px-2 text-sm font-bold rounded-md ">
+            <div className="col-span-1 cursor-pointer" onClick={() => handleSort("delivery_id")}>
+              Delivery ID# {sortColumn === "delivery_id" ? (sortDirection === "asc" ? "↑" : "↓") : ""}
+            </div>
+            <div className="col-span-1 cursor-pointer" onClick={() => handleSort("purchase_order_id")}>
+              Purchase Order ID# {sortColumn === "purchase_order_id" ? (sortDirection === "asc" ? "↑" : "↓") : ""}
+            </div>
+            <div className="col-span-2 cursor-pointer" onClick={() => handleSort("delivery_man")}>
+                Delivery Man {sortColumn === "delivery_man" ? (sortDirection === "asc" ? "↑" : "↓") : ""}
+            </div>
+            <div className="col-span-1 text-center">
+              Warranty Status
+            </div>
+
+            <div className="col-span-1 text-center cursor-pointer" onClick={() => handleSort("status")}>
+              Delivery Status {sortColumn === "status" ? (sortDirection === "asc" ? "↑" : "↓") : ""}
+            </div>
+            <div className="col-span-1 text-center">
+              Return Status
+            </div>
+            <div className="col-span-1 text-center cursor-pointer" onClick={() => handleSort("created_at")}>
+              Created Date {sortColumn === "created_at" ? (sortDirection === "asc" ? "↑" : "↓") : ""}
+            </div>
             <div className="col-span-1 text-center">Actions</div>
           </div>
           {filteredDeliveries.length > 0 ? (
@@ -300,7 +333,14 @@ function Delivery() {
               </div>
             ))
           ) : (
-            <div className="text-center p-4 text-sm font-medium">No deliveries found.</div>
+            <div className="flex  justify-center w-full items-center">
+                <h1>
+                  Loading 
+                </h1>
+                <div className=" spinner">
+
+                </div>
+            </div>
           )}
         </div>
 

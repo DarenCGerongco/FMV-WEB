@@ -7,24 +7,39 @@ const EditCategoriesModal = ({ isOpen, onClose, category, onCategoryUpdated }) =
   const categoriesApi = `/api/categories/${category?.id}/update`;
 
   const [categoryName, setCategoryName] = useState('');
+  const [safetyStock, setSafetyStock] = useState('');
 
+  // Populate category details when modal is opened
   useEffect(() => {
-    if (category) setCategoryName(category.category_name);
+    if (category) {
+      setCategoryName(category.category_name);
+      setSafetyStock(category.safety_stock || ''); // Initialize safety stock value
+    }
   }, [category]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    // Validate input
     if (!categoryName.trim()) {
       toast.error('Category name cannot be empty!');
       return;
     }
 
+    if (safetyStock < 0) {
+      toast.error('Safety stock must be a positive number!');
+      return;
+    }
+
     try {
       // Send POST request to update category
-      await axios.post(url + categoriesApi, { category_name: categoryName });
+      await axios.post(url + categoriesApi, {
+        category_name: categoryName,
+        safety_stock: safetyStock,
+      });
+
       toast.success('Category updated successfully!');
-      onCategoryUpdated(); // Refresh the category list
+      onCategoryUpdated(); // Trigger parent component to refresh the category list
       onClose(); // Close the modal
     } catch (error) {
       console.error('Error updating category:', error);
@@ -44,6 +59,7 @@ const EditCategoriesModal = ({ isOpen, onClose, category, onCategoryUpdated }) =
       <div className="bg-white p-6 rounded-md shadow-lg w-1/3">
         <h2 className="text-lg font-bold mb-4">Edit Category</h2>
         <form onSubmit={handleSubmit}>
+          {/* Category Name */}
           <div className="mb-4">
             <label htmlFor="categoryName" className="block text-sm font-bold mb-2">
               Category Name
@@ -58,7 +74,25 @@ const EditCategoriesModal = ({ isOpen, onClose, category, onCategoryUpdated }) =
               required
             />
           </div>
+
+          {/* Safety Stock */}
+          <div className="mb-4">
+            <label htmlFor="safetyStock" className="block text-sm font-bold mb-2">
+              Safety Stock Level
+            </label>
+            <input
+              type="number"
+              id="safetyStock"
+              className="w-full p-2 border rounded"
+              value={safetyStock}
+              onChange={(e) => setSafetyStock(e.target.value)}
+              placeholder="Enter safety stock"
+              required
+            />
+          </div>
+
           <div className="flex justify-end space-x-4">
+            {/* Cancel Button */}
             <button
               type="button"
               className="w-20 p-1 bg-transparent hover:bg-blue-500 text-blue-500 hover:text-white border border-blue-500 hover:border-transparent rounded-lg"
@@ -66,6 +100,8 @@ const EditCategoriesModal = ({ isOpen, onClose, category, onCategoryUpdated }) =
             >
               Cancel
             </button>
+
+            {/* Update Button */}
             <button
               type="submit"
               className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"

@@ -191,7 +191,7 @@ function Configuration() {
                         Edit
                       </button>
                       <button
-                        className="w-32 border rounded p-1 bg-red-500 text-white hover:bg-red-600 rounded-lg"
+                        className="w-32 border  p-1 bg-red-500 text-white hover:bg-red-600 rounded-lg"
                         onClick={() => handleSoftDelete(categoriesApi, category.id, fetchCategories, 'Category')}
                       >
                         Delete
@@ -226,7 +226,7 @@ function Configuration() {
                         Edit
                       </button>
                       <button
-                        className="w-32 border rounded p-1 bg-red-500 text-white hover:bg-red-600 rounded-lg"
+                        className="w-32 border  p-1 bg-red-500 text-white hover:bg-red-600 rounded-lg"
                         onClick={() => handleSoftDelete(saletypesApi, saleType.id, fetchSaleTypes, 'Sale Type')}
                       >
                         Delete

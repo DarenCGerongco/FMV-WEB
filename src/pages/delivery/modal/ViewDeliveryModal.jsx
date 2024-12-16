@@ -23,15 +23,16 @@ const getWarrantyMessage = (status, timeExceeded) => {
     case "OD":
       return "Awaiting Delivery";
     case "P":
-      return timeExceeded
-        ? "Warranty Period has Ended (7 Days passed)."
-        : "Under Warranty Period (7 Days).";
+      return timeExceeded === "no"
+        ? "Under Warranty Period (7 Days)."
+        : "Warranty Period has Ended (7 Days passed).";
     case "S":
       return "Warranty Period has Ended";
     default:
       return "Unknown Warranty Status";
   }
 };
+
 
 const ViewDeliveryModal = ({ deliveryId, onClose }) => {
   const url = import.meta.env.VITE_API_URL; // Use the base URL from environment variables
@@ -102,11 +103,12 @@ const ViewDeliveryModal = ({ deliveryId, onClose }) => {
 
   // Determine if the Accept button should be enabled or disabled
   const isAcceptable =
-  deliveryDetails.delivery.status === "P" &&
-  deliveryDetails.products.every(
-    (product) => product.return_status === "NR" || product.return_status === "S"
-  ) &&
-  !acceptLoading;
+    deliveryDetails.delivery.status === "P" &&
+    deliveryDetails.time_exceeded === "yes" && // Ensure 2 minutes have passed
+    deliveryDetails.products.every(
+      (product) => product.return_status === "NR" || product.return_status === "S"
+    ) &&
+    !acceptLoading;
 
   const isEditable = deliveryDetails.delivery.status !== "S"; // Disable editing for status "S"
 
