@@ -11,16 +11,56 @@ import {
 // Register Chart.js components
 ChartJS.register(ArcElement, Tooltip, Legend);
 
-const TopSoldProductsModal = ({ onClose, month, year, apiUrl }) => {
+const TopSoldProductsModal = ({ onClose, month, year }) => {
   const [topProducts, setTopProducts] = useState([]);
-  const [pagination, setPagination] = useState({});
+  const [pagination, setPagination] = useState({
+    total: 0,
+    perPage: 20,
+    currentPage: 1,
+    lastPage: 1,
+  });
   const [loading, setLoading] = useState(true);
-  const [currentPage, setCurrentPage] = useState(1);
   const [chartData, setChartData] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
 
   const url = import.meta.env.VITE_API_URL;
 
-  // Fetch top products function
+  // Fetch top 20 products for the Pie Chart
+  const fetchTopChartData = async () => {
+    try {
+      const response = await axios.get(`${url}/api/Insights/View/Month-Data/Top-Sold-Products`, {
+        params: { page: 1, perPage: 20, month, year },
+      });
+
+      const { data } = response.data;
+
+      // Prepare chart data for top 10 products
+      const top10 = data.slice(0, 20);
+      setChartData({
+        labels: top10.map((product) => product.product_name),
+        datasets: [
+          {
+            label: "Total Sold",
+            data: top10.map((product) => product.total_sold),
+            backgroundColor: [
+              "#FF6384", "#36A2EB", "#FFCE56", "#4CAF50",
+              "#F44336", "#7E57C2", "#FF7043", "#AB47BC",
+              "#26A69A", "#EC407A",
+            ],
+            hoverBackgroundColor: [
+              "#FF6384", "#36A2EB", "#FFCE56", "#4CAF50",
+              "#F44336", "#7E57C2", "#FF7043", "#AB47BC",
+              "#26A69A", "#EC407A",
+            ],
+          },
+        ],
+      });
+    } catch (error) {
+      console.error("Failed to fetch chart data:", error);
+    }
+  };
+
+  // Fetch paginated data for the table
   const fetchTopProducts = async (page = 1) => {
     try {
       setLoading(true);
@@ -29,45 +69,11 @@ const TopSoldProductsModal = ({ onClose, month, year, apiUrl }) => {
       });
 
       const { data, pagination } = response.data;
+
+      // Update table state
       setTopProducts(data);
       setPagination(pagination);
       setCurrentPage(pagination.currentPage);
-
-      // Generate Pie Chart data for top 10 products
-      const top10 = data.slice(0, 10);
-      setChartData({
-        labels: top10.map((product) => product.product_name),
-        datasets: [
-          {
-            label: "Total Sold",
-            data: top10.map((product) => product.total_sold),
-            backgroundColor: [
-              "#FF6384",
-              "#36A2EB",
-              "#FFCE56",
-              "#4CAF50",
-              "#F44336",
-              "#7E57C2",
-              "#FF7043",
-              "#AB47BC",
-              "#26A69A",
-              "#EC407A",
-            ],
-            hoverBackgroundColor: [
-              "#FF6384",
-              "#36A2EB",
-              "#FFCE56",
-              "#4CAF50",
-              "#F44336",
-              "#7E57C2",
-              "#FF7043",
-              "#AB47BC",
-              "#26A69A",
-              "#EC407A",
-            ],
-          },
-        ],
-      });
     } catch (error) {
       console.error("Failed to fetch top products:", error);
     } finally {
@@ -75,9 +81,10 @@ const TopSoldProductsModal = ({ onClose, month, year, apiUrl }) => {
     }
   };
 
-  // Fetch data on component mount and whenever month/year changes
+  // Run both fetch functions on component load
   useEffect(() => {
-    fetchTopProducts();
+    fetchTopChartData(); // Fetch top 20 products for chart
+    fetchTopProducts(); // Fetch paginated data
   }, [month, year]);
 
   // Handle pagination navigation
@@ -90,30 +97,29 @@ const TopSoldProductsModal = ({ onClose, month, year, apiUrl }) => {
   return (
     <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center z-50">
       <div className="bg-white w-3/4 max-w-4xl rounded-lg shadow-lg max-h-[90vh] overflow-y-auto">
-            <div className="sticky top-0 bg-white border-b z-10 p-4 flex justify-between items-center">
-            <h2 className="text-xl font-bold">
-                Top Sold Products - {month}/{year}
-            </h2>
-            <button
-                onClick={onClose}
-                className="text-gray-600 hover:text-gray-900 font-bold text-2xl"
-            >
-                &times;
-            </button>
+        {/* Header */}
+        <div className="sticky top-0 bg-white border-b z-10 p-4 flex justify-between items-center">
+          <h2 className="text-xl font-bold">Top Sold Products - {month}/{year}</h2>
+          <button
+            onClick={onClose}
+            className="text-gray-600 hover:text-gray-900 font-bold text-2xl"
+          >
+            &times;
+          </button>
         </div>
 
-
+        {/* Loading State */}
         {loading ? (
-          <div className="text-center text-gray-500 text-lg">Loading...</div>
+          <div className="text-center text-gray-500 text-lg py-6">Loading...</div>
         ) : topProducts.length > 0 ? (
           <>
             {/* Pie Chart */}
             {chartData && (
               <div className="my-6 p-2">
                 <h3 className="text-lg font-bold text-center mb-4">
-                  Top 10 Product Sales Distribution
+                  Top 20 Product Sales Distribution
                 </h3>
-                <div className="relative w-full h-[400px] bg-gray-100 p-4 rounded-md">
+                <div className="relative w-full h-[500px] bg-gray-100 p-4 rounded-md">
                   <Pie data={chartData} options={{ responsive: true, maintainAspectRatio: false }} />
                 </div>
               </div>
@@ -163,7 +169,7 @@ const TopSoldProductsModal = ({ onClose, month, year, apiUrl }) => {
             </div>
           </>
         ) : (
-          <div className="text-center text-gray-500 text-lg">
+          <div className="text-center text-gray-500 text-lg py-6">
             No products available for this month and year.
           </div>
         )}
