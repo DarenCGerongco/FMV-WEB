@@ -16,10 +16,12 @@ function Inventory() {
   const [items, setItems] = useState([]);
   const [searchInput, setSearchInput] = useState("");
   const [selectedCategories, setSelectedCategories] = useState([]);
+
   const [pagination, setPagination] = useState({
     currentPage: 1,
     lastPage: 1,
   });
+
   const [loading, setLoading] = useState(false);
   const [totalAssets, setTotalAssets] = useState(0);
   const [showAddProductModal, setShowAddProductModal] = useState(false);
@@ -42,29 +44,37 @@ function Inventory() {
     }
   };
 
-  // Fetch products
-  const fetchProducts = async (page = 1) => {
-    setLoading(true);
-    try {
-      const response = await axios.get(`${url}/api/products`, {
-        params: {
-          page,
-          categories: selectedCategories.length > 0 ? selectedCategories.join(",") : null,
-          search: searchInput,
-          sort_by: sortBy,
-          sort_order: sortOrder,
-        },
-      });
+// Fetch products with a limit of 15 items per page
+const fetchProducts = async (page = 1) => {
+  setLoading(true);
+  try {
+    const response = await axios.get(`${url}/api/products`, {
+      params: {
+        page,
+        limit: 15, // Fetch 15 items per page
+        categories: selectedCategories.length > 0 ? selectedCategories.join(",") : null,
+        search: searchInput,
+        sort_by: sortBy,
+        sort_order: sortOrder,
+      },
+    });
 
-      setItems(response.data.products || []);
-      setTotalAssets(response.data.totalValue || 0);
-      setPagination(response.data.pagination || { currentPage: 1, lastPage: 1 });
-    } catch (error) {
-      console.error("Error fetching products:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
+    // Update items and pagination
+    setItems(response.data.products || []);
+    setTotalAssets(response.data.totalValue || 0);
+
+    setPagination({
+      currentPage: response.data.pagination.currentPage,
+      lastPage: response.data.pagination.lastPage,
+    });
+  } catch (error) {
+    console.error("Error fetching products:", error);
+  } finally {
+    setLoading(false);
+  }
+};
+
+
 
   // Initial load and re-fetch when dependencies change
   useEffect(() => {
@@ -142,6 +152,82 @@ function Inventory() {
         document.removeEventListener("mousedown", handleClickOutside);
       };
     }, []);
+
+const renderPagination = () => {
+  const { currentPage, lastPage } = pagination;
+
+  const maxPagesShown = 20; // Show 20 pages initially
+  let startPage = Math.max(1, currentPage - Math.floor(maxPagesShown / 2));
+  let endPage = Math.min(lastPage, startPage + maxPagesShown - 1);
+
+  // Dynamically extend when near the last page
+  if (currentPage >= endPage - 3 && endPage < lastPage) {
+    endPage = Math.min(lastPage, endPage + 5); // Dynamically add 5 pages
+  }
+
+  // Adjust the start page if the range exceeds limits
+  if (endPage - startPage < maxPagesShown) {
+    startPage = Math.max(1, endPage - maxPagesShown + 1);
+  }
+
+  const pages = [];
+  for (let i = startPage; i <= endPage; i++) {
+    pages.push(i);
+  }
+
+  return (
+    <div className="flex justify-center w-full space-x-2 my-7">
+      {/* First and Previous Buttons */}
+      <button
+        onClick={() => fetchProducts(1)}
+        disabled={currentPage === 1}
+        className="font-bold px-3 py-1 bg-white hover:bg-blue-500 hover:text-white rounded disabled:opacity-50"
+      >
+        First
+      </button>
+      <button
+        onClick={() => fetchProducts(currentPage - 1)}
+        disabled={currentPage === 1}
+        className="font-bold px-3 py-1 bg-white hover:bg-blue-500 hover:text-white rounded disabled:opacity-50"
+      >
+        Previous
+      </button>
+
+      {/* Dynamic Page Numbers */}
+      {pages.map((page) => (
+        <button
+          key={page}
+          onClick={() => fetchProducts(page)}
+          className={`font-bold px-3 py-1 rounded cursor-pointer ${
+            currentPage === page
+              ? "bg-blue-500 text-white"
+              : "bg-white hover:bg-blue-500 hover:text-white"
+          }`}
+        >
+          {page}
+        </button>
+      ))}
+
+      {/* Next and Last Buttons */}
+      <button
+        onClick={() => fetchProducts(currentPage + 1)}
+        disabled={currentPage === lastPage}
+        className="font-bold px-3 py-1 bg-white hover:bg-blue-500 hover:text-white rounded disabled:opacity-50"
+      >
+        Next
+      </button>
+      <button
+        onClick={() => fetchProducts(lastPage)}
+        disabled={currentPage === lastPage}
+        className="font-bold px-3 py-1 bg-white hover:bg-blue-500 hover:text-white rounded disabled:opacity-50"
+      >
+        Last
+      </button>
+    </div>
+  );
+};
+
+    
 
   return (
     <div className="flex w-full bg-white">
@@ -226,7 +312,10 @@ function Inventory() {
         {/* Inventory List */}
         <div className="w-4/5 mx-auto p-5 m-3 rounded-lg bg-white shadow-lg shadow-gray-400">
           {loading ? (
-            <div className="spinner text-center"></div>
+            <div className="flex justify-center">
+              <p>Loading...</p>
+              <div className="spinner"></div>
+            </div>
           ) : items.length > 0 ? (
             <>
               {/* Table Headers */}
@@ -296,13 +385,12 @@ function Inventory() {
                   </div>
                 </div>
               ))}
-
+              {renderPagination()}
             </>
           ) : (
             <div>No products found.</div>
           )}
         </div>
-
         {/* Modals */}
         {showAddProductModal && (
           <AddProductModal
