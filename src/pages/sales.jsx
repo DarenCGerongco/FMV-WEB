@@ -15,6 +15,17 @@ function Sales() {
   const month = currentDate.toLocaleString("default", { month: "long" }); // Full month name
   const weekday = currentDate.toLocaleString("default", { weekday: "long" }); // Full weekday name
 
+  // const [annualDataTest, setAnnualDataTest] = useState("");
+
+  // const handleDataFromAnnual = (data) => {
+  //   console.log("Data received from Annual:", data);
+  
+  //   // Update state with received data
+  //   setAnnualDataTest(JSON.stringify(data, null, 2)); // For better visualization
+  // };
+  
+  
+  
   return (
     <div className="flex w-full ">
       <Navbar />
@@ -55,7 +66,8 @@ function Sales() {
         {/* Tabs Content */}
         <div className="w-4/5 mx-auto ">
           {activeTab === "month" && <MonthTab />}
-          {activeTab === "annual" && <AnnualTab />}
+          {activeTab === "annual" && <AnnualTab
+           />}
         </div>
       </div>
     </div>

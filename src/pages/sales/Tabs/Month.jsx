@@ -3,8 +3,8 @@ import axios from "axios";
 import { Bar } from "react-chartjs-2";
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from "chart.js";
 
-import TopSoldProductsModal from "../modal/TopSoldProductsModal";
-import TopDamagedProductsModal from "../modal/TopDamagedProductsModal";
+import TopSoldProductsModal from "../modal/month/TopSoldProductsModal";
+import TopDamagedProductsModal from "../modal/month/TopDamagedProductsModal";
 
 import { SlBadge } from "react-icons/sl";
 import { FaArrowRightLong } from "react-icons/fa6";
@@ -253,9 +253,7 @@ const Month = () => {
                             onClose={() => setTopSoldModal(false)} // Close the modal
                         />
                     )}
-
                 </div>
-
                 <div className="flex flex-col gap-4">
                     {top3SoldProducts.length > 0 ? (
                         top3SoldProducts.map((product) => (
