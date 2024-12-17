@@ -6,6 +6,9 @@ import ViewDeliveriesModal from '../modals/viewdeliveriesmodal';
 import ItemsOrderedModal from '../modals/viewitemsorderedmodal';
 
 const DeliveriesTab = () => {
+  const url = import.meta.env.VITE_API_URL;
+  const navigate = useNavigate();
+
   const [loading, setLoading] = useState(true);
   const [searchInput, setSearchInput] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
@@ -20,8 +23,8 @@ const DeliveriesTab = () => {
   const [selectedPurchaseOrderId, setSelectedPurchaseOrderId] = useState(null);
   const [confirmationData, setConfirmationData] = useState(null);
   const [openDropDowns, setOpenDropDowns] = useState({});
-  const navigate = useNavigate();
-  const url = import.meta.env.VITE_API_URL;
+
+
 
   const fetchOrders = async (page = 1) => {
     setLoading(true);
@@ -42,6 +45,7 @@ const DeliveriesTab = () => {
         city: order.address.city,
         barangay: order.address.barangay,
         province: order.address.province,
+        region: order.address.region,
         created_at: order.created_at,
         products: order.products || [],
       }));
@@ -114,13 +118,16 @@ const DeliveriesTab = () => {
       products: customerData.products,
     });
     setShowWarningModal(true);
-    setOpenDropDowns({});
+    setOpenDropDowns({}); // Close dropdown
   };
-
+  
   const proceedToEdit = () => {
     setShowWarningModal(false);
-    navigate(`/order/edit/${selectedPurchaseOrderId}`);
+    navigate(`/order/edit/${selectedPurchaseOrderId}`, {
+      state: confirmationData,
+    });
   };
+  
 
   const { currentPage, totalPages } = paginationInfo;
 

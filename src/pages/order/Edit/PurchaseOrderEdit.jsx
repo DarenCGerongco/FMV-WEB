@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useLocation } from "react-router-dom";
 import axios from "axios";
 import Navbar from "../../../components/navbar";
 import PurchaseOrderEdit_Modal from "./PurchaseOrderEdit_Modal"; // Modal for adding products
@@ -9,16 +9,20 @@ import "react-toastify/dist/ReactToastify.css";
 
 const PurchaseOrderEdit = () => {
   const url = import.meta.env.VITE_API_URL;
+  const location = useLocation(); // To access passed state
 
   const { purchaseOrderId } = useParams();
+
   const [purchaseOrderDetails, setPurchaseOrderDetails] = useState({
     customer_name: "",
     street: "",
     barangay: "",
     city: "",
     province: "",
+    region: "",
     zipcode: "",
   });
+  
   const [productsListed, setProductsListed] = useState([]);
   const [productInputs, setProductInputs] = useState({});
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -26,62 +30,23 @@ const PurchaseOrderEdit = () => {
   const [confirmationData, setConfirmationData] = useState([]); // For confirmation modal
   const [removedProducts, setRemovedProducts] = useState([]); // Track removed product IDs
 
-  // Add states for location dropdowns
   const [regions, setRegions] = useState([]);
   const [provinces, setProvinces] = useState([]);
   const [cities, setCities] = useState([]);
   const [barangays, setBarangays] = useState([]);
   
-  const [selectedRegionCode, setSelectedRegionCode] = useState('');
-  const [selectedProvinceCode, setSelectedProvinceCode] = useState('');
-  const [selectedCityCode, setSelectedCityCode] = useState('');
-
-  // Fetch Regions on Load
-  useEffect(() => {
-    fetch('/ph-json/regions.json')
-      .then((res) => res.json())
-      .then((data) => setRegions(data))
-      .catch((error) => console.error('Error fetching regions:', error));
-  }, []);
-
-  // Populate Provinces when Region changes
-  const handleRegionChange = (e) => {
-    const regionCode = e.target.value;
-    setSelectedRegionCode(regionCode);
-    setProvinces([]); setCities([]); setBarangays([]);
-
-    fetch('/ph-json/province.json')
-      .then((res) => res.json())
-      .then((data) => setProvinces(data.filter((p) => p.region_code === regionCode)));
-  };
-
-  // Populate Cities when Province changes
-  const handleProvinceChange = (e) => {
-    const provinceCode = e.target.value;
-    setSelectedProvinceCode(provinceCode);
-    setCities([]); setBarangays([]);
-
-    fetch('/ph-json/city.json')
-      .then((res) => res.json())
-      .then((data) => setCities(data.filter((c) => c.province_code === provinceCode)));
-  };
-
-  // Populate Barangays when City changes
-  const handleCityChange = (e) => {
-    const cityCode = e.target.value;
-    setSelectedCityCode(cityCode);
-
-    fetch('/ph-json/barangay.json')
-      .then((res) => res.json())
-      .then((data) => setBarangays(data.filter((b) => b.city_code === cityCode)));
-  };
+  const [selectedRegionCode, setSelectedRegionCode] = useState("");
+  const [selectedProvinceCode, setSelectedProvinceCode] = useState("");
+  const [selectedCityCode, setSelectedCityCode] = useState("");
 
   useEffect(() => {
     const fetchPurchaseOrder = async () => {
       try {
         const response = await axios.get(`${url}/api/PurchaseOrder/View/${purchaseOrderId}`);
         const data = response.data;
-
+        console.log(response.data);
+        
+        // Set purchase order details, including region
         setPurchaseOrderDetails({
           customer_name: data.customer_name,
           street: data.address.street,
@@ -89,8 +54,15 @@ const PurchaseOrderEdit = () => {
           city: data.address.city,
           province: data.address.province,
           zipcode: data.address.zip_code,
+          region: data.address.region,
         });
-
+  
+        // Set region and fetch provinces
+        const regionCode = data.address.region;  // Get region code from API response
+        setSelectedRegionCode(regionCode);  // Set the selected region
+        fetchProvinces(regionCode, data.address.province, data.address.city, data.address.barangay);  // Fetch provinces based on the region
+  
+        // Handle products
         const inputs = {};
         data.products.forEach((product) => {
           inputs[product.product_id] = {
@@ -105,9 +77,193 @@ const PurchaseOrderEdit = () => {
         toast.error("Failed to fetch purchase order details.");
       }
     };
-
+  
     fetchPurchaseOrder();
   }, [purchaseOrderId, url]);
+  
+  useEffect(() => {
+    // Fetch regions data once when component is mounted
+    fetch("/ph-json/regions.json")
+      .then((res) => res.json())
+      .then((regionsData) => {
+        console.log("Fetched regions data:", regionsData);  // Log fetched regions data
+        setRegions(regionsData);
+      })
+      .catch((error) => {
+        console.error("Error fetching regions:", error);  // Log any error
+      });
+  }, []); // Empty dependency array ensures it only runs once
+
+  useEffect(() => {
+    const passedData = location.state || {};
+  
+    if (passedData) {
+      const [street, barangay, city, province] = passedData.address.split(", ").map(s => s.trim());
+  
+      // Pre-fill customer details
+      setPurchaseOrderDetails({
+        customer_name: passedData.customer || "",
+        street,
+        barangay,
+        city,
+        province,
+        zipcode: passedData.zip_code || "", // Use passed zip code if available
+      });
+  
+      // Get the region from passed data
+      const regionCode = passedData.region; // This is like "10"
+      console.log("Passed region code:", regionCode);  // Log the region code from passed data
+  
+      if (regionCode) {
+        // Slice the first 2 digits of the region code to match the passed region code
+        const region = regions.find(r => r.region_code === regionCode);
+        if (region) {
+          console.log("Found region:", region);  // Log the matched region
+          setSelectedRegionCode(region.region_code); // Set region from passed data
+          fetchProvinces(region.region_code, province, city, barangay); // Fetch related provinces
+        } else {
+          console.log("Region not found in regions list");  // Log if region is not found
+        }
+      } else {
+        console.log("Region code is missing, fetching based on province...");
+  
+        // Fallback logic to match region by province if no region code is passed
+        fetch("/ph-json/regions.json")
+          .then((res) => res.json())
+          .then((regionsData) => {
+            console.log("Fetched regions data:", regionsData);  // Log fetched regions data
+  
+            if (regionsData.length > 0 && regions.length === 0) {  // Prevent updating if already fetched
+              setRegions(regionsData);
+              const region = regionsData.find((r) => province.includes(r.region_name));
+              if (region) {
+                console.log("Found region based on province:", region);  // Log the matched region from province
+                setSelectedRegionCode(region.region_code); // Set region based on province
+                fetchProvinces(region.region_code, province, city, barangay);
+              } else {
+                console.log("No matching region found based on province.");  // Log if no region found based on province
+              }
+            }
+          })
+          .catch((error) => {
+            console.error("Error fetching regions:", error);  // Log any error
+          });
+      }
+    }
+  }, [location.state, regions]);  // Make sure to check dependency properly (avoid infinite loop)
+  
+  
+  
+  const handleRegionChange = (e) => {
+    const regionCode = e.target.value; // Get the selected region code
+    setSelectedRegionCode(regionCode);
+
+    // Reset dependent dropdowns
+    setProvinces([]);
+    setCities([]);
+    setBarangays([]);
+    setSelectedProvinceCode("");
+    setSelectedCityCode("");
+    setPurchaseOrderDetails((prev) => ({ ...prev, barangay: "" }));
+
+    // Fetch provinces for the selected region
+    fetch("/ph-json/province.json")
+      .then((res) => res.json())
+      .then((data) => {
+        const filteredProvinces = data.filter((p) => p.region_code === regionCode);
+        setProvinces(filteredProvinces);
+      })
+      .catch((error) => console.error("Error fetching provinces:", error));
+  };
+
+  const fetchProvinces = (regionCode, targetProvince, targetCity, targetBarangay) => {
+    fetch("/ph-json/province.json")
+      .then((res) => res.json())
+      .then((provincesData) => {
+        const filteredProvinces = provincesData.filter((p) => p.region_code === regionCode);
+        setProvinces(filteredProvinces);
+
+        // Pre-select the province based on passed data
+        const province = filteredProvinces.find((p) => p.province_name.trim() === targetProvince);
+        if (province) {
+          setSelectedProvinceCode(province.province_code);
+
+          // Fetch Cities for the selected province
+          fetchCities(province.province_code, targetCity, targetBarangay);
+        }
+      })
+      .catch((error) => console.error("Error fetching provinces:", error));
+  };
+
+  const fetchCities = (provinceCode, targetCity, targetBarangay) => {
+    fetch("/ph-json/city.json")
+      .then((res) => res.json())
+      .then((citiesData) => {
+        const filteredCities = citiesData.filter(c => c.province_code === provinceCode);
+        setCities(filteredCities);
+
+        // Pre-select the city based on passed data
+        const city = filteredCities.find(c => c.city_name.trim() === targetCity);
+        if (city) {
+          setSelectedCityCode(city.city_code);
+
+          // Fetch Barangays for the selected city
+          fetchBarangays(city.city_code, targetBarangay);
+        }
+      })
+      .catch((error) => console.error("Error fetching cities:", error));
+  };
+
+  const fetchBarangays = (cityCode, targetBarangay) => {
+    fetch("/ph-json/barangay.json")
+      .then((res) => res.json())
+      .then((barangaysData) => {
+        const filteredBarangays = barangaysData.filter(b => b.city_code === cityCode);
+        setBarangays(filteredBarangays);
+
+        // Pre-select the barangay based on passed data
+        const barangay = filteredBarangays.find(b => targetBarangay.includes(b.brgy_name));
+        if (barangay) {
+          setPurchaseOrderDetails(prev => ({ ...prev, barangay: barangay.brgy_name }));
+        }
+      })
+      .catch((error) => console.error("Error fetching barangays:", error));
+  };
+  
+  const handleProvinceChange = (e) => {
+    const provinceCode = e.target.value; // Get the selected province code
+    setSelectedProvinceCode(provinceCode);
+    setCities([]); // Clear cities and barangays
+    setBarangays([]);
+  
+    // Fetch cities for the selected province
+    fetch('/ph-json/city.json')
+      .then((res) => res.json())
+      .then((data) => {
+        const filteredCities = data.filter((c) => c.province_code === provinceCode);
+        setCities(filteredCities); // Set the cities based on selected province
+      })
+      .catch((error) => console.error("Error fetching cities:", error));
+  };
+
+  const handleCityChange = (e) => {
+    const cityCode = e.target.value; // Get the selected city code
+    setSelectedCityCode(cityCode); // Update the selected city code
+  
+    // Clear barangays state before fetching new ones
+    setBarangays([]);
+  
+    // Fetch barangays for the selected city
+    fetch('/ph-json/barangay.json')
+      .then((res) => res.json())
+      .then((data) => {
+        const filteredBarangays = data.filter((b) => b.city_code === cityCode);
+        setBarangays(filteredBarangays); // Set barangays based on selected city
+      })
+      .catch((error) => console.error("Error fetching barangays:", error));
+  };
+  
+
 
   const handleDetailChange = (field, value) => {
     setPurchaseOrderDetails((prevDetails) => ({
@@ -135,11 +291,11 @@ const PurchaseOrderEdit = () => {
       delete newInputs[productId];
       return newInputs;
     });
-  
+
     // Add the product ID to the removedProducts list
     setRemovedProducts((currentRemoved) => [...currentRemoved, productId]);
   }, []);
-  
+
   const openConfirmationModal = () => {
     const hasMissingQuantity = productsListed.some((product) => {
       const quantity = productInputs[product.product_id]?.quantity;
@@ -161,22 +317,31 @@ const PurchaseOrderEdit = () => {
       isEditable: product.isEditable,
     }));
   
-    setConfirmationData({
+    // Separate region from the address
+    const newConfirmationData = {
       customer: purchaseOrderDetails.customer_name,
-      address: `${purchaseOrderDetails.street}, ${purchaseOrderDetails.barangay}, ${purchaseOrderDetails.city}, ${purchaseOrderDetails.province}, ${purchaseOrderDetails.zipcode}`,
+      address: `${purchaseOrderDetails.street}, ${purchaseOrderDetails.barangay}, ${purchaseOrderDetails.city}, ${purchaseOrderDetails.province}, Region ${purchaseOrderDetails.region}, ${purchaseOrderDetails.zipcode}`,
+      region: purchaseOrderDetails.region,  // Make sure region is passed correctly
       products: processedData,
-      removedProducts, // Include removed products here
-    });
+      removedProducts,  // Include removed products here
+    };
+    
   
+    console.log("Confirmation Data being set:", newConfirmationData); // Log the data before setting
+    setConfirmationData(newConfirmationData); // Set the state
+  
+    // Open the confirmation modal
     setIsConfirmationOpen(true);
   };
   
-  
+
   const toggleModal = useCallback(() => {
     setIsModalOpen((prev) => !prev);
   }, []);
   
-  
+
+  console.log("Confirmation", confirmationData);
+
   return (
     <div className="flex w-full">
       <Navbar />
@@ -226,7 +391,6 @@ const PurchaseOrderEdit = () => {
                 ))}
               </select>
             </div>
-
             {/* Province */}
             <div>
               <label className="block text-sm font-bold">Province:</label>
@@ -267,8 +431,8 @@ const PurchaseOrderEdit = () => {
             <div>
               <label className="block text-sm font-bold">Barangay:</label>
               <select
-                value={purchaseOrderDetails.barangay}
-                onChange={(e) => handleDetailChange('barangay', e.target.value)}
+                value={purchaseOrderDetails.barangay || ""}
+                onChange={(e) => handleDetailChange("barangay", e.target.value)}
                 className="w-full p-2 rounded-lg border shadow-lg"
                 disabled={!barangays.length}
               >
@@ -293,7 +457,6 @@ const PurchaseOrderEdit = () => {
               />
             </div>
           </div>
-
 
           <hr className="h-px my-8 bg-gray-500 border-0 shadow-md"></hr>
           <h1 className="text-xl font-bold">Product Listed:</h1>
@@ -348,18 +511,18 @@ const PurchaseOrderEdit = () => {
           ))}
 
           <div className="flex justify-end mt-5 items-end gap-x-3">
-          <button
+            <button
               className="mr-4 text-blue-500 px-4 py-2 hover:text-red-700 underline"
               onClick={() => window.history.back()}
             >
               Cancel
             </button>
-          <button
-            className="w-32 r-4 bg-transparent hover:bg-blue-500 text-blue-700 hover:text-white px-4 py-2 border border-blue-500 hover:border-transparent rounded-lg"
-            onClick={toggleModal}
-          >
-            Add Product
-          </button>
+            <button
+              className="w-32 r-4 bg-transparent hover:bg-blue-500 text-blue-700 hover:text-white px-4 py-2 border border-blue-500 hover:border-transparent rounded-lg"
+              onClick={toggleModal}
+            >
+              Add Product
+            </button>
             <button
               className="bg-blue-500 px-4 py-2 hover:bg-blue-700 rounded-lg text-white"
               onClick={openConfirmationModal}
@@ -383,7 +546,7 @@ const PurchaseOrderEdit = () => {
           isOpen={isConfirmationOpen}
           onClose={() => setIsConfirmationOpen(false)}
           confirmationData={confirmationData}
-          purchaseOrderId={purchaseOrderId} // Pass the purchase order ID
+          purchaseOrderId={purchaseOrderId}
         />
       </div>
       <ToastContainer />

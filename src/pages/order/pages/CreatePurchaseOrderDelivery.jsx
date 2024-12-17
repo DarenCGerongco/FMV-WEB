@@ -15,6 +15,7 @@ const CreatePurchaseOrder = () => {
     city: '',
     province: '',
     zipcode: '',
+    region: '',
   });
   const [productsListed, setProductsListed] = useState([]);
   const [productInputs, setProductInputs] = useState({});
@@ -141,7 +142,8 @@ const CreatePurchaseOrder = () => {
       province: selectedProvinceCode,
       city: selectedCityCode,
       barangay: purchaseOrderDetails.barangay, // Assuming barangay is already managed correctly
-    };
+   };
+   
   
     // Validate required fields for customer details
     const requiredFields = ['customer_name', 'street', 'region', 'province', 'city', 'barangay', 'zipcode'];
@@ -198,24 +200,26 @@ const CreatePurchaseOrder = () => {
       .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
       .join(' ');
 
-    const orderData = {
-      user_id: admin_id,
-      sale_type_id: 1,
-      customer_name: formattedCustomerName,
-      status: 'P',
-      address: {
-        street: purchaseOrderDetails.street,
-        barangay: purchaseOrderDetails.barangay,
-        city: purchaseOrderDetails.city,
-        province: purchaseOrderDetails.province,
-        zip_code: purchaseOrderDetails.zipcode,
-      },
-      product_details: productsListed.map((product) => ({
-        product_id: product.product_id,
-        price: productInputs[product.product_id]?.bidPrice || product.original_price,
-        quantity: productInputs[product.product_id]?.quantity,
-      })),
-    };
+      const orderData = {
+        user_id: admin_id,
+        sale_type_id: 1,
+        customer_name: formattedCustomerName,
+        status: 'P',
+        address: {
+          street: purchaseOrderDetails.street,
+          barangay: purchaseOrderDetails.barangay,
+          city: purchaseOrderDetails.city,
+          province: purchaseOrderDetails.province,
+          region: selectedRegionCode, 
+          zip_code: purchaseOrderDetails.zipcode,
+        },
+        product_details: productsListed.map((product) => ({
+          product_id: product.product_id,
+          price: productInputs[product.product_id]?.bidPrice || product.original_price,
+          quantity: productInputs[product.product_id]?.quantity,
+        })),
+     };
+     
     console.log("Payload to be sent:", JSON.stringify(orderData, null, 2));
 
     setIsSubmitting(true);

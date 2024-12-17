@@ -3,33 +3,46 @@ import axios from "axios";
 import { toast } from "react-toastify";
 
 const EditConfirmation = ({ isOpen, onClose, confirmationData, purchaseOrderId }) => {
-  
   const url = import.meta.env.VITE_API_URL;
 
-  const { customer, address, products } = confirmationData;
+  // Log confirmation data to ensure it is passed correctly
+  console.log("Confirmation Data in Modal:", confirmationData); 
   
+  const { customer, address, region, products } = confirmationData; // Destructure region from confirmationData
   
-  if (!isOpen) return null;
   const handleConfirm = async () => {
     try {
+      // Split the address into parts
+      const addressParts = address.split(", ");
+      
+      // Ensure the last part is the zip code, and the rest is the address
+      const zipCode = addressParts[addressParts.length - 1]; // Last part as zip code
+      const addressWithoutZip = addressParts.slice(0, addressParts.length - 1).join(", "); // Remove zip code from the address
+  
+      console.log("Region in payload:", region); // Log region to see if it's correctly passed
+
       const payload = {
         customer_name: customer,
         address: {
-          street: address.split(", ")[0], // Extract street
-          barangay: address.split(", ")[1], // Extract barangay
-          city: address.split(", ")[2], // Extract city
-          province: address.split(", ")[3], // Extract province
-          zip_code: address.split(", ")[4], // Extract zip code
+          street: addressWithoutZip.split(", ")[0], // Extract street
+          barangay: addressWithoutZip.split(", ")[1], // Extract barangay
+          city: addressWithoutZip.split(", ")[2], // Extract city
+          province: addressWithoutZip.split(", ")[3], // Extract province
+          region: region, // Use region from confirmationData
+          zip_code: zipCode || "", // Send zip code as string
         },
         product_details: products.map((product) => ({
           product_id: product.product_id,
           price: product.price,
           quantity: product.quantity,
         })),
-        removed_products: confirmationData.removedProducts || [], // Include removed products
-        status: "P", // Example status; update based on your logic
+        removed_products: confirmationData.removedProducts || [],
+        status: "P",
       };
-  
+
+      console.log("Payload being sent:", payload); // Log entire payload to verify data
+
+
       // Make the API call
       const response = await axios.post(
         `${url}/api/PurchaseOrder/Edit/${purchaseOrderId}/Update`,
@@ -46,14 +59,14 @@ const EditConfirmation = ({ isOpen, onClose, confirmationData, purchaseOrderId }
     }
   };
   
+  
 
+
+  if (!isOpen) return null;
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
       {/* Overlay */}
-      <div
-        className="fixed inset-0 bg-gray-600 bg-opacity-50 z-40"
-        onClick={onClose}
-      ></div>
+      <div className="fixed inset-0 bg-gray-600 bg-opacity-50 z-40" onClick={onClose}></div>
 
       {/* Modal Content */}
       <div
@@ -68,10 +81,11 @@ const EditConfirmation = ({ isOpen, onClose, confirmationData, purchaseOrderId }
           <p>{customer}</p>
           <p className="font-bold mt-2">Address:</p>
           <p>{address}</p>
+          <p className="font-bold mt-2">Region:</p>
+          <p>{region}</p> {/* Display the region */}
         </div>
 
         {/* Product List */}
-{/* Product List */}
         <h4 className="font-bold">Products:</h4>
         <div className="grid grid-cols-12 bg-gray-300 p-2 rounded mt-2">
           <span className="col-span-1 font-bold">ID</span>
@@ -91,7 +105,6 @@ const EditConfirmation = ({ isOpen, onClose, confirmationData, purchaseOrderId }
             </div>
           ))}
         </div>
-
 
         {/* Buttons */}
         <div className="flex justify-end mt-4">
