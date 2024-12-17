@@ -84,7 +84,7 @@ const TopDamagedProductsModal = ({ onClose, month, year }) => {
 
   return (
     <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center z-50">
-      <div className="bg-white w-3/4 max-w-4xl rounded-lg shadow-lg max-h-[90vh] overflow-y-auto">
+      <div className="bg-white w-3/4 max-w-5xl rounded-lg shadow-lg max-h-[90vh] overflow-y-auto">
         {/* Header */}
         <div className="sticky top-0 bg-white border-b z-10 p-4 flex justify-between items-center">
           <h2 className="text-xl font-bold">Top Damaged Products - {year}</h2>
@@ -100,9 +100,9 @@ const TopDamagedProductsModal = ({ onClose, month, year }) => {
           <>
             {/* Pie Chart */}
             {chartData && (
-              <div className="mb-6">
+              <div className="my-6 p-2">
                 <h3 className="text-lg font-bold text-center mb-4">Top 20 Damaged Products Distribution</h3>
-                <div className="relative w-full h-[500px] bg-gray-100 rounded-md">
+                <div className="relative w-full h-[500px] bg-gray-100 p-4 rounded-md">
                   <Pie data={chartData} options={{ responsive: true, maintainAspectRatio: false }} />
                 </div>
               </div>

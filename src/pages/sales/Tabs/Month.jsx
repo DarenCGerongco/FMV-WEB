@@ -174,7 +174,7 @@ const Month = () => {
             {/* Successful Deliveries */}
             <div className="hover:scale-105 duration-300 bg-white rounded-lg shadow-lg shadow-gray-400 p-4 text-center flex-1">
                 <h2 className="text-md  font-semibold text-gray-700">Successful Deliveries</h2>
-                <p className="text-md  font-bold text-purple-600">
+                <p className="text-md  font-bold text-blue-500">
                 {monthData.successfulDeliveriesCount || "0"}
                 </p>
             </div>
