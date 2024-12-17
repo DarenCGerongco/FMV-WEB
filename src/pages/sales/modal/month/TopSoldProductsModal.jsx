@@ -96,7 +96,7 @@ const TopSoldProductsModal = ({ onClose, month, year }) => {
 
   return (
     <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center z-50">
-      <div className="bg-white w-3/4 max-w-4xl rounded-lg shadow-lg max-h-[90vh] overflow-y-auto">
+      <div className="bg-white w-3/4 max-w-5xl rounded-lg shadow-lg max-h-[90vh] overflow-y-auto">
         {/* Header */}
         <div className="sticky top-0 bg-white border-b z-10 p-4 flex justify-between items-center">
           <h2 className="text-xl font-bold">Top Sold Products - {month}/{year}</h2>

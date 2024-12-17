@@ -204,7 +204,7 @@ const Annual = ({ onDataSend }) => {
           {/* Successful Deliveries */}
           <div className="hover:scale-105 duration-300 bg-white rounded-lg shadow-lg shadow-gray-400 p-4 text-center flex-1">
             <h2 className="text-md font-semibold text-gray-700">Successful Deliveries</h2>
-            <p className="text-md font-bold text-purple-600">
+            <p className="text-md font-bold text-blue-500">
               {annualData.successfulDeliveriesCount || "0"}
             </p>
           </div>
@@ -267,9 +267,9 @@ const Annual = ({ onDataSend }) => {
 
                             {/* Product Price */}
                             <div className="w-1/3 text-center">
-                                <p className="text-xs text-gray-600">
+                                <p className="text-sm text-gray-600">
                                     Price:{" "}
-                                    <span className="font-semibold text-blue-600">
+                                    <span className="font-bold text-blue-600">
                                         PHP {product.price}
                                     </span>
                                 </p>
@@ -277,9 +277,9 @@ const Annual = ({ onDataSend }) => {
 
                             {/* Total Sold */}
                             <div className="w-1/3 text-right">
-                                <p className="text-xs text-gray-600">
+                                <p className="text-sm text-gray-600">
                                     Total Sold:{" "}
-                                    <span className="font-semibold text-green-600">
+                                    <span className="font-bold text-green-600">
                                         {product.total_sold}
                                     </span>
                                 </p>
@@ -314,7 +314,7 @@ const Annual = ({ onDataSend }) => {
                   <div className="flex items-center gap-1 hover:bg-gray-300 duration-200 bg-gray-100 rounded-full p-1">
                   <button
                       onClick={() => setTopDamagedModal(true)} // Open Modal
-                      className="text-blue-600 font-semibold"
+                      className="text-blue-600 font-bold"
                   >
                       See All
                   </button>
@@ -338,9 +338,9 @@ const Annual = ({ onDataSend }) => {
 
                             {/* Product Price */}
                             <div className="w-1/3 text-center">
-                                <p className="text-xs text-gray-600">
+                                <p className="text-sm text-gray-600">
                                     Price:{" "}
-                                    <span className="font-semibold text-blue-600">
+                                    <span className="font-bold text-blue-600">
                                         PHP {product.price}
                                     </span>
                                 </p>
@@ -348,9 +348,9 @@ const Annual = ({ onDataSend }) => {
 
                             {/* Total Sold */}
                             <div className="w-1/3 text-right">
-                                <p className="text-xs text-gray-600">
+                                <p className="text-sm text-gray-600">
                                     Total Damage:{" "}
-                                    <span className="font-semibold text-red-500">
+                                    <span className="font-bold text-red-500">
                                         {product.total_damages}
                                     </span>
                                 </p>
