@@ -7,19 +7,33 @@ import { GlobalContext } from "./../../GlobalContext";
 const Reorder = () => {
   const url = import.meta.env.VITE_API_URL;
   const { id: userID } = useContext(GlobalContext); // Cached user ID
-  const [products, setProducts] = useState([]);
+
+  const [reorderProducts, setReorderProducts] = useState([]); // Reorder Level Products
+  const [lowStockProducts, setLowStockProducts] = useState([]); // Low Product Level
   const [loading, setLoading] = useState(false);
-  const [selectedProducts, setSelectedProducts] = useState({});
+
+  const [selectedProducts, setSelectedProducts] = useState({}); // Selected restock items
   const [showModal, setShowModal] = useState(false); // Modal visibility state
 
-  // Fetch products needing reorder
+  // Fetch Products for Reorder Level and Low Product Level
   const fetchProducts = async () => {
     setLoading(true);
     try {
-      const response = await axios.get(`${url}/api/products`);
-      const allProducts = response.data.products || [];
-      const filteredProducts = allProducts.filter((product) => product.needs_reorder);
-      setProducts(filteredProducts);
+      // Fetch Reorder Level Products
+      const reorderResponse = await axios.get(`${url}/api/view/reorder-level`);
+      const reorderProducts = reorderResponse.data.data;
+
+      // Fetch Low Product Level Products
+      const lowStockResponse = await axios.get(`${url}/api/products/low-level`);
+      const lowStockProducts = lowStockResponse.data.data;
+
+      // Exclude Reorder Products from Low Product Level
+      const filteredLowStock = lowStockProducts.filter(
+        (lowStock) => !reorderProducts.some((reorder) => reorder.product_id === lowStock.product_id)
+      );
+
+      setReorderProducts(reorderProducts);
+      setLowStockProducts(filteredLowStock);
     } catch (error) {
       console.error("Error fetching products:", error);
     } finally {
@@ -27,7 +41,7 @@ const Reorder = () => {
     }
   };
 
-  // Handle input for restock quantity
+  // Handle quantity input changes
   const handleQuantityChange = (productId, quantity) => {
     setSelectedProducts((prev) => ({
       ...prev,
@@ -35,19 +49,19 @@ const Reorder = () => {
     }));
   };
 
-  // Open modal with selected products for confirmation
+  // Open Confirmation Modal
   const openModal = () => {
-    const filtered = Object.entries(selectedProducts).filter(
-      ([_, value]) => value.quantity > 0
+    const hasValidSelection = Object.values(selectedProducts).some(
+      (product) => product.quantity > 0
     );
-    if (filtered.length === 0) {
+    if (!hasValidSelection) {
       alert("No products selected with valid quantities.");
       return;
     }
     setShowModal(true);
   };
 
-  // Submit restocks to API
+  // Submit Restocks
   const submitRestocks = async () => {
     try {
       const transactions = Object.entries(selectedProducts)
@@ -64,7 +78,7 @@ const Reorder = () => {
 
       alert("Restocks successfully submitted!");
       setShowModal(false);
-      fetchProducts(); // Refresh product list
+      fetchProducts();
     } catch (error) {
       console.error("Error submitting restocks:", error);
       alert("Failed to submit restocks. Please try again.");
@@ -80,12 +94,14 @@ const Reorder = () => {
       <Navbar />
       <QuickButtons />
       <div className="w-4/5 mx-auto bg-white p-6 rounded-lg shadow-lg">
-        <h1 className="text-2xl font-bold text-center mb-4">Products Needing Reorder</h1>
+        <h1 className="text-2xl font-bold text-center mb-4">Product Reorder and Low Levels</h1>
         {loading ? (
           <div className="text-center">Loading...</div>
         ) : (
           <>
-            <table className="w-full border-collapse border">
+            {/* Reorder Level Table */}
+            <h2 className="text-xl font-bold mt-4">Reorder Level Products</h2>
+            <table className="w-full border-collapse border mt-2 mb-6">
               <thead>
                 <tr className="bg-blue-500 text-white">
                   <th className="p-2">Product ID</th>
@@ -97,12 +113,12 @@ const Reorder = () => {
                 </tr>
               </thead>
               <tbody>
-                {products.map((product) => (
+                {reorderProducts.map((product) => (
                   <tr key={product.product_id} className="even:bg-gray-100">
                     <td className="p-2">{product.product_id}</td>
                     <td className="p-2">{product.product_name}</td>
                     <td className="p-2">{product.category_name}</td>
-                    <td className="p-2">{product.quantity}</td>
+                    <td className="p-2">{product.current_quantity}</td>
                     <td className="p-2">{product.reorder_level}</td>
                     <td className="p-2">
                       <input
@@ -119,6 +135,43 @@ const Reorder = () => {
                 ))}
               </tbody>
             </table>
+
+            {/* Low Product Level Table */}
+            <h2 className="text-xl font-bold mt-4">Low Product Level</h2>
+            <table className="w-full border-collapse border mt-2">
+              <thead>
+                <tr className="bg-red-500 text-white">
+                  <th className="p-2">Product ID</th>
+                  <th className="p-2">Product Name</th>
+                  <th className="p-2">Safety Stock</th>
+                  <th className="p-2">Quantity Left</th>
+                  <th className="p-2">Restock Quantity</th>
+                </tr>
+              </thead>
+              <tbody>
+                {lowStockProducts.map((product) => (
+                  <tr key={product.product_id} className="even:bg-gray-100">
+                    <td className="p-2">{product.product_id}</td>
+                    <td className="p-2">{product.product_name}</td>
+                    <td className="p-2">{product.safety_stock}</td>
+                    <td className="p-2">{product.current_quantity}</td>
+                    <td className="p-2">
+                      <input
+                        type="number"
+                        min="1"
+                        className="border p-1 w-full"
+                        placeholder="Enter quantity"
+                        onChange={(e) =>
+                          handleQuantityChange(product.product_id, e.target.value)
+                        }
+                      />
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+
+            {/* Confirmation Button */}
             <div className="text-right mt-4">
               <button
                 onClick={openModal}
@@ -130,27 +183,22 @@ const Reorder = () => {
           </>
         )}
 
-        {/* Modal for Confirmation */}
+        {/* Modal */}
         {showModal && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
             <div className="bg-white p-6 rounded-lg shadow-lg w-1/3">
               <h2 className="text-xl font-bold mb-4">Confirm Restock</h2>
-              <ul className="mb-4">
-                {Object.entries(selectedProducts)
-                  .filter(([_, value]) => value.quantity > 0)
-                  .map(([productId, { quantity }]) => {
-                    const product = products.find((p) => p.product_id === parseInt(productId));
-                    return (
-                      <li key={productId} className="mb-2">
-                        {product.product_name} - {quantity} units
-                      </li>
-                    );
-                  })}
+              <ul>
+                {Object.entries(selectedProducts).map(([productId, { quantity }]) => (
+                  <li key={productId}>
+                    Product ID {productId} - Quantity: {quantity} units
+                  </li>
+                ))}
               </ul>
-              <div className="flex justify-end space-x-4">
+              <div className="flex justify-end space-x-4 mt-4">
                 <button
                   onClick={() => setShowModal(false)}
-                  className="bg-gray-300 text-gray-700 px-4 py-2 rounded hover:bg-gray-400"
+                  className="bg-gray-300 px-4 py-2 rounded hover:bg-gray-400"
                 >
                   Cancel
                 </button>

@@ -153,79 +153,79 @@ const fetchProducts = async (page = 1) => {
       };
     }, []);
 
-const renderPagination = () => {
-  const { currentPage, lastPage } = pagination;
+  const renderPagination = () => {
+    const { currentPage, lastPage } = pagination;
 
-  const maxPagesShown = 20; // Show 20 pages initially
-  let startPage = Math.max(1, currentPage - Math.floor(maxPagesShown / 2));
-  let endPage = Math.min(lastPage, startPage + maxPagesShown - 1);
+    const maxPagesShown = 20; // Show 20 pages initially
+    let startPage = Math.max(1, currentPage - Math.floor(maxPagesShown / 2));
+    let endPage = Math.min(lastPage, startPage + maxPagesShown - 1);
 
-  // Dynamically extend when near the last page
-  if (currentPage >= endPage - 3 && endPage < lastPage) {
-    endPage = Math.min(lastPage, endPage + 5); // Dynamically add 5 pages
-  }
+    // Dynamically extend when near the last page
+    if (currentPage >= endPage - 3 && endPage < lastPage) {
+      endPage = Math.min(lastPage, endPage + 5); // Dynamically add 5 pages
+    }
 
-  // Adjust the start page if the range exceeds limits
-  if (endPage - startPage < maxPagesShown) {
-    startPage = Math.max(1, endPage - maxPagesShown + 1);
-  }
+    // Adjust the start page if the range exceeds limits
+    if (endPage - startPage < maxPagesShown) {
+      startPage = Math.max(1, endPage - maxPagesShown + 1);
+    }
 
-  const pages = [];
-  for (let i = startPage; i <= endPage; i++) {
-    pages.push(i);
-  }
+    const pages = [];
+    for (let i = startPage; i <= endPage; i++) {
+      pages.push(i);
+    }
 
-  return (
-    <div className="flex justify-center w-full space-x-2 my-7">
-      {/* First and Previous Buttons */}
-      <button
-        onClick={() => fetchProducts(1)}
-        disabled={currentPage === 1}
-        className="font-bold px-3 py-1 bg-white hover:bg-blue-500 hover:text-white rounded disabled:opacity-50"
-      >
-        First
-      </button>
-      <button
-        onClick={() => fetchProducts(currentPage - 1)}
-        disabled={currentPage === 1}
-        className="font-bold px-3 py-1 bg-white hover:bg-blue-500 hover:text-white rounded disabled:opacity-50"
-      >
-        Previous
-      </button>
+      return (
+        <div className="flex justify-center w-full space-x-2 my-7">
+          {/* First and Previous Buttons */}
+          <button
+            onClick={() => fetchProducts(1)}
+            disabled={currentPage === 1}
+            className="font-bold px-3 py-1 bg-white hover:bg-blue-500 hover:text-white rounded disabled:opacity-50"
+          >
+            First
+          </button>
+          <button
+            onClick={() => fetchProducts(currentPage - 1)}
+            disabled={currentPage === 1}
+            className="font-bold px-3 py-1 bg-white hover:bg-blue-500 hover:text-white rounded disabled:opacity-50"
+          >
+            Previous
+          </button>
 
-      {/* Dynamic Page Numbers */}
-      {pages.map((page) => (
-        <button
-          key={page}
-          onClick={() => fetchProducts(page)}
-          className={`font-bold px-3 py-1 rounded cursor-pointer ${
-            currentPage === page
-              ? "bg-blue-500 text-white"
-              : "bg-white hover:bg-blue-500 hover:text-white"
-          }`}
-        >
-          {page}
-        </button>
-      ))}
+          {/* Dynamic Page Numbers */}
+          {pages.map((page) => (
+            <button
+              key={page}
+              onClick={() => fetchProducts(page)}
+              className={`font-bold px-3 py-1 rounded cursor-pointer ${
+                currentPage === page
+                  ? "bg-blue-500 text-white"
+                  : "bg-white hover:bg-blue-500 hover:text-white"
+              }`}
+            >
+              {page}
+            </button>
+          ))}
 
-      {/* Next and Last Buttons */}
-      <button
-        onClick={() => fetchProducts(currentPage + 1)}
-        disabled={currentPage === lastPage}
-        className="font-bold px-3 py-1 bg-white hover:bg-blue-500 hover:text-white rounded disabled:opacity-50"
-      >
-        Next
-      </button>
-      <button
-        onClick={() => fetchProducts(lastPage)}
-        disabled={currentPage === lastPage}
-        className="font-bold px-3 py-1 bg-white hover:bg-blue-500 hover:text-white rounded disabled:opacity-50"
-      >
-        Last
-      </button>
-    </div>
-  );
-};
+          {/* Next and Last Buttons */}
+          <button
+            onClick={() => fetchProducts(currentPage + 1)}
+            disabled={currentPage === lastPage}
+            className="font-bold px-3 py-1 bg-white hover:bg-blue-500 hover:text-white rounded disabled:opacity-50"
+          >
+            Next
+          </button>
+          <button
+            onClick={() => fetchProducts(lastPage)}
+            disabled={currentPage === lastPage}
+            className="font-bold px-3 py-1 bg-white hover:bg-blue-500 hover:text-white rounded disabled:opacity-50"
+          >
+            Last
+          </button>
+        </div>
+      );
+  };
 
     
 
@@ -263,13 +263,13 @@ const renderPagination = () => {
           </div>
 
           {/* Category Filter */}
-          <div className="mt-4">
+          <div className="mt-4 flex justify-between items-center ">
             <div className="relative">
               <button
-                className="px-4 py-2 bg-gray-300 text-black rounded-lg font-bold"
+                className="px-4 py-2 bg-blue-500 text-white  hover:bg-white hover:text-blue-500 shadow-md duration-200 rounded-lg font-bold"
                 onClick={() => setIsFilterOpen((prev) => !prev)}
               >
-                Filter by Category
+                Filter by Category ↓
               </button>
               {isFilterOpen && (
                 <div className="absolute mt-2 bg-white border rounded-lg shadow-lg z-10 w-48">
@@ -279,7 +279,7 @@ const renderPagination = () => {
                       {categories.map((category) => (
                         <label
                           key={category.id}
-                          className="flex items-center space-x-2 cursor-pointer"
+                          className="flex items-center hover:bg-blue-500 hover:text-white duration-200 rounded space-x-2 cursor-pointer"
                         >
                           <input
                             type="checkbox"
@@ -296,15 +296,17 @@ const renderPagination = () => {
                     >
                       Apply Filters
                     </button>
-                    {/* <button
-                      className="ml-4 px-4 py-2 bg-red-500 text-white font-bold rounded-lg"
-                      onClick={clearFilters}
-                    >
-                      Clear Filters
-                    </button> */}
                   </div>
                 </div>
               )}
+            </div>
+            <div className="flex">
+              <button
+                className="px-4 py-2 bg-blue-500 text-white  hover:bg-white hover:text-blue-500 shadow-md duration-200 rounded-lg font-bold"
+                onClick={() => navigate("/inventory/reorder")}
+                >
+                View Reorder Level
+              </button>
             </div>
           </div>
         </div>
