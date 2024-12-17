@@ -40,12 +40,12 @@ function Sales() {
         </div>
 
         {/* Tabs Navigation */}
-        <div className="w-4/5 mx-auto mt-4 flex ">
+        <div className="w-4/5 mx-auto mt-4 flex  ">
           <button
             className={`p-3 w-1/2 text-center font-bold ${
               activeTab === "month"
-                ? "bg-blue-500 text-white rounded-lg shadow-md border-blue-700"
-                : "bg-gray-200 text-gray-700 rounded-lg shadow-md hover:bg-white duration-200"
+                ? "bg-blue-500 text-white rounded-lg shadow-lg shadow-gray-400 border-blue-700"
+                : "bg-gray-200 text-gray-700 rounded-lg shadow-lg shadow-gray-400 hover:bg-white duration-200"
             }`}
             onClick={() => setActiveTab("month")}
           >
@@ -54,8 +54,8 @@ function Sales() {
           <button
             className={`p-3 w-1/2 text-center font-bold  ${
               activeTab === "annual"
-                ? "bg-blue-500 text-white rounded-lg shadow-md border-blue-700"
-                : "bg-gray-200 text-gray-700 rounded-lg shadow-md hover:bg-white duration-200"
+                ? "bg-blue-500 text-white rounded-lg shadow-lg shadow-gray-400 border-blue-700"
+                : "bg-gray-200 text-gray-700 rounded-lg shadow-lg shadow-gray-400 hover:bg-white duration-200"
             }`}
             onClick={() => setActiveTab("annual")}
           >

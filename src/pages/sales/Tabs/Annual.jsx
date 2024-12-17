@@ -14,6 +14,7 @@ import { SlBadge } from "react-icons/sl";
 
 import AnnualTopSoldProduct from './../modal/annual/TopSoldProductsModal'
 import AnnualTopDamagedProduct from './../modal/annual/TopDamagedProductsModal'
+import { FaArrowRightLong } from "react-icons/fa6";
 
 
 
@@ -110,12 +111,12 @@ const Annual = ({ onDataSend }) => {
       {
         label: "Monthly Sales",
         data: mergedMonthlyData.map((data) => data.monthlyTotalSales),
-        backgroundColor: "rgba(54, 162, 235, 0.6)",
+        backgroundColor: "rgb(147, 250, 165, 1)",
       },
       {
         label: "Damage Cost",
         data: mergedMonthlyData.map((data) => data.monthlyTotalDamageCost),
-        backgroundColor: "rgba(255, 99, 132, 0.6)",
+        backgroundColor: "rgba(246, 71, 71, 1)",
       },
     ],
   };
@@ -152,7 +153,7 @@ const Annual = ({ onDataSend }) => {
   return (
     <div className="bg-gray-50">
       {/* Header */}
-      <div className="my-2 flex justify-between bg-white p-4 border rounded-lg">
+      <div className="my-2 flex justify-between bg-white p-4 shadow-lg shadow-gray-400 rounded-lg">
         <div>
           <h1 className="text-xl font-bold">Annual Sales Insights</h1>
           <p className="text-gray-600">Insights for the year {selectedYear}</p>
@@ -187,28 +188,28 @@ const Annual = ({ onDataSend }) => {
         <>
         <div className="flex gap-4 mb-3">
           {/* Annual Total Sales */}
-          <div className="hover:scale-105 duration-300 bg-white rounded-lg shadow p-4 text-center flex-1">
+          <div className="hover:scale-105 duration-300 bg-white rounded-lg shadow-lg shadow-gray-400 p-4 text-center flex-1">
             <h2 className="text-md font-semibold text-gray-700">Annual Total Sales</h2>
             <p className="text-md font-bold text-blue-600">
               PHP {annualData.annualTotalSales || "0"}
             </p>
           </div>
           {/* Total Delivered Products */}
-          <div className="hover:scale-105 duration-300 bg-white rounded-lg shadow p-4 text-center flex-1">
+          <div className="hover:scale-105 duration-300 bg-white rounded-lg shadow-lg shadow-gray-400 p-4 text-center flex-1">
             <h2 className="text-md font-semibold text-gray-700">Total Delivered Products</h2>
             <p className="text-md font-bold text-green-600">
               {annualData.totalSuccessDeliveredProduct || "0"}
             </p>
           </div>
           {/* Successful Deliveries */}
-          <div className="hover:scale-105 duration-300 bg-white rounded-lg shadow p-4 text-center flex-1">
+          <div className="hover:scale-105 duration-300 bg-white rounded-lg shadow-lg shadow-gray-400 p-4 text-center flex-1">
             <h2 className="text-md font-semibold text-gray-700">Successful Deliveries</h2>
             <p className="text-md font-bold text-purple-600">
               {annualData.successfulDeliveriesCount || "0"}
             </p>
           </div>
           {/* Annual Total Damage Cost */}
-          <div className="hover:scale-105 duration-300 bg-white rounded-lg shadow p-4 text-center flex-1">
+          <div className="hover:scale-105 duration-300 bg-white rounded-lg shadow-lg shadow-gray-400 p-4 text-center flex-1">
             <h2 className="text-md font-semibold text-gray-700">Annual Total Damage Cost</h2>
             <p className="text-md font-bold text-red-600">
               PHP {annualData.annualTotalDamageCost || "0"}
@@ -217,7 +218,7 @@ const Annual = ({ onDataSend }) => {
         </div>
 
           {/* Chart Section */}
-          <div className="bg-white w-full rounded-lg shadow p-4">
+          <div className="bg-white w-full rounded-lg shadow-lg shadow-gray-400 p-4">
             {/* Full Width with Custom Height */}
             <div className="w-full" style={{ height: "18rem" }}>
               <Bar data={chartData} options={chartOptions} />
@@ -227,23 +228,26 @@ const Annual = ({ onDataSend }) => {
         <div className="w-full flex gap-2 mt-2">
 
           {/* LEFT TOP 3 SOLD PRODUCT */}
-          <div className="w-1/2 mt-2 p-4 border border-yellow-200 rounded-xl shadow-md bg-white">
+          <div className="w-1/2 mt-2 p-4 border border-green-500 rounded-xl shadow-lg shadow-gray-400 bg-white">
             {/* Header Section */}
             <div className="flex items-center justify-between w-full gap-2 mb-4">
                 <div className="flex items-center gap-2">
                     <h2 className="text-md font-bold text-gray-700">
                         Most Sold Products of Year {selectedYear}
                     </h2>
-                    <SlBadge className="bg-yellow-500 text-white rounded-full p-1 w-6 h-6" />
+                    <SlBadge className="bg-green-300 text-white rounded-full p-1 w-6 h-6" />
                 </div>
 
                 {/* See All Button */}
+                <div className="flex items-center gap-1 hover:bg-gray-300 duration-200 bg-gray-100 rounded-full p-1">
                 <button
                     onClick={() => setTopSoldModal(true)} // Open Modal
-                    className="text-blue-600 font-semibold hover:underline"
+                    className="text-blue-600 font-semibold"
                 >
                     See All
                 </button>
+                <FaArrowRightLong className="text-blue-600" />
+                </div>
             </div>
             {/* Top 3 Sold Products List */}
             <div className="flex flex-col gap-4">
@@ -297,22 +301,25 @@ const Annual = ({ onDataSend }) => {
             {/* LEFT TOP 3 SOLD PRODUCT */}
 
             {/* RIGHT TOP DAMAGED PRODUCT */}
-            <div className="w-1/2 mt-2 p-4 border border-red-200 rounded-xl shadow-md bg-white">
+            <div className="w-1/2 mt-2 p-4 border border-red-500 rounded-xl shadow-lg shadow-gray-400 bg-white">
               <div className="flex items-center justify-between w-full gap-2 mb-4">
                   <div className="flex items-center gap-2">
                       <h2 className="text-md font-bold text-gray-700">
                           Most Damaged Products of Year {selectedYear}
                       </h2>
-                      <SlBadge className="bg-red-500 text-white rounded-full p-1 w-6 h-6" />
+                      <SlBadge className="bg-red-300 text-white rounded-full p-1 w-6 h-6" />
                   </div>
 
                   {/* See All Button */}
+                  <div className="flex items-center gap-1 hover:bg-gray-300 duration-200 bg-gray-100 rounded-full p-1">
                   <button
                       onClick={() => setTopSoldModal(true)} // Open Modal
-                      className="text-blue-600 font-semibold hover:underline"
+                      className="text-blue-600 font-semibold"
                   >
                       See All
                   </button>
+                  <FaArrowRightLong className="text-blue-600" />
+                  </div>
               </div>
               <div className="flex flex-col gap-4">
                 {top3AnnualData.top_damaged_products?.length > 0 ? (
@@ -343,7 +350,7 @@ const Annual = ({ onDataSend }) => {
                             <div className="w-1/3 text-right">
                                 <p className="text-xs text-gray-600">
                                     Total Damage:{" "}
-                                    <span className="font-semibold text-green-600">
+                                    <span className="font-semibold text-red-500">
                                         {product.total_damages}
                                     </span>
                                 </p>
