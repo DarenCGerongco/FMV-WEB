@@ -131,7 +131,7 @@ const TopDamagedProductsModal = ({ onClose, month, year }) => {
             </table>
 
             {/* Pagination */}
-            <div className="flex justify-evenly p-5 items-center mt-4">
+            <div className="flex p-5 justify-between items-center mt-6">
               <button
                 className="px-4 py-2 bg-gray-300 rounded disabled:opacity-50"
                 onClick={() => handlePageChange(pagination.currentPage - 1)}
