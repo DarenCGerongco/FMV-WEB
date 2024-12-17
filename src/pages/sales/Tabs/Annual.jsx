@@ -313,7 +313,7 @@ const Annual = ({ onDataSend }) => {
                   {/* See All Button */}
                   <div className="flex items-center gap-1 hover:bg-gray-300 duration-200 bg-gray-100 rounded-full p-1">
                   <button
-                      onClick={() => setTopSoldModal(true)} // Open Modal
+                      onClick={() => setTopDamagedModal(true)} // Open Modal
                       className="text-blue-600 font-semibold"
                   >
                       See All
