@@ -91,7 +91,7 @@ const Reorder = () => {
 
   return (
     <div className="flex w-full bg-white">
-      <Navbar />
+      <Navbar/>
       <QuickButtons />
       <div className="w-4/5 mx-auto bg-white p-6 rounded-lg shadow-lg">
         <h1 className="text-2xl font-bold text-center mb-4">Product Reorder and Low Levels</h1>
@@ -99,77 +99,67 @@ const Reorder = () => {
           <div className="text-center">Loading...</div>
         ) : (
           <>
-            {/* Reorder Level Table */}
+            {/* Reorder Level Products Grid */}
             <h2 className="text-xl font-bold mt-4">Reorder Level Products</h2>
-            <table className="w-full border-collapse border mt-2 mb-6">
-              <thead>
-                <tr className="bg-blue-500 text-white">
-                  <th className="p-2">Product ID</th>
-                  <th className="p-2">Product Name</th>
-                  <th className="p-2">Category</th>
-                  <th className="p-2">Quantity</th>
-                  <th className="p-2">Reorder Level</th>
-                  <th className="p-2">Restock Quantity</th>
-                </tr>
-              </thead>
-              <tbody>
-                {reorderProducts.map((product) => (
-                  <tr key={product.product_id} className="even:bg-gray-100">
-                    <td className="p-2">{product.product_id}</td>
-                    <td className="p-2">{product.product_name}</td>
-                    <td className="p-2">{product.category_name}</td>
-                    <td className="p-2">{product.current_quantity}</td>
-                    <td className="p-2">{product.reorder_level}</td>
-                    <td className="p-2">
-                      <input
-                        type="number"
-                        min="1"
-                        className="border p-1 w-full"
-                        placeholder="Enter quantity"
-                        onChange={(e) =>
-                          handleQuantityChange(product.product_id, e.target.value)
-                        }
-                      />
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+            <div className="grid grid-cols-6 gap-4 bg-blue-500 text-white font-bold p-2">
+              <div>Product ID</div>
+              <div>Product Name</div>
+              <div>Category</div>
+              <div>Quantity</div>
+              <div>Reorder Level</div>
+              <div>Restock Quantity</div>
+            </div>
 
-            {/* Low Product Level Table */}
+            {reorderProducts.map((product) => (
+              <div key={product.product_id} className="grid grid-cols-6 gap-4 even:bg-gray-100 p-2">
+                <div>{product.product_id}</div>
+                <div>{product.product_name}</div>
+                <div>{product.category_name}</div>
+                <div>{product.current_quantity}</div>
+                <div>{product.reorder_level}</div>
+                <div>
+                  <input
+                    type="number"
+                    min="1"
+                    className="border p-1 w-full"
+                    placeholder="Enter quantity"
+                    onChange={(e) =>
+                      handleQuantityChange(product.product_id, e.target.value)
+                    }
+                  />
+                </div>
+              </div>
+            ))}
+
+            {/* Low Product Level Grid */}
             <h2 className="text-xl font-bold mt-4">Low Product Level</h2>
-            <table className="w-full border-collapse border mt-2">
-              <thead>
-                <tr className="bg-red-500 text-white">
-                  <th className="p-2">Product ID</th>
-                  <th className="p-2">Product Name</th>
-                  <th className="p-2">Safety Stock</th>
-                  <th className="p-2">Quantity Left</th>
-                  <th className="p-2">Restock Quantity</th>
-                </tr>
-              </thead>
-              <tbody>
-                {lowStockProducts.map((product) => (
-                  <tr key={product.product_id} className="even:bg-gray-100">
-                    <td className="p-2">{product.product_id}</td>
-                    <td className="p-2">{product.product_name}</td>
-                    <td className="p-2">{product.safety_stock}</td>
-                    <td className="p-2">{product.current_quantity}</td>
-                    <td className="p-2">
-                      <input
-                        type="number"
-                        min="1"
-                        className="border p-1 w-full"
-                        placeholder="Enter quantity"
-                        onChange={(e) =>
-                          handleQuantityChange(product.product_id, e.target.value)
-                        }
-                      />
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+            <div className="grid grid-cols-5 gap-4 bg-red-500 text-white font-bold p-2">
+              <div>Product ID</div>
+              <div>Product Name</div>
+              <div>Safety Stock</div>
+              <div>Quantity Left</div>
+              <div>Restock Quantity</div>
+            </div>
+
+            {lowStockProducts.map((product) => (
+              <div key={product.product_id} className="grid grid-cols-5 gap-4 even:bg-gray-100 p-2">
+                <div>{product.product_id}</div>
+                <div>{product.product_name}</div>
+                <div>{product.safety_stock}</div>
+                <div>{product.current_quantity}</div>
+                <div>
+                  <input
+                    type="number"
+                    min="1"
+                    className="border p-1 w-full"
+                    placeholder="Enter quantity"
+                    onChange={(e) =>
+                      handleQuantityChange(product.product_id, e.target.value)
+                    }
+                  />
+                </div>
+              </div>
+            ))}
 
             {/* Confirmation Button */}
             <div className="text-right mt-4">

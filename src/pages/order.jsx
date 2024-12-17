@@ -8,8 +8,8 @@ import ViewDeliveriesModal from './order/modals/viewdeliveriesmodal';
 import ItemsOrderedModal from './order/modals/viewitemsorderedmodal';
 import QuickButtons from '../components/quickButtons';
 
-import DeliveriesTab from './order/components/deliveriesTab';
-import WalkinTab from './order/components/WalkinTab';
+import DeliveriesTab from './order/Tabs/deliveriesTab';
+import WalkinTab from './order/Tabs/WalkinTab';
 
 function Order() {
   const { id: userID, setID } = useContext(GlobalContext);
@@ -95,7 +95,6 @@ function Order() {
           purchaseOrderID={selectedItemsOrderId}
         />
       )}
-
 
       <ViewDeliveriesModal
         viewDeliveriesModalOpen={viewDeliveriesModalOpen}

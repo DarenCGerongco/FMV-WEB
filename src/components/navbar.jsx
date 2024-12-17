@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
+
+// Import Images
 import companyImage from './../assets/Logo.png';
 import dashboardImage from './../assets/dashboard.png';
 import overviewImage from './../assets/overview.png';
@@ -13,31 +15,43 @@ import settingsImage from './../assets/settings.png';
 import logoutImage from './../assets/logout.png';
 
 const Navbar = () => {
-  const url = import.meta.env.VITE_API_URL;
+  const url = import.meta.env.VITE_API_URL; // Base API URL
   const navigate = useNavigate();
   const location = useLocation();
 
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [message, setMessage] = useState('');
-  const [showSuccessMessage, setShowSuccessMessage] = useState(false);
-  const [reorderCount, setReorderCount] = useState(0);
+  const [isModalOpen, setIsModalOpen] = useState(false); // Modal State
+  const [message, setMessage] = useState(''); // Notification Message
+  const [showSuccessMessage, setShowSuccessMessage] = useState(false); // Success Message Visibility
+  const [reorderCount, setReorderCount] = useState(
+    localStorage.getItem('reorderCount') ? Number(localStorage.getItem('reorderCount')) : 0
+  ); // Cached State for Reorder Count
 
-  // Fetch reorder count
+  // Fetch Reorder Count
   const fetchReorderCount = async () => {
     try {
-      const response = await axios.get(`${url}/api/products`);
-      const products = response.data.products || [];
+      const response = await axios.get(`${url}/api/view/reorder-level`);
+      const products = response.data.data || [];
       const count = products.filter((product) => product.needs_reorder).length;
+
+      localStorage.setItem('reorderCount', count); // Cache the count
       setReorderCount(count);
     } catch (error) {
       console.error('Error fetching reorder count:', error);
     }
   };
 
+  // Fetch Reorder Count on Initial Load and Periodically
   useEffect(() => {
     fetchReorderCount();
+
+    const intervalId = setInterval(() => {
+      fetchReorderCount();
+    }, 30000); // Fetch every 30 seconds
+
+    return () => clearInterval(intervalId); // Cleanup
   }, []);
 
+  // Logout Function
   const handleLogout = async () => {
     try {
       const token = localStorage.getItem('token');
@@ -46,16 +60,20 @@ const Navbar = () => {
         setShowSuccessMessage(true);
         return;
       }
-      const response = await axios.post(`${url}/api/logout`, {}, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+
+      const response = await axios.post(
+        `${url}/api/logout`,
+        {},
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
       if (response.data.success) {
         setMessage('Logout successfully');
         setShowSuccessMessage(true);
         localStorage.removeItem('token');
+        localStorage.removeItem('reorderCount'); // Clear cache
         setTimeout(() => {
           setShowSuccessMessage(false);
-          setMessage('');
           navigate('/');
         }, 1000);
       } else {
@@ -68,9 +86,17 @@ const Navbar = () => {
     }
   };
 
+  const confirmLogout = () => {
+    handleLogout();
+    closeModal();
+  };
+
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
+
   const isActive = (path) => location.pathname === path;
+
+
   return (
     <nav className="shadow-[20px] sticky top-0 left-0 w-72 h-screen bg-custom-blue p-4 flex flex-col justify-between items-center z-10">
       <div className="flex flex-col items-center md:items-start w-full">
@@ -157,25 +183,21 @@ const Navbar = () => {
               />
               <Link to="/configuration" className={`text-base md:text-xl ${isActive('/configuration') ? 'text-black' : 'text-white group-hover:text-black'}`}>CONFIGURATION</Link>
             </li>
-
-            {/* <li className={`my-3 flex items-center transition pl-2 md:pl-5 group ${isActive('/logs') ? 'bg-white text-black rounded' : 'hover:bg-white hover:text-black rounded'}`}>
-              <Link to="/logs" className={`text-base md:text-xl ${isActive('/') ? 'text-black' : 'text-white group-hover:text-black'}`}>LOGS (wip)</Link>
-            </li> */}
-
           </ul>
         </div>
       </div>
       <div className="w-full">
-        <li className={`my-3 flex items-center pl-2 md:pl-5 group relative ${isActive('/inventory/reorder') ? 'bg-white text-black rounded' : 'hover:bg-white hover:text-black rounded'}`}>
-          <Link to="/inventory/reorder" className={`text-base md:text-xl ${isActive('/inventory/reorder') ? 'text-black' : 'text-white group-hover:text-black'}`}>
-            REORDER ITEMS
-            {reorderCount > 0 && (
-              <span className="absolute -top-2 right-6 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full">
-                {reorderCount}
-              </span>
-            )}
-          </Link>
-        </li>
+          {/* Reorder Items */}
+          <li className={`my-3 flex items-center pl-2 md:pl-5 group relative ${isActive('/inventory/reorder') ? 'bg-white text-black rounded' : 'hover:bg-white hover:text-black rounded'}`}>
+            <Link to="/inventory/reorder" className={`text-base md:text-xl ${isActive('/inventory/reorder') ? 'text-black' : 'text-white group-hover:text-black'}`}>
+              REORDER ITEMS
+              {reorderCount > 0 && (
+                <span className="absolute -top-2 right-6 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full">
+                  {reorderCount}
+                </span>
+              )}
+            </Link>
+          </li>
         <li className="my-3 flex items-center transition duration-300 group hover:bg-white hover:text-black rounded pl-2 md:pl-5">
         <img
             src={logoutImage}
@@ -195,7 +217,7 @@ const Navbar = () => {
           </p>
           <div className="flex justify-center">
             <button
-              onClick={confirmLogout}
+              onClick={confirmLogout} // Fixed here
               className="mx-2 bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded focus:outline-none"
             >
               OK

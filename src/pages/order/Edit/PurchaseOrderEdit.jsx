@@ -8,6 +8,8 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 const PurchaseOrderEdit = () => {
+  const url = import.meta.env.VITE_API_URL;
+
   const { purchaseOrderId } = useParams();
   const [purchaseOrderDetails, setPurchaseOrderDetails] = useState({
     customer_name: "",
@@ -24,8 +26,55 @@ const PurchaseOrderEdit = () => {
   const [confirmationData, setConfirmationData] = useState([]); // For confirmation modal
   const [removedProducts, setRemovedProducts] = useState([]); // Track removed product IDs
 
+  // Add states for location dropdowns
+  const [regions, setRegions] = useState([]);
+  const [provinces, setProvinces] = useState([]);
+  const [cities, setCities] = useState([]);
+  const [barangays, setBarangays] = useState([]);
   
-  const url = import.meta.env.VITE_API_URL;
+  const [selectedRegionCode, setSelectedRegionCode] = useState('');
+  const [selectedProvinceCode, setSelectedProvinceCode] = useState('');
+  const [selectedCityCode, setSelectedCityCode] = useState('');
+
+  // Fetch Regions on Load
+  useEffect(() => {
+    fetch('/ph-json/regions.json')
+      .then((res) => res.json())
+      .then((data) => setRegions(data))
+      .catch((error) => console.error('Error fetching regions:', error));
+  }, []);
+
+  // Populate Provinces when Region changes
+  const handleRegionChange = (e) => {
+    const regionCode = e.target.value;
+    setSelectedRegionCode(regionCode);
+    setProvinces([]); setCities([]); setBarangays([]);
+
+    fetch('/ph-json/province.json')
+      .then((res) => res.json())
+      .then((data) => setProvinces(data.filter((p) => p.region_code === regionCode)));
+  };
+
+  // Populate Cities when Province changes
+  const handleProvinceChange = (e) => {
+    const provinceCode = e.target.value;
+    setSelectedProvinceCode(provinceCode);
+    setCities([]); setBarangays([]);
+
+    fetch('/ph-json/city.json')
+      .then((res) => res.json())
+      .then((data) => setCities(data.filter((c) => c.province_code === provinceCode)));
+  };
+
+  // Populate Barangays when City changes
+  const handleCityChange = (e) => {
+    const cityCode = e.target.value;
+    setSelectedCityCode(cityCode);
+
+    fetch('/ph-json/barangay.json')
+      .then((res) => res.json())
+      .then((data) => setBarangays(data.filter((b) => b.city_code === cityCode)));
+  };
 
   useEffect(() => {
     const fetchPurchaseOrder = async () => {
@@ -139,39 +188,112 @@ const PurchaseOrderEdit = () => {
           <h1 className="text-xl font-bold">Customer's Detail with <span className="text-red-500 underline font-bold ">Purchase Order ID#: {purchaseOrderId}</span></h1>
           <hr className="h-px my-8 bg-gray-500 border-0 shadow-md"></hr>
           <div className="grid grid-cols-2 gap-4">
-          {Object.keys(purchaseOrderDetails).map((field, index) => (
-            <div key={index}>
-              <label className="block text-sm font-bold">
-                {field
-                  .split("_")
-                  .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-                  .join(" ")}
-                :
-              </label>
+            {/* Customer Name */}
+            <div>
+              <label className="block text-sm font-bold">Customer Name:</label>
               <input
-                className="w-full p-2 text-sm rounded-lg border shadow-lg"
+                className="w-full p-2 rounded-lg border shadow-lg"
                 type="text"
-                value={purchaseOrderDetails[field]}
-                onChange={(e) => {
-                  const value = e.target.value;
-
-                  // Validation for `customer_name`: allow only letters, dots, and spaces
-                  if (field === "customer_name" && /[^a-zA-Z. ]/.test(value)) {
-                    return; // Prevent updating if the value contains characters other than letters, dots, or spaces
-                  }
-
-                  // Validation for `zipcode`: allow only numbers
-                  if (field === "zipcode" && /[^0-9]/.test(value)) {
-                    return; // Prevent updating if non-numeric characters are detected
-                  }
-
-                  // Handle valid input
-                  handleDetailChange(field, value);
-                }}
+                value={purchaseOrderDetails.customer_name}
+                onChange={(e) => handleDetailChange('customer_name', e.target.value)}
               />
             </div>
-          ))}
-        </div>
+
+            {/* Street */}
+            <div>
+              <label className="block text-sm font-bold">Street:</label>
+              <input
+                className="w-full p-2 rounded-lg border shadow-lg"
+                type="text"
+                value={purchaseOrderDetails.street}
+                onChange={(e) => handleDetailChange('street', e.target.value)}
+              />
+            </div>
+
+            {/* Region */}
+            <div>
+              <label className="block text-sm font-bold">Region:</label>
+              <select
+                value={selectedRegionCode}
+                onChange={handleRegionChange}
+                className="w-full p-2 rounded-lg border shadow-lg"
+              >
+                <option value="" disabled>Select Region</option>
+                {regions.map((region) => (
+                  <option key={region.psgc_code} value={region.region_code}>
+                    {region.region_name}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* Province */}
+            <div>
+              <label className="block text-sm font-bold">Province:</label>
+              <select
+                value={selectedProvinceCode}
+                onChange={handleProvinceChange}
+                className="w-full p-2 rounded-lg border shadow-lg"
+                disabled={!provinces.length}
+              >
+                <option value="" disabled>Select Province</option>
+                {provinces.map((province) => (
+                  <option key={province.psgc_code} value={province.province_code}>
+                    {province.province_name}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* City */}
+            <div>
+              <label className="block text-sm font-bold">City:</label>
+              <select
+                value={selectedCityCode}
+                onChange={handleCityChange}
+                className="w-full p-2 rounded-lg border shadow-lg"
+                disabled={!cities.length}
+              >
+                <option value="" disabled>Select City</option>
+                {cities.map((city) => (
+                  <option key={city.city_code} value={city.city_code}>
+                    {city.city_name}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* Barangay */}
+            <div>
+              <label className="block text-sm font-bold">Barangay:</label>
+              <select
+                value={purchaseOrderDetails.barangay}
+                onChange={(e) => handleDetailChange('barangay', e.target.value)}
+                className="w-full p-2 rounded-lg border shadow-lg"
+                disabled={!barangays.length}
+              >
+                <option value="" disabled>Select Barangay</option>
+                {barangays.map((barangay) => (
+                  <option key={barangay.brgy_code} value={barangay.brgy_name}>
+                    {barangay.brgy_name}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* Zip Code */}
+            <div>
+              <label className="block text-sm font-bold">Zip Code:</label>
+              <input
+                className="w-full p-2 rounded-lg border shadow-lg"
+                type="text"
+                value={purchaseOrderDetails.zipcode}
+                onChange={(e) => handleDetailChange('zipcode', e.target.value)}
+                placeholder="Enter Zip Code"
+              />
+            </div>
+          </div>
+
 
           <hr className="h-px my-8 bg-gray-500 border-0 shadow-md"></hr>
           <h1 className="text-xl font-bold">Product Listed:</h1>
