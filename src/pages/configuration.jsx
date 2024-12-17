@@ -16,7 +16,7 @@ function Configuration() {
   const url = import.meta.env.VITE_API_URL;
   const usertypeApi = '/api/user-type';
   const categoriesApi = '/api/categories';
-  const saletypesApi = '/api/sale-type';
+  const saleTypesApi = '/api/sale-type';
 
   const [categories, setCategories] = useState([]);
   const [usertype, setUsertype] = useState([]);
@@ -52,7 +52,7 @@ function Configuration() {
 
   const fetchSaleTypes = async () => {
     try {
-      const response = await axios.get(`${url}${saletypesApi}`);
+      const response = await axios.get(`${url}${saleTypesApi}`);
       setSaleTypes(response.data || []);
     } catch (error) {
       console.error('Error fetching sale types:', error);

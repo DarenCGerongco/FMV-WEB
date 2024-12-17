@@ -26,7 +26,7 @@ const InventoryDetails = () => {
   const fetchProductTransactions = async (page = 1) => {
     try {
       setLoading(true);
-      const response = await axios.get(`${url}/api/view/${productID}/per-product-restock`, {
+      const response = await axios.get(`${url}/api/view/${productID}/Product-Profile`, {
         params: { page: Number(page) }, // Ensure 'page' is a number
       });
 
