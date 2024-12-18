@@ -204,7 +204,8 @@ const DeliveriesTab = () => {
 
           {loading ? (
             <div className="flex justify-center py-5">
-              <h2>Loading...</h2>
+              <h2>Loading purchase order data...</h2>
+              <div className="spinner"></div>
             </div>
           ) : (
             searchResults.map((customerData, index) => (

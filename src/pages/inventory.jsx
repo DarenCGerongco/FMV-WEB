@@ -7,6 +7,9 @@ import EditProductModal from "./inventory/modal/EditProductModal";
 import QuickButtons from "../components/quickButtons";
 import { useNavigate } from "react-router-dom";
 
+import { MdExpandMore } from "react-icons/md";
+import { IoMdMore } from "react-icons/io";
+
 function Inventory() {
   const url = import.meta.env.VITE_API_URL;
   const navigate = useNavigate();
@@ -260,7 +263,7 @@ const fetchProducts = async (page = 1) => {
               />
             </div>
             <button
-              className="w-40 r-4 px-4 py-2 bg-blue-500 text-white hover:bg-blue-700 rounded-lg font-bold"
+              className="w-40 r-4 px-4 py-2 bg-blue-500 text-white hover:bg-white hover:text-blue-500 shadow-md duration-200 rounded-lg font-bold"
               onClick={() => setShowAddProductModal(true)}
             >
               <h1 className="text-center text-md">Add Product</h1>
@@ -270,12 +273,17 @@ const fetchProducts = async (page = 1) => {
           {/* Category Filter */}
           <div className="mt-4 flex justify-between items-center ">
             <div className="relative">
-              <button
-                className="px-4 py-2 bg-blue-500 text-white  hover:bg-white hover:text-blue-500 shadow-md duration-200 rounded-lg font-bold"
-                onClick={() => setIsFilterOpen((prev) => !prev)}
-              >
-                Filter by Category ↓
-              </button>
+            <div 
+              onClick={() => setIsFilterOpen((prev) => !prev)}
+              className="cursor-pointer flex p-2 hover:bg-blue-500 hover:text-white shadow-md duration-200 rounded-full justify-center items-center"
+            >
+              <h1
+                  className=" text-xs font-bold "
+                >
+                Category 
+              </h1>
+              <MdExpandMore/>
+            </div>
               {isFilterOpen && (
                 <div className="absolute mt-2 bg-white border rounded-lg shadow-lg z-10 w-48">
                   <div className="p-2">
@@ -296,10 +304,10 @@ const fetchProducts = async (page = 1) => {
                       ))}
                     </div>
                     <button
-                      className="w-full mt-4 px-4 py-2 bg-blue-500 text-white font-bold rounded-lg"
-                      onClick={() => setIsFilterOpen(false)}
+                      className="w-full mt-4 px-4 py-2 hover:bg-blue-500 hover:text-white border font-bold rounded-lg"
+                      onClick={() => setSelectedCategories([])}
                     >
-                      Apply Filters
+                      Clear Filters
                     </button>
                   </div>
                 </div>
@@ -328,45 +336,49 @@ const fetchProducts = async (page = 1) => {
               {/* Table Headers */}
               <div className="grid grid-cols-8 text-sm font-bold border-b py-2">
                 <div
-                  className="col-span-1 cursor-pointer"
+                  className="col-span-1 cursor-pointer rounded "
                   onClick={() => handleSortByColumn("product_id")}
                 >
-                  Product ID {sortBy === "product_id" && (sortOrder === "asc" ? "↑" : "↓")}
+                  <button className="hover:bg-gray-300 px-2 rounded duration-200 border shadow-sm">
+                    Product ID {sortBy === "product_id" && (sortOrder === "asc" ? "↑" : "↓")}
+                  </button>
                 </div>
                 <div className="col-span-2">Product Name</div>
                 <div className="col-span-2">Category</div>
                 <div>Price</div>
                 <div
-                  className="cursor-pointer flex items-center"
+                  className="cursor-pointer flex items-center rounded"
                   onClick={() => handleSortByColumn("quantity")}
                 >
-                  Quantity {sortBy === "quantity" && (sortOrder === "asc" ? "↑" : "↓")}
+                  <button className="hover:bg-gray-300 px-2 rounded duration-200 border ">
+                    Quantity {sortBy === "quantity" && (sortOrder === "asc" ? "↑" : "↓")}
+                  </button>
                 </div>
-                <div>Actions</div>
+                <div className="text-center">Actions</div>
               </div>
               {/* Table Rows */}
               {items.map((item) => (
                 <div
                   key={item.product_id}
-                  className="grid text-sm grid-cols-8 shadow-md shadow-gray-400 hover:bg-blue-50 rounded my-1 border-gray-300 p-1 items-center"
+                  className="grid text-sm grid-cols-8 shadow-md border duration-100 hover:bg-blue-100 rounded my-2 border-gray-300 p-1 items-center"
                 >
                   <div className="col-span-1">{item.product_id}</div>
                   <div className="col-span-2">{item.product_name}</div>
                   <div className="col-span-2">{item.category_name}</div>
                   <div>₱ {item.original_price}</div>
                   <div>{item.quantity}</div>
-                  <div className="relative">
+                  <div className="relative flex justify-center">
                     {/* Dropdown Button */}
                     <button
-                      className="px-2 py-1 bg-blue-500 text-white font-bold rounded-lg"
+                      className="px-2 py-1 bg-gray-400 hover:bg-gray-700 duration-200 text-white  font-bold rounded-lg"
                       onClick={() => toggleDropdown(item.product_id)}
                     >
-                      More
+                      <IoMdMore/>
                     </button>
 
                     {/* Dropdown Menu */}
                     {openDropdowns[item.product_id] && (
-                      <div className="absolute dropdown-menu right-0 mt-2 w-40 bg-white border rounded-lg shadow-lg z-10">
+                      <div className="absolute dropdown-menu left-24 top-0 w-40 bg-white border rounded-lg shadow-lg z-10">
                         <ul>
                           <li
                             className="px-4 py-2 hover:bg-blue-500 hover:text-white cursor-pointer font-bold"

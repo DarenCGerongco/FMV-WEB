@@ -16,7 +16,8 @@ import AnnualTopSoldProduct from './../modal/annual/TopSoldProductsModal'
 import AnnualTopDamagedProduct from './../modal/annual/TopDamagedProductsModal'
 import { FaArrowRightLong } from "react-icons/fa6";
 
-
+import { FcBullish } from "react-icons/fc";
+import { FcBearish } from "react-icons/fc";
 
 // Register Chart.js components
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
@@ -235,7 +236,7 @@ const Annual = ({ onDataSend }) => {
                     <h2 className="text-md font-bold text-gray-700">
                         Most Sold Products of Year {selectedYear}
                     </h2>
-                    <SlBadge className="bg-green-300 text-white rounded-full p-1 w-6 h-6" />
+                    <FcBullish className=" w-6 h-6" />
                 </div>
 
                 {/* See All Button */}
@@ -307,9 +308,8 @@ const Annual = ({ onDataSend }) => {
                       <h2 className="text-md font-bold text-gray-700">
                           Most Damaged Products of Year {selectedYear}
                       </h2>
-                      <SlBadge className="bg-red-300 text-white rounded-full p-1 w-6 h-6" />
+                      <FcBearish className=" w-6 h-6" />
                   </div>
-
                   {/* See All Button */}
                   <div className="flex items-center gap-1 hover:bg-gray-300 duration-200 bg-gray-100 rounded-full p-1">
                   <button

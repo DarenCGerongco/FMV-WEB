@@ -9,6 +9,11 @@ import TopDamagedProductsModal from "../modal/month/TopDamagedProductsModal";
 import { SlBadge } from "react-icons/sl";
 import { FaArrowRightLong } from "react-icons/fa6";
 
+import { FaRegThumbsDown } from "react-icons/fa";
+import { FaRegThumbsUp } from "react-icons/fa";
+import { FcBullish } from "react-icons/fc";
+import { FcBearish } from "react-icons/fc";
+
 // Register Chart.js components
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
@@ -235,7 +240,7 @@ const Month = () => {
                         <h2 className="text-md font-bold text-gray-700">
                             Most Sold Products as of {months.find((m) => m.value === selectedMonth)?.label}
                         </h2>
-                        <SlBadge className="bg-green-300 rounded-full p-1 w-6 h-6" />
+                        <FcBullish className=" w-6 h-6" />
                     </div>
 
                     {/* Right-aligned button with arrow */}
@@ -302,7 +307,7 @@ const Month = () => {
                         <h2 className="text-md font-bold text-gray-700">
                             Most Damaged Products as of {months.find((m) => m.value === selectedMonth)?.label}
                         </h2>
-                        <SlBadge className="bg-red-300 rounded-full p-1 w-6 h-6" />
+                        <FcBearish className="  w-6 h-6 hover:scale-125 duration-200 " />
                     </div>
 
                     {/* Right-aligned button with arrow */}

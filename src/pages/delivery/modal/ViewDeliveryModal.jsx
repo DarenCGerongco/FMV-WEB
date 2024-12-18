@@ -17,6 +17,7 @@ const getStatusDisplayName = (status) => {
       return "Unknown Status";
   }
 };
+
 // Determine warranty status based on the delivery status
 const getWarrantyMessage = (status, timeExceeded) => {
   switch (status) {
@@ -33,12 +34,24 @@ const getWarrantyMessage = (status, timeExceeded) => {
   }
 };
 
-
 const ViewDeliveryModal = ({ deliveryId, onClose }) => {
-  const url = import.meta.env.VITE_API_URL; // Use the base URL from environment variables
+  const url = import.meta.env.VITE_API_URL;
   const [deliveryDetails, setDeliveryDetails] = useState(null);
   const [loading, setLoading] = useState(true);
   const [acceptLoading, setAcceptLoading] = useState(false);
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedImage, setSelectedImage] = useState(null);
+
+  const openModal = (imageUrl) => {
+    setSelectedImage(imageUrl); // Set the selected image
+    setIsModalOpen(true); // Open the modal
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setSelectedImage(null); // Reset the selected image
+  };
 
   // Function to fetch delivery details
   const fetchDeliveryDetails = async () => {
@@ -46,7 +59,6 @@ const ViewDeliveryModal = ({ deliveryId, onClose }) => {
     try {
       const response = await axios.get(`${url}/api/deliveries/${deliveryId}/report`);
       setDeliveryDetails(response.data);
-      console.log("Fetched Delivery Details:", response.data);
     } catch (error) {
       console.error("Error fetching delivery details:", error);
     } finally {
@@ -54,7 +66,6 @@ const ViewDeliveryModal = ({ deliveryId, onClose }) => {
     }
   };
 
-  // Function to handle Accept button click
   const handleAccept = async () => {
     setAcceptLoading(true);
     try {
@@ -73,14 +84,13 @@ const ViewDeliveryModal = ({ deliveryId, onClose }) => {
     }
   };
 
-  // Fetch data on component mount
   useEffect(() => {
     if (deliveryId) {
       fetchDeliveryDetails();
     }
   }, [deliveryId]);
 
-  if (!deliveryId) return null; // Don't render if no delivery ID is provided
+  if (!deliveryId) return null;
   if (loading) {
     return (
       <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
@@ -101,7 +111,7 @@ const ViewDeliveryModal = ({ deliveryId, onClose }) => {
     );
   }
 
-  // Determine if the Accept button should be enabled or disabled
+  // Define isAcceptable based on conditions
   const isAcceptable =
     deliveryDetails.delivery.status === "P" &&
     deliveryDetails.time_exceeded === "yes" && // Ensure 2 minutes have passed
@@ -112,8 +122,6 @@ const ViewDeliveryModal = ({ deliveryId, onClose }) => {
 
   const isEditable = deliveryDetails.delivery.status !== "S"; // Disable editing for status "S"
 
-
-  // Determine warranty status
   const warrantyMessage = getWarrantyMessage(
     deliveryDetails.delivery.status,
     deliveryDetails.time_exceeded
@@ -156,13 +164,11 @@ const ViewDeliveryModal = ({ deliveryId, onClose }) => {
           <p>
             <strong>Created:</strong> {deliveryDetails.delivery.created_at}
           </p>
-
         </div>
-        <h1 className="mt-5 text-xl font-bold text-blue-500">
-          Report:
-        </h1>
+
+        <h1 className="mt-5 text-xl font-bold text-blue-500">Report:</h1>
         <p>
-          <strong>Warranty Status:</strong>{" "}
+          <strong>Warranty Status:</strong>
           <span
             className={`font-bold ml-2 ${
               deliveryDetails.delivery.status === "P" && !deliveryDetails.time_exceeded
@@ -173,9 +179,9 @@ const ViewDeliveryModal = ({ deliveryId, onClose }) => {
             {warrantyMessage}
           </span>
         </p>
-          <p>
-            <strong>Notes:</strong> {deliveryDetails.delivery.notes || "No comment"}
-          </p>
+        <p>
+          <strong>Notes:</strong> {deliveryDetails.delivery.notes || "No comment"}
+        </p>
 
         {/* Display Images */}
         {deliveryDetails.images && deliveryDetails.images.length > 0 ? (
@@ -185,10 +191,11 @@ const ViewDeliveryModal = ({ deliveryId, onClose }) => {
               {deliveryDetails.images.map((image) => (
                 <div
                   key={image.id}
-                  className="flex flex-col justify-center items-center border rounded-lg shadow-md overflow-hidden"
+                  className="flex flex-col justify-center items-center border rounded-lg shadow-md overflow-hidden cursor-pointer"
+                  onClick={() => openModal(image.url)} // Open modal on image click
                 >
                   <img
-                    src={`${image.url}`}
+                    src={image.url}
                     alt={`Delivery Image ${image.id}`}
                     className="w-full h-48 object-contain"
                   />
@@ -201,6 +208,25 @@ const ViewDeliveryModal = ({ deliveryId, onClose }) => {
           </div>
         ) : (
           <p className="mt-4 text-gray-600">Image Pending for Employee's Delivery Report.</p>
+        )}
+
+        {/* Modal for Full Image View */}
+        {isModalOpen && (
+          <div className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50">
+            <div className=" p-3 rounded-lg">
+              <img
+                src={selectedImage}
+                alt="Full View"
+                className="w-[80vw] h-[80vh] object-contain"
+              />
+              <button
+                onClick={closeModal}
+                className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-2"
+              >
+                X
+              </button>
+            </div>
+          </div>
         )}
 
         {/* Display Products */}

@@ -1,39 +1,37 @@
 import React, { useState, useEffect, useContext } from "react";
 import axios from "axios";
-import Navbar from "../components/navbar";
+import Navbar from "../components/Navbar"; // Add this import for the Navbar component
 import QuickButtons from "../components/quickButtons";
 import { GlobalContext } from "./../../GlobalContext";
 
+import { MdKeyboardDoubleArrowLeft } from "react-icons/md";
+import { MdKeyboardDoubleArrowRight } from "react-icons/md";
+
+import { MdNavigateNext } from "react-icons/md";
+import { MdNavigateBefore } from "react-icons/md";
 const Reorder = () => {
   const url = import.meta.env.VITE_API_URL;
   const { id: userID } = useContext(GlobalContext); // Cached user ID
 
   const [reorderProducts, setReorderProducts] = useState([]); // Reorder Level Products
-  const [lowStockProducts, setLowStockProducts] = useState([]); // Low Product Level
   const [loading, setLoading] = useState(false);
-
+  const [pagination, setPagination] = useState({
+    total: 0,
+    per_page: 10,
+    current_page: 1,
+    last_page: 1,
+  });
   const [selectedProducts, setSelectedProducts] = useState({}); // Selected restock items
   const [showModal, setShowModal] = useState(false); // Modal visibility state
 
-  // Fetch Products for Reorder Level and Low Product Level
-  const fetchProducts = async () => {
+  const fetchProducts = async (page = 1) => {
     setLoading(true);
     try {
-      // Fetch Reorder Level Products
-      const reorderResponse = await axios.get(`${url}/api/view/reorder-level`);
-      const reorderProducts = reorderResponse.data.data;
-
-      // Fetch Low Product Level Products
-      const lowStockResponse = await axios.get(`${url}/api/products/low-level`);
-      const lowStockProducts = lowStockResponse.data.data;
-
-      // Exclude Reorder Products from Low Product Level
-      const filteredLowStock = lowStockProducts.filter(
-        (lowStock) => !reorderProducts.some((reorder) => reorder.product_id === lowStock.product_id)
-      );
-
-      setReorderProducts(reorderProducts);
-      setLowStockProducts(filteredLowStock);
+      const response = await axios.get(`${url}/api/view/reorder-level`, {
+        params: { page, limit: 10 }, // Send page and limit to the backend
+      });
+      setReorderProducts(response.data.data);
+      setPagination(response.data.pagination); // Set pagination data
     } catch (error) {
       console.error("Error fetching products:", error);
     } finally {
@@ -41,7 +39,6 @@ const Reorder = () => {
     }
   };
 
-  // Handle quantity input changes
   const handleQuantityChange = (productId, quantity) => {
     setSelectedProducts((prev) => ({
       ...prev,
@@ -49,7 +46,6 @@ const Reorder = () => {
     }));
   };
 
-  // Open Confirmation Modal
   const openModal = () => {
     const hasValidSelection = Object.values(selectedProducts).some(
       (product) => product.quantity > 0
@@ -61,7 +57,6 @@ const Reorder = () => {
     setShowModal(true);
   };
 
-  // Submit Restocks
   const submitRestocks = async () => {
     try {
       const transactions = Object.entries(selectedProducts)
@@ -85,9 +80,94 @@ const Reorder = () => {
     }
   };
 
+  const handlePageChange = (newPage) => {
+    if (newPage < 1 || newPage > pagination.last_page) return;
+    fetchProducts(newPage);
+  };
+
   useEffect(() => {
-    fetchProducts();
+    fetchProducts(); // Fetch products initially
   }, []);
+
+  const { current_page, last_page } = pagination;
+
+  // Helper to create the range of page numbers to display
+  const createPageRange = () => {
+    let start = Math.max(1, current_page - 2);
+    let end = Math.min(last_page, current_page + 2);
+    let pages = [];
+
+    for (let i = start; i <= end; i++) {
+      pages.push(i);
+    }
+
+    if (start > 1) {
+      pages.unshift('...');
+      pages.unshift(1);
+    }
+
+    if (end < last_page) {
+      pages.push('...');
+      pages.push(last_page);
+    }
+
+    return pages;
+  };
+
+  const pages = createPageRange();
+
+  const PaginationControls = () => {
+    return (
+      <div className="flex justify-center items-center space-x-2 mt-4">
+        {/* First Button */}
+        <button
+          onClick={() => handlePageChange(1)}
+          disabled={current_page === 1}
+          className={`font-bold px-3 py-1 rounded cursor-pointer ${current_page === 1 ? "bg-gray-300 text-gray-500" : "bg-white hover:bg-blue-500 hover:text-white"}`}
+        >
+          <MdKeyboardDoubleArrowLeft />
+        </button>
+
+        {/* Previous Button */}
+        <button
+          onClick={() => handlePageChange(current_page - 1)}
+          disabled={current_page === 1}
+          className={`font-bold px-3 py-1 rounded cursor-pointer ${current_page === 1 ? "bg-gray-300 text-gray-500" : "bg-white hover:bg-blue-500 hover:text-white"}`}
+        >
+          <MdNavigateBefore />
+        </button>
+
+        {/* Page Numbers */}
+        {pages.map((pageNum) => (
+          <button
+            key={pageNum}
+            onClick={() => handlePageChange(pageNum)}
+            className={`font-bold px-3 py-1 rounded cursor-pointer ${current_page === pageNum ? "bg-blue-500 text-white" : "bg-white hover:bg-blue-500 hover:text-white"}`}
+          >
+            {pageNum}
+          </button>
+        ))}
+
+        {/* Next Button */}
+        <button
+          onClick={() => handlePageChange(current_page + 1)}
+          disabled={current_page === last_page}
+          className={`font-bold px-3 py-1 rounded cursor-pointer ${current_page === last_page ? "bg-gray-300 text-gray-500" : "bg-white hover:bg-blue-500 hover:text-white"}`}
+        >
+          <MdNavigateNext />
+        </button>
+
+        {/* Last Button */}
+        <button
+          onClick={() => handlePageChange(last_page)}
+          disabled={current_page === last_page}
+          className={`font-bold px-3 py-1 rounded cursor-pointer ${current_page === last_page ? "bg-gray-300 text-gray-500" : "bg-white hover:bg-blue-500 hover:text-white"}`}
+        >
+          <MdKeyboardDoubleArrowRight />
+        </button>
+      </div>
+    );
+  };
 
   return (
     <div className="flex w-full bg-white">
@@ -96,86 +176,45 @@ const Reorder = () => {
       <div className="w-4/5 mx-auto bg-white p-6 rounded-lg shadow-lg">
         <h1 className="text-2xl font-bold text-center mb-4">Product Reorder and Low Levels</h1>
         {loading ? (
-          <div className="text-center">Loading...</div>
+          <div className="text-center">
+            <h1>Loading Reorder Data...</h1>
+          </div>
         ) : (
           <>
-            {/* Reorder Level Products Grid */}
-            <div className=" flex items-center ">
-              <h2 className="text-xl font-bold mt-4">
-                Reorder Level Products
-              </h2>
-              <h2 className="ml-1 text-md font-bold mt-4 text-red-700">
-                 (!Warning Level! Product Quantity &lt;= Reorder Level || Safety Stock )
-               </h2>
-            </div>
-            <div className="grid grid-cols-6 gap-4 bg-red-500 text-white font-bold p-2">
-              <div>Product ID</div>
-              <div>Product Name</div>
-              <div>Category</div>
-              <div>Quantity</div>
-              <div>Reorder Level</div>
-              <div>Restock Quantity</div>
-            </div>
-
-            {reorderProducts.map((product) => (
-              <div key={product.product_id} className="grid grid-cols-6 gap-4 even:bg-gray-100 p-2">
-                <div>{product.product_id}</div>
-                <div>{product.product_name}</div>
-                <div>{product.category_name}</div>
-                <div>{product.current_quantity}</div>
-                <div>{product.reorder_level}</div>
-                <div>
-                  <input
-                    type="number"
-                    min="1"
-                    className="border p-1 w-full"
-                    placeholder="Enter quantity"
-                    onChange={(e) =>
-                      handleQuantityChange(product.product_id, e.target.value)
-                    }
-                  />
-                </div>
+            <div className="border p-2 rounded">
+              <div className="grid grid-cols-6 gap-4 bg-red-500 text-white font-bold p-2">
+                <div>Product ID</div>
+                <div>Product Name</div>
+                <div>Category</div>
+                <div>Quantity</div>
+                <div>Reorder Level</div>
+                <div>Restock Quantity</div>
               </div>
-            ))}
 
-            {/* Low Product Level Grid */}
-            <div className="flex items-center">
-              <h2 h2 className="text-xl font-bold mt-4">
-                Low Product Level
-              </h2>
-              <h2 className="ml-1 text-md font-bold mt-4 text-red-700">
-                (Needs Attention Products &lt;= (equal or below) 120 )
-              </h2>
-            </div>
-            <div className="grid grid-cols-5 gap-4 bg-blue-500 text-white font-bold p-2">
-              <div>Product ID</div>
-              <div>Product Name</div>
-              <div>Safety Stock</div>
-              <div>Quantity Left</div>
-              <div>Restock Quantity</div>
-            </div>
-
-            {lowStockProducts.map((product) => (
-              <div key={product.product_id} className="grid grid-cols-5 gap-4 even:bg-gray-100 p-2">
-                <div>{product.product_id}</div>
-                <div>{product.product_name}</div>
-                <div>{product.safety_stock}</div>
-                <div>{product.quantity_left}</div>
-                <div>
-                  <input
-                    type="number"
-                    min="1"
-                    className="border p-1 w-full"
-                    placeholder="Enter quantity"
-                    onChange={(e) =>
-                      handleQuantityChange(product.product_id, e.target.value)
-                    }
-                  />
+              {reorderProducts.map((product) => (
+                <div
+                  key={product.product_id}
+                  className="grid grid-cols-6 gap-4 rounded items-center border shadow-md my-3 duration-300 hover:bg-red-300 even:bg-gray-100 p-2"
+                >
+                  <div>{product.product_id}</div>
+                  <div>{product.product_name}</div>
+                  <div>{product.category_name}</div>
+                  <div>{product.current_quantity}</div>
+                  <div>{product.reorder_level}</div>
+                  <div>
+                    <input
+                      type="number"
+                      min="1"
+                      className="border rounded p-1 w-full"
+                      placeholder="Enter quantity"
+                      onChange={(e) => handleQuantityChange(product.product_id, e.target.value)}
+                    />
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
 
-            {/* Confirmation Button */}
+            <PaginationControls />
             <div className="text-right mt-4">
               <button
                 onClick={openModal}
@@ -186,8 +225,6 @@ const Reorder = () => {
             </div>
           </>
         )}
-
-        {/* Modal */}
         {showModal && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
             <div className="bg-white p-6 rounded-lg shadow-lg w-1/3">
