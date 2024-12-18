@@ -29,12 +29,11 @@ const Navbar = () => {
   // Fetch Reorder Count
   const fetchReorderCount = async () => {
     try {
-      const response = await axios.get(`${url}/api/view/reorder-level`);
-      const products = response.data.data || [];
-      const count = products.filter((product) => product.needs_reorder).length;
-
-      localStorage.setItem('reorderCount', count); // Cache the count
-      setReorderCount(count);
+      const response = await axios.get(`${url}/api/view/reorder-level?page=1&limit=10`);
+      const totalCount = response.data.reorder_count;
+  
+      localStorage.setItem('reorderCount', totalCount); // Cache the count
+      setReorderCount(totalCount);
     } catch (error) {
       console.error('Error fetching reorder count:', error);
     }

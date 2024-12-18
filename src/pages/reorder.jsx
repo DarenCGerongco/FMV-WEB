@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from "react";
 import axios from "axios";
-import Navbar from "../components/Navbar"; // Add this import for the Navbar component
+import Navbar from "../components/navbar"; // Add this import for the Navbar component
 import QuickButtons from "../components/quickButtons";
 import { GlobalContext } from "./../../GlobalContext";
 
@@ -138,15 +138,20 @@ const Reorder = () => {
         </button>
 
         {/* Page Numbers */}
-        {pages.map((pageNum) => (
-          <button
-            key={pageNum}
-            onClick={() => handlePageChange(pageNum)}
-            className={`font-bold px-3 py-1 rounded cursor-pointer ${current_page === pageNum ? "bg-blue-500 text-white" : "bg-white hover:bg-blue-500 hover:text-white"}`}
-          >
-            {pageNum}
-          </button>
-        ))}
+        {pages.map((pageNum, index) => {
+          const isCurrentPage = Number(current_page) === Number(pageNum); // Convert both to numbers
+          return (
+            <button
+              key={index}
+              onClick={() => typeof pageNum === "number" && handlePageChange(pageNum)}
+              className={`font-bold px-3 py-1 rounded cursor-pointer 
+                ${isCurrentPage ? "bg-blue-500 text-white" : "bg-white hover:bg-blue-500 hover:text-white"}`}
+              disabled={pageNum === "..."} // Disable placeholder pages
+            >
+              {pageNum}
+            </button>
+          );
+        })}
 
         {/* Next Button */}
         <button
