@@ -1,14 +1,22 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 
-const EditProductModal = ({ product, onClose, onEditSuccess }) => {
+const EditProductModal = ({ item, onClose, onEditSuccess }) => {
   const url = import.meta.env.VITE_API_URL;
 
+  console.log(item);
+
+  // const [formData, setFormData] = useState({
+  //   product_name: "", // Using item instead of product
+  //   category_id: "",  // Set category_id from item
+  //   original_price:  "",
+  //   quantity:"",
+  // });
   const [formData, setFormData] = useState({
-    product_name: product.product_name || "",
-    category_id: product.category_id || "",
-    original_price: product.original_price || "",
-    quantity: product.quantity || "",
+    product_name: item.product_name || "", // Using item instead of product
+    category_id: item.category_id || "",  // Set category_id from item
+    original_price: item.original_price || "",
+    quantity: item.quantity || "",
   });
 
   const [categories, setCategories] = useState([]);
@@ -53,10 +61,10 @@ const EditProductModal = ({ product, onClose, onEditSuccess }) => {
     const validationErrors = {};
 
     if (!formData.product_name) validationErrors.product_name = "Product name is required.";
-    if (!formData.category_id) validationErrors.category_id = "Category is required.";
-    if (!formData.original_price) validationErrors.original_price = "Price is required.";
-    if (!formData.quantity) validationErrors.quantity = "Quantity is required.";
-    if (formData.quantity <= 0) validationErrors.quantity = "Quantity must be greater than zero.";
+    if (!formData.category_id) validationErrors.category_id = "Category is required.";  // Required field
+    if (!formData.original_price) validationErrors.original_price = "Price is required.";  // Price must always be filled
+    if (!formData.quantity) validationErrors.quantity = "Quantity is required."; // Quantity is also required
+    if (formData.quantity <= 0) validationErrors.quantity = "Quantity must be greater than zero."; // Quantity validation
 
     setErrors(validationErrors);
     return Object.keys(validationErrors).length === 0; // Return true if no errors
@@ -65,12 +73,25 @@ const EditProductModal = ({ product, onClose, onEditSuccess }) => {
   const handleSave = async () => {
     if (!validateForm()) return; // If validation fails, stop here
 
+    // Check if any meaningful changes have been made (price or quantity)
+    const isPriceChanged = formData.original_price !== item.original_price;
+    const isQuantityChanged = formData.quantity !== item.quantity;
+    const isCategoryChanged = formData.category_id !== item.category_id;
+
+    // If no meaningful changes (only category), show a message and don't submit
+    if (!isPriceChanged && !isQuantityChanged && !isCategoryChanged) {
+      toast.error("No changes detected to save.");
+      return; // Stop here if no changes
+    }
+
     try {
-      await axios.put(`${url}/api/products/${product.product_id}`, formData);
-      onEditSuccess();
-      onClose();
+      await axios.put(`${url}/api/products/${item.product_id}`, formData);
+      onEditSuccess(); // Notify parent component of the successful edit
+      onClose(); // Close the modal
+      toast.success("Product updated successfully!"); // Show success message
     } catch (error) {
       console.error("Error updating product:", error);
+      toast.error("Failed to update product."); // Show error message
     }
   };
 
@@ -78,7 +99,7 @@ const EditProductModal = ({ product, onClose, onEditSuccess }) => {
     <div className="fixed top-0 left-0 w-full h-full bg-gray-800 bg-opacity-50 flex justify-center items-center z-50">
       <div className="bg-white p-6 rounded-lg shadow-2xl w-1/2">
         <h3 className="text-lg font-bold mb-4">Edit Product</h3>
-        
+
         {/* Product Name Field */}
         <div className="mb-4">
           <label htmlFor="product_name" className="block text-gray-700">
@@ -93,19 +114,7 @@ const EditProductModal = ({ product, onClose, onEditSuccess }) => {
             onChange={handleChange}
             className="w-full px-3 py-2 border border-gray-300 rounded-md"
           />
-          {errors.product_name && (
-            <p className="text-red-500 text-sm">{errors.product_name}</p>
-          )}
-        </div>
-
-        {/* Current Category */}
-        <div className="mb-4 flex flex-col">
-          <label htmlFor="current_category" className="block text-gray-700">
-            Current Category:
-          </label>
-          <span className="w-full px-3 py-2 border border-gray-300 bg-gray-200 text-blue-500 font-bold rounded-md">
-            {product.category_name}
-          </span>
+          {errors.product_name && <p className="text-red-500 text-sm">{errors.product_name}</p>}
         </div>
 
         {/* Category Select */}
@@ -116,7 +125,7 @@ const EditProductModal = ({ product, onClose, onEditSuccess }) => {
           <select
             id="category_id"
             name="category_id"
-            value={formData.category_id}
+            value={formData.category_id} // Default value is set here to the current category id
             onChange={handleChange}
             className="w-full px-3 py-2 border text-red-500 font-bold border-gray-300 rounded-md"
           >
@@ -131,9 +140,7 @@ const EditProductModal = ({ product, onClose, onEditSuccess }) => {
               ))
             )}
           </select>
-          {errors.category_id && (
-            <p className="text-red-500 text-sm">{errors.category_id}</p>
-          )}
+          {errors.category_id && <p className="text-red-500 text-sm">{errors.category_id}</p>}
         </div>
 
         {/* Price Field */}
@@ -150,9 +157,7 @@ const EditProductModal = ({ product, onClose, onEditSuccess }) => {
             placeholder="Enter price"
             className="w-full px-3 py-2 border border-gray-300 rounded-md"
           />
-          {errors.original_price && (
-            <p className="text-red-500 text-sm">{errors.original_price}</p>
-          )}
+          {errors.original_price && <p className="text-red-500 text-sm">{errors.original_price}</p>}
         </div>
 
         {/* Quantity Field */}
@@ -169,22 +174,13 @@ const EditProductModal = ({ product, onClose, onEditSuccess }) => {
             placeholder="Enter quantity"
             className="w-full px-3 py-2 border border-gray-300 rounded-md"
           />
-          {errors.quantity && (
-            <p className="text-red-500 text-sm">{errors.quantity}</p>
-          )}
+          {errors.quantity && <p className="text-red-500 text-sm">{errors.quantity}</p>}
         </div>
 
         {/* Buttons */}
         <div className="flex justify-end space-x-4">
-          <button onClick={onClose} className="bg-gray-300 px-4 py-2 rounded-md">
-            Cancel
-          </button>
-          <button
-            onClick={handleSave}
-            className="bg-blue-500 text-white px-4 py-2 rounded-md"
-          >
-            Save
-          </button>
+          <button onClick={onClose} className="bg-gray-300 px-4 py-2 rounded-md">Cancel</button>
+          <button onClick={handleSave} className="bg-blue-500 text-white px-4 py-2 rounded-md">Save</button>
         </div>
       </div>
     </div>

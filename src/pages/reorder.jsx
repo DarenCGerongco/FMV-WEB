@@ -91,7 +91,7 @@ const Reorder = () => {
 
   return (
     <div className="flex w-full bg-white">
-      <Navbar/>
+      <Navbar />
       <QuickButtons />
       <div className="w-4/5 mx-auto bg-white p-6 rounded-lg shadow-lg">
         <h1 className="text-2xl font-bold text-center mb-4">Product Reorder and Low Levels</h1>
@@ -100,8 +100,15 @@ const Reorder = () => {
         ) : (
           <>
             {/* Reorder Level Products Grid */}
-            <h2 className="text-xl font-bold mt-4">Reorder Level Products</h2>
-            <div className="grid grid-cols-6 gap-4 bg-blue-500 text-white font-bold p-2">
+            <div className=" flex items-center ">
+              <h2 className="text-xl font-bold mt-4">
+                Reorder Level Products
+              </h2>
+              <h2 className="ml-1 text-md font-bold mt-4 text-red-700">
+                 (!Warning Level! Product Quantity &lt;= Reorder Level || Safety Stock )
+               </h2>
+            </div>
+            <div className="grid grid-cols-6 gap-4 bg-red-500 text-white font-bold p-2">
               <div>Product ID</div>
               <div>Product Name</div>
               <div>Category</div>
@@ -132,8 +139,15 @@ const Reorder = () => {
             ))}
 
             {/* Low Product Level Grid */}
-            <h2 className="text-xl font-bold mt-4">Low Product Level</h2>
-            <div className="grid grid-cols-5 gap-4 bg-red-500 text-white font-bold p-2">
+            <div className="flex items-center">
+              <h2 h2 className="text-xl font-bold mt-4">
+                Low Product Level
+              </h2>
+              <h2 className="ml-1 text-md font-bold mt-4 text-red-700">
+                (Needs Attention Products &lt;= (equal or below) 120 )
+              </h2>
+            </div>
+            <div className="grid grid-cols-5 gap-4 bg-blue-500 text-white font-bold p-2">
               <div>Product ID</div>
               <div>Product Name</div>
               <div>Safety Stock</div>
@@ -146,7 +160,7 @@ const Reorder = () => {
                 <div>{product.product_id}</div>
                 <div>{product.product_name}</div>
                 <div>{product.safety_stock}</div>
-                <div>{product.current_quantity}</div>
+                <div>{product.quantity_left}</div>
                 <div>
                   <input
                     type="number"

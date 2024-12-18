@@ -73,6 +73,9 @@ function Delivery() {
       console.log("Fetching deliveries with params:", params); // Debug log
   
       const response = await axios.get(`${url}/api/deliveries/index`, { params });
+
+      console.log("Data sample", response.data)
+      
       setDeliveries(response.data.deliveries || []);
       setTotalPages(response.data.pagination?.lastPage || 1);
       setFilteredDeliveries(response.data.deliveries || []);

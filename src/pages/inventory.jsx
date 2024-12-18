@@ -59,6 +59,8 @@ const fetchProducts = async (page = 1) => {
       },
     });
 
+
+
     // Update items and pagination
     setItems(response.data.products || []);
     setTotalAssets(response.data.totalValue || 0);
@@ -111,8 +113,9 @@ const fetchProducts = async (page = 1) => {
     setShowRestockModal(true);
   };
 
-  const handleEditClick = (product) => {
-    setEditProduct({ ...product, category_name: product.category_name });
+  const handleEditClick = (item) => {
+    setEditProduct({ ...item  });
+    // console.log("HandleEditClick", item)
     setShowEditProductModal(true);
   };
 
@@ -152,6 +155,8 @@ const fetchProducts = async (page = 1) => {
         document.removeEventListener("mousedown", handleClickOutside);
       };
     }, []);
+
+    // console.log(items)
 
   const renderPagination = () => {
     const { currentPage, lastPage } = pagination;
@@ -410,7 +415,7 @@ const fetchProducts = async (page = 1) => {
         )}
         {showEditProductModal && editProduct && (
           <EditProductModal
-            product={editProduct}
+            item={editProduct}
             onClose={() => setShowEditProductModal(false)}
             onEditSuccess={() => fetchProducts(pagination.currentPage)}
           />
