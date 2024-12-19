@@ -17,7 +17,7 @@ const Reorder = () => {
   const [loading, setLoading] = useState(false);
   const [pagination, setPagination] = useState({
     total: 0,
-    per_page: 10,
+    per_page: 20,
     current_page: 1,
     last_page: 1,
   });
@@ -28,8 +28,12 @@ const Reorder = () => {
     setLoading(true);
     try {
       const response = await axios.get(`${url}/api/view/reorder-level`, {
-        params: { page, limit: 10 }, // Send page and limit to the backend
+        params: { page, limit: 20 },
       });
+
+      console.log("Reorder Products State:", response.data.data);
+
+      
       setReorderProducts(response.data.data);
       setPagination(response.data.pagination); // Set pagination data
     } catch (error) {
@@ -42,43 +46,49 @@ const Reorder = () => {
   const handleQuantityChange = (productId, quantity) => {
     setSelectedProducts((prev) => ({
       ...prev,
-      [productId]: { quantity: parseInt(quantity, 10) || 0 },
+      [productId]: {
+        ...prev[productId], // Keep existing product details
+        quantity: parseInt(quantity, 10) || 0, // Update only quantity
+      },
     }));
   };
+  
 
   const openModal = () => {
-    const hasValidSelection = Object.values(selectedProducts).some(
-      (product) => product.quantity > 0
-    );
-    if (!hasValidSelection) {
-      alert("No products selected with valid quantities.");
+    if (Object.keys(selectedProducts).length === 0) {
+      alert("No products selected. Please select at least one product.");
       return;
     }
     setShowModal(true);
   };
 
   const submitRestocks = async () => {
+    const transactions = Object.entries(selectedProducts)
+      .filter(([_, value]) => value.quantity > 0) // Ensure quantity > 0
+      .map(([productId, { quantity }]) => ({
+        user_id: userID,
+        product_id: productId,
+        quantity,
+      }));
+  
+    if (transactions.length === 0) {
+      alert("Please enter valid restock quantities before submitting.");
+      return;
+    }
+  
     try {
-      const transactions = Object.entries(selectedProducts)
-        .filter(([_, value]) => value.quantity > 0)
-        .map(([productId, { quantity }]) => ({
-          user_id: userID,
-          product_id: productId,
-          quantity,
-        }));
-
       for (const transaction of transactions) {
         await axios.post(`${url}/api/products-restock`, transaction);
       }
-
       alert("Restocks successfully submitted!");
       setShowModal(false);
-      fetchProducts();
+      fetchProducts(); // Refresh product list
     } catch (error) {
       console.error("Error submitting restocks:", error);
       alert("Failed to submit restocks. Please try again.");
     }
   };
+  
 
   const handlePageChange = (newPage) => {
     if (newPage < 1 || newPage > pagination.last_page) return;
@@ -195,26 +205,39 @@ const Reorder = () => {
                 <div>Reorder Level</div>
                 <div>Restock Quantity</div>
               </div>
-
-              {reorderProducts.map((product) => (
+              {reorderProducts.map((product, index) => (
                 <div
-                  key={product.product_id}
+                  key={index}
                   className="grid grid-cols-6 gap-4 rounded items-center border shadow-md my-3 duration-300 hover:bg-red-300 even:bg-gray-100 p-2"
                 >
-                  <div>{product.product_id}</div>
-                  <div>{product.product_name}</div>
-                  <div>{product.category_name}</div>
-                  <div>{product.current_quantity}</div>
-                  <div>{product.reorder_level}</div>
+                  {/* Checkbox for selecting the product */}
                   <div>
                     <input
-                      type="number"
-                      min="1"
-                      className="border rounded p-1 w-full"
-                      placeholder="Enter quantity"
-                      onChange={(e) => handleQuantityChange(product.product_id, e.target.value)}
+                      type="checkbox"
+                      className="form-checkbox h-5 w-5 text-blue-600"
+                      checked={!!selectedProducts[product.product_id]} // Keep the selection state
+                      onChange={(e) => {
+                        const isChecked = e.target.checked;
+                        setSelectedProducts((prev) => {
+                          const updated = { ...prev };
+                          if (isChecked) {
+                            updated[product.product_id] = {
+                              ...product, // Store entire product data
+                              quantity: 0, // Add default quantity
+                            };
+                          } else {
+                            delete updated[product.product_id]; // Remove if unchecked
+                          }
+                          return updated;
+                        });
+                      }}
                     />
                   </div>
+                  <div>{product.product_id}</div>
+                  <div>{product.product_name}</div>
+                  <div>{product.category_name || "N/A"}</div>
+                  <div>{product.current_quantity || "Missing"}</div>
+                  <div>{product.reorder_level || 0}</div>
                 </div>
               ))}
             </div>
@@ -232,15 +255,45 @@ const Reorder = () => {
         )}
         {showModal && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white p-6 rounded-lg shadow-lg w-1/3">
-              <h2 className="text-xl font-bold mb-4">Confirm Restock</h2>
-              <ul>
-                {Object.entries(selectedProducts).map(([productId, { quantity }]) => (
-                  <li key={productId}>
-                    Product ID {productId} - Quantity: {quantity} units
-                  </li>
-                ))}
-              </ul>
+            <div
+              className="bg-white p-6 rounded-lg shadow-lg w-2/3 max-h-[80vh] overflow-y-auto"
+            >
+              <h2 className="text-xl font-bold mb-4">Enter Restock Quantities</h2>
+              <table className="w-full table-auto border-collapse border border-gray-300">
+                <thead>
+                  <tr className="bg-gray-100">
+                    <th className="border border-gray-300 px-4 py-2">Product ID</th>
+                    <th className="border border-gray-300 px-4 py-2">Product Name</th>
+                    <th className="border border-gray-300 px-4 py-2">Current Quantity</th>
+                    <th className="border border-gray-300 px-4 py-2">Reorder Level</th>
+                    <th className="border border-gray-300 px-4 py-2">Enter Quantity</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {Object.entries(selectedProducts).map(([productId, product]) => (
+                    <tr key={productId}>
+                      <td className="border border-gray-300 px-4 py-2">{productId}</td>
+                      <td className="border border-gray-300 px-4 py-2">{product.product_name}</td>
+                      <td className="border border-gray-300 px-4 py-2">{product.current_quantity}</td>
+                      <td className="border border-gray-300 px-4 py-2">{product.reorder_level}</td>
+                      <td className="border border-gray-300 px-4 py-2">
+                        <input
+                          type="number"
+                          min="1"
+                          className="border rounded p-1 w-full"
+                          placeholder="Enter quantity"
+                          onChange={(e) =>
+                            setSelectedProducts((prev) => ({
+                              ...prev,
+                              [productId]: { ...product, quantity: parseInt(e.target.value, 10) || 0 },
+                            }))
+                          }
+                        />
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
               <div className="flex justify-end space-x-4 mt-4">
                 <button
                   onClick={() => setShowModal(false)}
