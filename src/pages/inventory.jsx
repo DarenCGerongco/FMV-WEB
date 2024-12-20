@@ -546,7 +546,7 @@ const fetchProducts = async (page = 1, filterReorder = false) => {
             </div>
           )}
         </div>
-          {showRestockModal && (
+          {/* {showRestockModal && (
             <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
               <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-4xl max-h-[80vh] overflow-y-auto">
                 <h2 className="text-xl font-bold mb-4">Enter Restock Quantities</h2>
@@ -604,7 +604,7 @@ const fetchProducts = async (page = 1, filterReorder = false) => {
 
               </div>
             </div>
-          )}
+          )} */}
         {/* Modals */}
         {showAddProductModal && (
           <AddProductModal

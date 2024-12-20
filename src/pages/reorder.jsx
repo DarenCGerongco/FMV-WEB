@@ -189,7 +189,11 @@ const Reorder = () => {
       <Navbar />
       <QuickButtons />
       <div className="w-4/5 mx-auto bg-white p-6 rounded-lg shadow-lg">
-        <h1 className="text-2xl font-bold text-center mb-4">Product Reorder and Low Levels</h1>
+        <div className="">
+          <h1 className="text-2xl font-bold text-center mb-4">
+            Product Reorder and Low Levels
+          </h1>
+        </div>
         {loading ? (
           <div className="text-center">
             <h1>Loading Reorder Data...</h1>
@@ -197,21 +201,24 @@ const Reorder = () => {
         ) : (
           <>
             <div className="border p-2 rounded">
-              <div className="grid grid-cols-6 gap-4 bg-red-500 text-white font-bold p-2">
+              {/* Header Row */}
+              <div className="grid grid-cols-8 gap-4 bg-red-500 rounded-md text-white font-bold p-2 ">
+                <div className="text-left">Select</div>
                 <div>Product ID</div>
-                <div>Product Name</div>
-                <div>Category</div>
-                <div>Quantity</div>
+                <div className="col-span-2">Product Name</div>
+                <div className="col-span-2">Category</div>
+                <div>Current Quantity</div>
                 <div>Reorder Level</div>
-                <div>Restock Quantity</div>
               </div>
+
+              {/* Product Rows */}
               {reorderProducts.map((product, index) => (
                 <div
                   key={index}
-                  className="grid grid-cols-6 gap-4 rounded items-center border shadow-md my-3 duration-300 hover:bg-red-300 even:bg-gray-100 p-2"
+                  className="grid grid-cols-8 gap-4  rounded items-center border shadow-md my-3 duration-300 hover:bg-red-300 even:bg-gray-100 p-2"
                 >
                   {/* Checkbox for selecting the product */}
-                  <div>
+                  <div className="">
                     <input
                       type="checkbox"
                       className="form-checkbox h-5 w-5 text-blue-600"
@@ -234,14 +241,13 @@ const Reorder = () => {
                     />
                   </div>
                   <div>{product.product_id}</div>
-                  <div>{product.product_name}</div>
-                  <div>{product.category_name || "N/A"}</div>
+                  <div className="col-span-2">{product.product_name}</div>
+                  <div className="col-span-2">{product.category_name || "N/A"}</div>
                   <div>{product.current_quantity || "Missing"}</div>
                   <div>{product.reorder_level || 0}</div>
                 </div>
               ))}
             </div>
-
             <PaginationControls />
             <div className="text-right mt-4">
               <button
