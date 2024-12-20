@@ -45,39 +45,35 @@ function Inventory() {
     }
   };
 
-// Fetch products with a limit of 15 items per page
-const fetchProducts = async (page = 1, filterReorder = false) => {
-  setLoading(true);
-  try {
-    const response = await axios.get(`${url}/api/products`, {
-      params: {
-        page,
-        limit: 30,
-        categories: selectedCategories.length > 0 ? selectedCategories.join(",") : null,
-        search: searchInput,
-        sort_by: sortBy,
-        sort_order: sortOrder,
-      },
-    });
-
-    let products = response.data.products || [];
-
-    // Apply filtering based on the toggle
-    if (filterReorder) {
-      products = products.filter((product) => product.needs_reorder === true);
+  const fetchProducts = async (page = 1, filterReorder = false) => {
+    setLoading(true);
+    try {
+      const response = await axios.get(`${url}/api/products`, {
+        params: {
+          page,
+          limit: 30,
+          categories: selectedCategories.length > 0 ? selectedCategories.join(",") : null,
+          search: searchInput,
+          sort_by: sortBy,
+          sort_order: sortOrder,
+          needs_reorder: filterReorder ? true : null, // Pass the filter to the backend
+        },
+      });
+  
+      const products = response.data.products || [];
+      setItems(products);
+  
+      setPagination({
+        currentPage: response.data.pagination.currentPage,
+        lastPage: response.data.pagination.lastPage,
+      });
+    } catch (error) {
+      console.error("Error fetching products:", error);
+    } finally {
+      setLoading(false);
     }
-
-    setItems(products);
-    setPagination({
-      currentPage: response.data.pagination.currentPage,
-      lastPage: response.data.pagination.lastPage,
-    });
-  } catch (error) {
-    console.error("Error fetching products:", error);
-  } finally {
-    setLoading(false);
-  }
-};
+  };
+  
 
 
 
@@ -187,7 +183,7 @@ const fetchProducts = async (page = 1, filterReorder = false) => {
         <div className="flex flex-col justify-center w-full space-x-2 my-7">
           <div className="">
             {isRestockMode && (
-                <div className="text-center text-red-500 font-bold mt-4">
+                <div className="text-center  mb-8  text-red-500 font-bold mt-4">
                   You are in Restock Mode. Select products to restock.
                 </div>
               )}
@@ -343,18 +339,18 @@ const fetchProducts = async (page = 1, filterReorder = false) => {
                   </h1>
                   <MdExpandMore/>
                 </div>
-                <div
-                  className={`ml-1 cursor-pointer relative flex p-2 ${
-                    isReorderFilterEnabled ? "bg-blue-500 text-white" : "bg-white text-black"
-                  } hover:bg-blue-500 hover:text-white shadow-md duration-200 rounded-full justify-center items-center`}
-                  onClick={() => {
-                    setIsReorderFilterEnabled((prev) => !prev); // Toggle reorder filter
-                    setPagination((prev) => ({ ...prev, currentPage: 1 }));
-                    fetchProducts(1, !isReorderFilterEnabled); // Pass updated filter state
-                  }}
-                >
-                  <h1 className="text-xs font-bold">Reorder</h1>
-                </div>
+                  <div
+                    className={`ml-1 cursor-pointer relative flex p-2 ${
+                      isReorderFilterEnabled ? "bg-blue-500 text-white" : "bg-white text-black"
+                    } hover:bg-blue-500 hover:text-white shadow-md duration-200 rounded-full justify-center items-center`}
+                    onClick={() => {
+                      setIsReorderFilterEnabled((prev) => !prev); // Toggle reorder filter
+                      setPagination((prev) => ({ ...prev, currentPage: 1 }));
+                      fetchProducts(1, !isReorderFilterEnabled); // Pass updated filter state
+                    }}
+                  >
+                    <h1 className="text-xs font-bold">Reorder</h1>
+                  </div>
                   <div
                   className={` p-2  cursor-pointer ${
                     isRestockMode ? "bg-red-500 " : "bg-green-500"
@@ -546,65 +542,6 @@ const fetchProducts = async (page = 1, filterReorder = false) => {
             </div>
           )}
         </div>
-          {/* {showRestockModal && (
-            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-              <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-4xl max-h-[80vh] overflow-y-auto">
-                <h2 className="text-xl font-bold mb-4">Enter Restock Quantities</h2>
-                <table className="w-full table-auto border-collapse border border-gray-300">
-                  <thead>
-                    <tr className="bg-gray-100">
-                      <th className="border border-gray-300 px-4 py-2 text-center">Product ID</th>
-                      <th className="border border-gray-300 px-4 py-2 text-center">Product Name</th>
-                      <th className="border border-gray-300 px-4 py-2 text-center">Current Quantity</th>
-                      <th className="border border-gray-300 px-4 py-2 text-center">Enter Restock Quantity</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {Object.entries(selectedProducts).map(([productId, product]) => (
-                      <tr key={productId}>
-                        <td className="border border-gray-300 px-4 py-2 text-center">{productId}</td>
-                        <td className="border border-gray-300 px-4 py-2 text-center">{product.product_name}</td>
-                        <td className="border border-gray-300 px-4 py-2 text-center">{product.quantity || 0}</td>
-                        <td className="border border-gray-300 px-4 py-2 text-center">
-                          <input
-                            type="number"
-                            min="1"
-                            className="border rounded p-1 w-full"
-                            placeholder="Enter quantity"
-                            value={product.restockQuantity || ""}
-                            onChange={(e) =>
-                              setSelectedProducts((prev) => ({
-                                ...prev,
-                                [productId]: {
-                                  ...product,
-                                  restockQuantity: parseInt(e.target.value, 10) || 0, // Track restock quantity separately
-                                },
-                              }))
-                            }
-                          />
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-                <div className="flex justify-end mt-4">
-                  <button
-                    onClick={() => setShowRestockModal(false)}
-                    className="bg-gray-300 px-4 py-2 rounded hover:bg-gray-400"
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    onClick={submitRestocks}
-                    className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-700"
-                  >
-                    Submit
-                  </button>
-                </div>
-
-              </div>
-            </div>
-          )} */}
         {/* Modals */}
         {showAddProductModal && (
           <AddProductModal

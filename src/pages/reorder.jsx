@@ -243,7 +243,7 @@ const Reorder = () => {
                   <div>{product.product_id}</div>
                   <div className="col-span-2">{product.product_name}</div>
                   <div className="col-span-2">{product.category_name || "N/A"}</div>
-                  <div>{product.current_quantity || "Missing"}</div>
+                  <div>{product.current_quantity}</div>
                   <div>{product.reorder_level || 0}</div>
                 </div>
               ))}
