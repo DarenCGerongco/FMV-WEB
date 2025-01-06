@@ -58,10 +58,19 @@ function Employee() {
           params: { page: currentPage, per_page: 20 },
         });
 
-        console.log("Full API Response:", response.data);
+        // console.log("Full API Response:", response.data);
 
         if (Array.isArray(response.data.data.data)) {
-          setDeliveryMen(response.data.data.data);
+          const formattedData = response.data.data.data.map((user) => ({
+            ...user,
+            created_at: new Date(user.created_at).toLocaleDateString("en-us",{
+              month: "2-digit",
+              day: "2-digit",
+              year: "numeric",
+            }),
+          }));
+
+          setDeliveryMen(formattedData);
           setTotalPages(response.data.data.last_page);
         } else {
           console.error("The API response does not contain an array for 'data'");
@@ -129,7 +138,7 @@ function Employee() {
 
   const submitAddModal = async () => {
     try {
-      const response = await axios.post(`${url}/api/users`, {
+      const response = await axios.post(`${url}/api/users/employee`, {
         name: newDeliveryMan.name,
         email: newDeliveryMan.email || null, // Optional field
         username: newDeliveryMan.username,
@@ -184,6 +193,8 @@ function Employee() {
     }
   };
 
+  console.log(deliveryMen);
+
   return (
     <div className="flex w-full bg-100">
       <Navbar />
@@ -208,7 +219,7 @@ function Employee() {
               />
             </div>
             <button
-              className="flex bg-blue-500 text-white w-[10rem] duration-200 justify-center rounded hover:bg-blue-700 rounded-lg items-center font-bold"
+              className="flex bg-blue-500 text-white w-[10rem] duration-200 justify-center rounded hover:bg-blue-700 items-center font-bold"
               onClick={openAddModal}
             >
               Add Employee
@@ -218,20 +229,25 @@ function Employee() {
 
         <div className="w-4/5 mx-auto p-5 m-3 rounded-lg bg-white shadow-lg shadow-gray-400">
           <div id="delivery-man-container" className="mt-4 space-y-1">
-            <div className="grid grid-cols-6 gap-1 font-bold p-1">
+            <div className="grid grid-cols-8 gap-1 font-bold p-1">
               <div className="col-span-2">Name</div>
               <div className="col-span-2">Number</div>
-              <div className="col-span-2 text-right">Options</div>
+              <div className="col-span-1">Created</div>
+              <div className="col-span-1">User Type</div>
+              <div className="col-span-2 text-center">Options</div>
             </div>
 
             {filteredDeliveryMen.map((deliveryMan, index) => (
               <div
                 key={index}
-                className="grid grid-cols-6 rounded-lg hover:bg-blue-50 duration-300 bg-white shadow-lg shadow-gray-400 p-3"
+                className="grid text-sm border gap-1 grid-cols-8 rounded hover:bg-blue-50 duration-300 bg-white shadow-md py-2 px-1"
               >
                 <div className="col-span-2">{deliveryMan.name}</div>
                 <div className="col-span-2">{deliveryMan.number}</div>
-                <div className="col-span-2 flex justify-end items-center space-x-2">
+                <div className="col-span-1">{deliveryMan.created_at}</div>
+                <div className="col-span-1">{deliveryMan.user_type?.user_type}</div>
+                {/* <div className="col-span-1">{deliveryMan}</div> */}
+                <div className="col-span-2 flex justify-center space-x-2">
                   <img
                     src="./src/assets/edit.png"
                     alt="Edit"

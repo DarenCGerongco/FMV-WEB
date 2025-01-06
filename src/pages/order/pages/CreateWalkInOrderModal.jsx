@@ -316,13 +316,13 @@ const CreateWalkInOrderModal = ({ isOpen, onClose }) => {
           </div>
           <div className=" rounded-lg transform transition-all w-full max-h-[100%] overflow-hidden flex flex-row">
           {/* Scrollable Container */}
-            <div className="flex-1 flex flex-col overflow-hidden  border-b border-gray-300">
+            <div className="flex-1 flex flex-col overflow-hidden border-b border-gray-300">
               {/* Header Row */}
               <div className="grid grid-cols-9 border-b bg-gray-200 rounded font-bold sticky top-0 z-10">
-                <div className="col-span-1 ">ID</div>
+                <div className="col-span-1">ID</div>
                 <div className="col-span-3">Product Name</div>
                 <div className="col-span-3">Category Name</div>
-                <div className="col-span-1 ">Price</div>
+                <div className="col-span-1">Price</div>
                 <div className="col-span-1 text-center">Quantity</div>
               </div>
               {/* Scrollable Product Rows */}
@@ -335,7 +335,7 @@ const CreateWalkInOrderModal = ({ isOpen, onClose }) => {
                   filteredProducts.map((product) => (
                     <div
                       key={product.product_id}
-                      className={`grid grid-cols-9 border-b p-1 m-1 cursor-pointer rounded hover:bg-blue-500 hover:text-white duration-100  ${
+                      className={`grid grid-cols-9 border-b p-1 m-1 cursor-pointer rounded hover:bg-blue-500 hover:text-white duration-100 ${
                         chosenProducts[product.product_id]
                           ? 'bg-white'
                           : product.needs_reorder
@@ -344,10 +344,18 @@ const CreateWalkInOrderModal = ({ isOpen, onClose }) => {
                       }`}
                       onClick={() => handleProductClick(product)}
                     >
-                      <div className="col-span-1 font-bold text-left">{product.product_id}</div>
+                      <div className="col-span-1 flex items-center">
+                        <input
+                          type="checkbox"
+                          checked={!!chosenProducts[product.product_id]}
+                          onChange={() => handleProductClick(product)}
+                          className="mr-2 pointer-events-none"
+                        />
+                        <span className="font-bold text-left">{product.product_id}</span>
+                      </div>
                       <div className="col-span-3">{product.product_name}</div>
-                      <div className="col-span-3 ">{product.category_name}</div>
-                      <div className="col-span-1 ">₱ {product.original_price}</div>
+                      <div className="col-span-3">{product.category_name}</div>
+                      <div className="col-span-1">₱ {product.original_price}</div>
                       <div
                         className={`col-span-1 text-center ${
                           product.needs_reorder ? 'text-red-600' : ''
@@ -451,7 +459,7 @@ const CreateWalkInOrderModal = ({ isOpen, onClose }) => {
                         <span className="text-md font-bold text-blue-600  ">{product.product_name}</span>
                         <button
                           onClick={() => handleProductClick(product)}
-                          className="text-red-500 font-bold hover:text-red-700"
+                          className="text-red-500 font-bold border px-2 rounded-xl hover:bg-gray-200 duration-200 shadow-md hover:text-red-700"
                         >
                           Remove
                         </button>

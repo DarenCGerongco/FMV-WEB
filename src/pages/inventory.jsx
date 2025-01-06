@@ -443,7 +443,7 @@ function Inventory() {
                   <div className="col-span-3 text-left">Product Name</div>
                   <div className="col-span-3 text-left">Category</div>
                   <div className="text-center">Price</div>
-                  <div className="text-center">Quantity</div>
+                  <div className="text-center">In Stock</div>
                   {!isRestockMode && (
                     <div className="text-center">Actions</div>
                   )}

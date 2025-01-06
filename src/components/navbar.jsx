@@ -99,7 +99,7 @@ const Navbar = () => {
   return (
     <nav className="shadow-[20px] sticky top-0 left-0 w-72 h-screen bg-custom-blue p-4 flex flex-col justify-between items-center z-10">
       <div className="flex flex-col items-center md:items-start w-full">
-        <div className="flex items-center mb-3 justify-center md:justify-start">
+        <div className="flex items-center mb-3 justify-center md:justify-start ">
           <h1 className="text-white text-2xl md:text-3xl font-bold mr-3 text-center">
             FMV Management System
           </h1>
@@ -109,7 +109,7 @@ const Navbar = () => {
             className="w-24 h-auto md:max-w-16" 
           />
         </div>
-        <div className="mt-8 w-full">
+        <div className="mt-8 w-full ">
           <h2 className="text-white text-xl md:text-2xl mb-5 md:ml-0 ml-2 flex items-center text-center md:text-left">
             <img
               src={dashboardImage}
@@ -119,16 +119,16 @@ const Navbar = () => {
               DASHBOARD
           </h2>
           <ul>
-            <li className={`my-3 flex items-center transition pl-2 md:pl-5 group ${isActive('/overview') ? 'bg-white text-black rounded' : 'hover:bg-white hover:text-black rounded'}`}>
+            <li className={`my-3 hover:translate-x-3 duration-200 flex items-center transition pl-2 md:pl-5 group ${isActive('/overview') ? 'bg-white text-black rounded ' : 'hover:bg-white  hover:text-black rounded'}`}>
               <img
                 src={overviewImage}
                 alt="Overview Icon"
                 className={`w-6 h-6 mr-2 transition group-hover:invert-0 ${isActive('/overview') ? 'invert-0' : 'invert'}`}
               />
-              <Link to="/overview" className={`text-base md:text-xl ${isActive('/overview') ? 'text-black' : 'text-white group-hover:text-black'}`}>OVERVIEW</Link>
+              <Link to="/overview" className={`text-base md:text-xl ${isActive('/overview') ? 'text-black ' : 'text-white group-hover:text-black '}`}>OVERVIEW</Link>
             </li>
               <div className="h-[0.5px] w-full bg-white"></div>
-            <li className={`my-3 flex items-center transition pl-2 md:pl-5 group ${isActive('/order') ? 'bg-white text-black rounded' : 'hover:bg-white hover:text-black rounded'}`}>
+            <li className={`my-3 flex hover:translate-x-3 duration-200 items-center transition pl-2 md:pl-5 group ${isActive('/order') ? 'bg-white text-black rounded' : 'hover:bg-white hover:text-black rounded'}`}>
               <img
                 src={orderImage}
                 alt="Order Icon"
@@ -136,7 +136,7 @@ const Navbar = () => {
               />
                 <Link to="/order" className={`text-base md:text-xl ${isActive('/order') ? 'text-black' : 'text-white group-hover:text-black'}`}>ORDER</Link>
             </li>
-            <li className={`my-3 flex items-center transition pl-2 md:pl-5 group ${isActive('/delivery') ? 'bg-white text-black rounded' : 'hover:bg-white hover:text-black rounded'}`}>
+            <li className={`my-3 flex hover:translate-x-3 duration-200 items-center transition pl-2 md:pl-5 group ${isActive('/delivery') ? 'bg-white text-black rounded' : 'hover:bg-white hover:text-black rounded'}`}>
               <img
                 src={deliveryImage}
                 alt="Delivery Icon"
@@ -146,7 +146,7 @@ const Navbar = () => {
             </li>
             <div className="h-[0.5px] w-full bg-white"></div>
 
-            <li className={`my-3 flex items-center transition pl-2 md:pl-5 group ${isActive('/sales') ? 'bg-white text-black rounded' : 'hover:bg-white hover:text-black rounded'}`}>
+            <li className={`my-3 flex hover:translate-x-3 duration-200 items-center transition pl-2 md:pl-5 group ${isActive('/sales') ? 'bg-white text-black rounded' : 'hover:bg-white hover:text-black rounded'}`}>
               <img
                 src={salesImage}
                 alt="Sales Icon"
@@ -155,26 +155,26 @@ const Navbar = () => {
               <Link to="/sales" className={`text-base md:text-xl ${isActive('/sales') ? 'text-black' : 'text-white group-hover:text-black'}`}>SALES</Link>
             </li>
 
-            <li className={`my-3 flex items-center transition pl-2 md:pl-5 group ${isActive('/inventory') ? 'bg-white text-black rounded' : 'hover:bg-white hover:text-black rounded'}`}>
-            <img
-            src={inventoryImage}
-            alt="Inventory Icon"
-            className={`w-6 h-6 mr-2 transition group-hover:invert-0 ${isActive('/inventory') ? 'invert-0' : 'invert'}`}
-            />
-              <Link to="/inventory" className={`text-base md:text-xl ${isActive('/inventory') ? 'text-black' : 'text-white group-hover:text-black'}`}>INVENTORY</Link>
+            <li className={`my-3 flex hover:translate-x-3 duration-200 items-center transition pl-2 md:pl-5 group ${isActive('/inventory') ? 'bg-white text-black rounded' : 'hover:bg-white hover:text-black rounded'}`}>
+              <img
+              src={inventoryImage}
+              alt="Inventory Icon"
+              className={`w-6 h-6 mr-2 transition group-hover:invert-0 ${isActive('/inventory') ? 'invert-0' : 'invert'}`}
+              />
+                <Link to="/inventory" className={`text-base md:text-xl ${isActive('/inventory') ? 'text-black' : 'text-white group-hover:text-black'}`}>INVENTORY</Link>
             </li>
 
-            <li className={`my-3 flex items-center transition pl-2 md:pl-5 group ${isActive('/employee') ? 'bg-white text-black rounded' : 'hover:bg-white hover:text-black rounded'}`}>
-            <img
-            src={employeeImage}
-            alt="Employee Icon"
-            className={`w-6 h-6 mr-2 transition group-hover:invert-0 ${isActive('/employee') ? 'invert-0' : 'invert'}`}
+            <li className={`my-3 flex hover:translate-x-3 duration-200 items-center transition pl-2 md:pl-5 group ${isActive('/employee') ? 'bg-white text-black rounded' : 'hover:bg-white hover:text-black rounded'}`}>
+              <img
+              src={employeeImage}
+              alt="Employee Icon"
+              className={`w-6 h-6 mr-2 transition group-hover:invert-0 ${isActive('/employee') ? 'invert-0' : 'invert'}`}
             />
               <Link to="/employee" className={`text-base md:text-xl ${isActive('/employee') ? 'text-black' : 'text-white group-hover:text-black'}`}>EMPLOYEE</Link>
             </li>
             <div className="h-[0.5px] w-full bg-white"></div>
 
-            <li className={`my-3 flex items-center transition pl-2 md:pl-5 group ${isActive('/configuration') ? 'bg-white text-black rounded' : 'hover:bg-white hover:text-black rounded'}`}>
+            <li className={`my-3 flex hover:translate-x-3 duration-200 items-center transition pl-2 md:pl-5 group ${isActive('/configuration') ? 'bg-white text-black rounded' : 'hover:bg-white hover:text-black rounded'}`}>
               <img
                 src={settingsImage}
                 alt="Settings Icon"
@@ -187,7 +187,7 @@ const Navbar = () => {
       </div>
       <div className="w-full">
           {/* Reorder Items */}
-          <li className={`my-3 flex items-center pl-2 md:pl-5 group relative ${isActive('/inventory/reorder') ? 'bg-white text-black rounded' : 'hover:bg-white hover:text-black rounded'}`}>
+          <li className={`my-3 flex  hover:translate-x-3 duration-200 items-center pl-2 md:pl-5 group relative ${isActive('/inventory/reorder') ? 'bg-white text-black rounded' : 'hover:bg-white hover:text-black rounded'}`}>
             <Link to="/inventory/reorder" className={`text-base md:text-xl ${isActive('/inventory/reorder') ? 'text-black' : 'text-white group-hover:text-black'}`}>
               REORDER ITEMS
               {reorderCount > 0 && (
@@ -197,7 +197,7 @@ const Navbar = () => {
               )}
             </Link>
           </li>
-        <li className="my-3 flex items-center transition duration-300 group hover:bg-white hover:text-black rounded pl-2 md:pl-5">
+        <li className="my-3 flex hover:translate-x-3 duration-200 items-center transition group hover:bg-white hover:text-black rounded pl-2 md:pl-5">
         <img
             src={logoutImage}
             alt="Settings Icon"
