@@ -41,11 +41,14 @@ const InventoryDetails = () => {
         params: { page: Number(page), transactionType },
       });
   
+      console.log(response.data);
+
       const {
         product_id,
         product_name,
         product_created_date,
         remaining_quantity,
+        total_restocked_quantity,
         transactions: { data: transactionData, pagination: paginationData },
       } = response.data;
   
@@ -57,6 +60,7 @@ const InventoryDetails = () => {
         product_name,
         product_created_date,
         remaining_quantity,
+        total_restocked_quantity,
       });
   
       const sortedTransactions = transactionData.sort((a, b) => new Date(b.date) - new Date(a.date));
@@ -208,15 +212,21 @@ const InventoryDetails = () => {
                   Product ID: {productDetails.product_id} - {productDetails.product_name}
                 </h1>
                 <p>
-                  <strong>Created On:</strong> {formatDate(productDetails.product_created_date)}
+                  <span className="font-bold">Created On:</span> {formatDate(productDetails.product_created_date)}
                 </p>
-                <p>
-                  <strong>In-Stock:</strong> {productDetails.remaining_quantity}
+                <p className="text-red-600 font-bold flex items-center">
+                  <span className="font-bold">In Stock:</span> {productDetails.remaining_quantity}
+                  <span className="ml-1 flex items-center">
+                    <span className="live-circle"></span>
+                  </span>
+                </p>
+                <p className="text-green-600 font-bold">
+                  <span>Total Stock Accumulated:</span> {productDetails.total_restocked_quantity}
                 </p>
               </div>
               {/* Restock Button */}
               <button
-                className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700"
+                className="px-4 py-2 font-bold  bg-blue-500 text-white rounded hover:bg-white hover:text-blue-500 shadow-md border duration-200"
                 onClick={() => setShowRestockModal(true)}
               >
                 Restock
