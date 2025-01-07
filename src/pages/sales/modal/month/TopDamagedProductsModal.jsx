@@ -112,7 +112,7 @@ const TopDamagedProductsModal = ({ onClose, month, year }) => {
             <table className="w-full border-collapse">
               <thead>
                 <tr className="border-b bg-gray-200 text-left">
-                  <th className="p-3 font-bold">#</th>
+                  <th className="p-3 font-bold">ID#</th>
                   <th className="p-3 font-bold">Product Name</th>
                   <th className="p-3 font-bold">Price (Php)</th>
                   <th className="p-3 font-bold">Total Damages</th>
@@ -120,8 +120,8 @@ const TopDamagedProductsModal = ({ onClose, month, year }) => {
               </thead>
               <tbody>
                 {topProducts.map((product, index) => (
-                  <tr key={product.product_id} className="border-b hover:bg-gray-100">
-                    <td className="p-3">{index + 1 + (pagination.currentPage - 1) * pagination.perPage}</td>
+                  <tr key={index} className="border-b hover:bg-gray-100">
+                    <td className="p-3">{product.product_id}</td>
                     <td className="p-3">{product.product_name}</td>
                     <td className="p-3">₱ {parseFloat(product.price).toLocaleString()}</td>
                     <td className="p-3">{product.total_damages}</td>
