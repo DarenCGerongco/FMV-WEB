@@ -6,6 +6,7 @@ import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
 ChartJS.register(ArcElement, Tooltip, Legend);
 
 const TopDamagedProductsModal = ({ onClose, month, year }) => {
+  
   const [topProducts, setTopProducts] = useState([]);
   const [pagination, setPagination] = useState({
     total: 0,
@@ -18,11 +19,11 @@ const TopDamagedProductsModal = ({ onClose, month, year }) => {
 
   const url = import.meta.env.VITE_API_URL;
 
-  // Fetch Pie Chart data (always fetch top 20)
+  // Fetch Pie Chart data
   const fetchTopChartData = async () => {
     try {
       const response = await axios.get(`${url}/api/Insights/View/Annual-Data/Top-Damaged-Products`, {
-        params: { page: 1, perPage: 20, month, year },
+        params: { year, page: 1, perPage: 20 }, // Use year here
       });
       const { data } = response.data;
 
@@ -50,13 +51,12 @@ const TopDamagedProductsModal = ({ onClose, month, year }) => {
   const fetchTopDamagedProducts = async (page = 1) => {
     try {
       setLoading(true);
-      const response = await axios.get(`${url}/api/Insights/View/Month-Data/Top-Damaged-Products`, {
-        params: { page, perPage: 20, month, year },
+      const response = await axios.get(`${url}/api/Insights/View/Annual-Data/Top-Damaged-Products`, {
+        params: { year, page, perPage: 20 }, // Use year here
       });
 
       const { data, pagination } = response.data;
 
-      // Update state
       setTopProducts(data || []);
       setPagination({
         total: pagination.total || 0,
@@ -72,20 +72,18 @@ const TopDamagedProductsModal = ({ onClose, month, year }) => {
   };
 
   useEffect(() => {
-    fetchTopChartData(); // Load Pie Chart data once
-    fetchTopDamagedProducts(); // Fetch paginated data
-  }, [month, year]);
+    fetchTopChartData(); // Fetch chart data on load
+    fetchTopDamagedProducts(); // Fetch paginated data on load
+  }, [year]); // Rerun effect when `year` changes
 
   const handlePageChange = (page) => {
     if (page >= 1 && page <= pagination.lastPage) {
       fetchTopDamagedProducts(page);
     }
   };
-
   return (
     <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center z-50">
       <div className="bg-white w-3/4 max-w-5xl rounded-lg shadow-lg max-h-[90vh] overflow-y-auto">
-        {/* Header */}
         <div className="sticky top-0 bg-white border-b z-10 p-4 flex justify-between items-center">
           <h2 className="text-xl font-bold">Top Damaged Products - {year}</h2>
           <button onClick={onClose} className="text-gray-600 hover:text-gray-900 font-bold text-2xl">
