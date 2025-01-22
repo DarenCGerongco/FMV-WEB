@@ -63,6 +63,7 @@ const Annual = ({ onDataSend }) => {
         {params: {year}}
       );
 
+      console.log(responseTotalAnnualChart.data);
       console.log(responseTop3Products.data);
       setAnnualData(responseTotalAnnual.data || {});
       setChartAnnualData(responseTotalAnnualChart.data.monthlyData || []);

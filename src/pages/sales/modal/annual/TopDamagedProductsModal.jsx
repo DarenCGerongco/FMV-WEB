@@ -18,21 +18,19 @@ const TopDamagedProductsModal = ({ onClose, month, year }) => {
 
   const url = import.meta.env.VITE_API_URL;
 
-  // Fetch Pie Chart data (always fetch top 20)
   const fetchTopChartData = async () => {
     try {
       const response = await axios.get(`${url}/api/Insights/View/Annual-Data/Top-Damaged-Products`, {
-        params: { page: 1, perPage: 20, month, year },
+        params: { year }
       });
       const { data } = response.data;
-
-      const top10 = data.slice(0, 20);
+  
       setChartData({
-        labels: top10.map((product) => product.product_name),
+        labels: data.map(product => product.product_name),
         datasets: [
           {
             label: "Total Damages",
-            data: top10.map((product) => product.total_damages),
+            data: data.map(product => parseInt(product.total_damages)),
             backgroundColor: [
               "#FF6384", "#36A2EB", "#FFCE56", "#4CAF50",
               "#F44336", "#7E57C2", "#FF7043", "#AB47BC",
@@ -45,18 +43,16 @@ const TopDamagedProductsModal = ({ onClose, month, year }) => {
       console.error("Failed to fetch chart data:", error);
     }
   };
-
-  // Fetch paginated top damaged products
+  
   const fetchTopDamagedProducts = async (page = 1) => {
     try {
       setLoading(true);
-      const response = await axios.get(`${url}/api/Insights/View/Month-Data/Top-Damaged-Products`, {
-        params: { page, perPage: 20, month, year },
+      const response = await axios.get(`${url}/api/Insights/View/Annual-Data/Top-Damaged-Products`, {
+        params: { page, year }
       });
-
+  
       const { data, pagination } = response.data;
-
-      // Update state
+  
       setTopProducts(data || []);
       setPagination({
         total: pagination.total || 0,
@@ -70,7 +66,7 @@ const TopDamagedProductsModal = ({ onClose, month, year }) => {
       setLoading(false);
     }
   };
-
+  
   useEffect(() => {
     fetchTopChartData(); // Load Pie Chart data once
     fetchTopDamagedProducts(); // Fetch paginated data

@@ -34,14 +34,16 @@ const TopSoldProductsModal = ({ onClose, month, year }) => {
 
       const { data } = response.data;
 
+      // console.log(response);
+
       // Prepare chart data for top 10 products
-      const top10 = data.slice(0, 20);
+      const top20 = data.slice(0, 20);
       setChartData({
-        labels: top10.map((product) => product.product_name),
+        labels: top20.map((product) => product.product_name),
         datasets: [
           {
             label: "Total Sold",
-            data: top10.map((product) => product.total_sold),
+            data: top20.map((product) => product.total_sold),
             backgroundColor: [
               "#FF6384", "#36A2EB", "#FFCE56", "#4CAF50",
               "#F44336", "#7E57C2", "#FF7043", "#AB47BC",
@@ -64,9 +66,11 @@ const TopSoldProductsModal = ({ onClose, month, year }) => {
   const fetchTopProducts = async (page = 1) => {
     try {
       setLoading(true);
-      const response = await axios.get(`${url}/api/Insights/View/Month-Data/Top-Sold-Products`, {
+      const response = await axios.get(`${url}/api/Insights/View/Annual-Data/Top-Sold-Products`, {
         params: { page, perPage: 20, month, year },
       });
+
+      console.log("Top Sold Products LOG:", response);
 
       const { data, pagination } = response.data;
 
