@@ -133,19 +133,19 @@ const Reorder = () => {
         <button
           onClick={() => handlePageChange(1)}
           disabled={current_page === 1}
-          className={`font-bold px-3 py-1 rounded cursor-pointer ${current_page === 1 ? "bg-gray-300 text-gray-500" : "bg-white hover:bg-blue-500 hover:text-white"}`}
+          className={`font-bold px-3 py-1 border shadow-md duration-200  rounded cursor-pointer ${current_page === 1 ? "bg-gray-300 text-gray-500" : "bg-white hover:bg-blue-500 hover:text-white"}`}
         >
-          <MdKeyboardDoubleArrowLeft />
+          <h1>First</h1>
         </button>
 
         {/* Previous Button */}
         <button
           onClick={() => handlePageChange(current_page - 1)}
           disabled={current_page === 1}
-          className={`font-bold px-3 py-1 rounded cursor-pointer ${current_page === 1 ? "bg-gray-300 text-gray-500" : "bg-white hover:bg-blue-500 hover:text-white"}`}
+          className={`font-bold px-3 py-1 border shadow-md duration-200 rounded cursor-pointer ${current_page === 1 ? "bg-gray-300 text-gray-500" : "bg-white hover:bg-blue-500 hover:text-white"}`}
         >
-          <MdNavigateBefore />
-        </button>
+          <h1>Prev</h1>
+          </button>
 
         {/* Page Numbers */}
         {pages.map((pageNum, index) => {
@@ -167,19 +167,19 @@ const Reorder = () => {
         <button
           onClick={() => handlePageChange(current_page + 1)}
           disabled={current_page === last_page}
-          className={`font-bold px-3 py-1 rounded cursor-pointer ${current_page === last_page ? "bg-gray-300 text-gray-500" : "bg-white hover:bg-blue-500 hover:text-white"}`}
+          className={`font-bold px-3 py-1 border shadow-md duration-200 rounded cursor-pointer ${current_page === last_page ? "bg-gray-300 text-gray-500" : "bg-white hover:bg-blue-500 hover:text-white"}`}
         >
-          <MdNavigateNext />
-        </button>
+          <h1>Next</h1>
+          </button>
 
         {/* Last Button */}
         <button
           onClick={() => handlePageChange(last_page)}
           disabled={current_page === last_page}
-          className={`font-bold px-3 py-1 rounded cursor-pointer ${current_page === last_page ? "bg-gray-300 text-gray-500" : "bg-white hover:bg-blue-500 hover:text-white"}`}
+          className={`font-bold px-3 py-1 border shadow-md duration-200 rounded cursor-pointer ${current_page === last_page ? "bg-gray-300 text-gray-500" : "bg-white hover:bg-blue-500 hover:text-white"}`}
         >
-          <MdKeyboardDoubleArrowRight />
-        </button>
+          <h1>Last</h1>
+          </button>
       </div>
     );
   };
@@ -215,13 +215,13 @@ const Reorder = () => {
               {reorderProducts.map((product, index) => (
                 <div
                   key={index}
-                  className="grid grid-cols-8 gap-4  rounded items-center border shadow-md my-3 duration-300 hover:bg-red-300 even:bg-gray-100 p-2"
+                  className="grid grid-cols-8 gap-4 rounded items-center border shadow-md my-3 duration-300 hover:bg-red-300 even:bg-gray-100 p-1"
                 >
                   {/* Checkbox for selecting the product */}
                   <div className="">
                     <input
                       type="checkbox"
-                      className="form-checkbox h-5 w-5 text-blue-600"
+                      className="form-checkbox text-blue-600"
                       checked={!!selectedProducts[product.product_id]} // Keep the selection state
                       onChange={(e) => {
                         const isChecked = e.target.checked;
@@ -252,7 +252,7 @@ const Reorder = () => {
             <div className="text-right mt-4">
               <button
                 onClick={openModal}
-                className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-700"
+                className="bg-blue-500 font-bold shadow-md duration-200 text-white px-4 py-2 rounded hover:bg-white hover:text-blue-500"
               >
                 Confirm Restock
               </button>

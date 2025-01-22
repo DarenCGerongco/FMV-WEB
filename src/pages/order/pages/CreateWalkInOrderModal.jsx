@@ -316,9 +316,9 @@ const CreateWalkInOrderModal = ({ isOpen, onClose }) => {
           </div>
           <div className=" rounded-lg transform transition-all w-full max-h-[100%] overflow-hidden flex flex-row">
           {/* Scrollable Container */}
-            <div className="flex-1 flex flex-col overflow-hidden border-b border-gray-300">
+            <div className="flex-1 flex flex-col overflow-hidden border-b border-gray-300 mb-5">
               {/* Header Row */}
-              <div className="grid grid-cols-9 border-b bg-gray-200 rounded font-bold sticky top-0 z-10">
+              <div className="grid grid-cols-9 border-b bg-gray-200 rounded font-bold sticky px-1 top-0 z-10">
                 <div className="col-span-1">ID</div>
                 <div className="col-span-3">Product Name</div>
                 <div className="col-span-3">Category Name</div>
@@ -335,7 +335,7 @@ const CreateWalkInOrderModal = ({ isOpen, onClose }) => {
                   filteredProducts.map((product) => (
                     <div
                       key={product.product_id}
-                      className={`grid grid-cols-9 border-b p-1 m-1 cursor-pointer rounded hover:bg-blue-500 hover:text-white duration-100 ${
+                      className={`grid grid-cols-9 border-b py-1 px-1 m-1 cursor-pointer rounded hover:bg-blue-500 hover:text-white duration-100 ${
                         chosenProducts[product.product_id]
                           ? 'bg-white'
                           : product.needs_reorder
@@ -344,7 +344,7 @@ const CreateWalkInOrderModal = ({ isOpen, onClose }) => {
                       }`}
                       onClick={() => handleProductClick(product)}
                     >
-                      <div className="col-span-1 flex items-center">
+                      <div className="col-span-1  flex items-center">
                         <input
                           type="checkbox"
                           checked={!!chosenProducts[product.product_id]}
@@ -414,7 +414,7 @@ const CreateWalkInOrderModal = ({ isOpen, onClose }) => {
           </div>
         </div>
 
-        <div className="w-1/3 pl-4 border-l border-gray-300 overflow-y-auto">
+        <div className="w-1/3 pl-4 border-l border-gray-300 b overflow-y-auto">
           <h4 className="font-bold mb-2">Walk-in Order Details:</h4>
           <input
             type="text"
@@ -440,7 +440,7 @@ const CreateWalkInOrderModal = ({ isOpen, onClose }) => {
               <option value="10">10%</option>
             </select>
           </div>
-          <div className="mt-4">
+          <div className="mt-4 ">
             <h5 className="font-semibold mb-2">Selected Products:</h5>
             {Object.keys(chosenProducts).length === 0 ? (
               <p className="text-gray-500">No products selected.</p>
@@ -454,12 +454,12 @@ const CreateWalkInOrderModal = ({ isOpen, onClose }) => {
                   );
 
                   return (
-                    <li key={productId} className="flex flex-col p-2 border rounded">
+                    <li key={productId} className="flex flex-col p-2 bg-gray-100 border rounded">
                       <div className="flex justify-between items-center">
                         <span className="text-md font-bold text-blue-600  ">{product.product_name}</span>
                         <button
                           onClick={() => handleProductClick(product)}
-                          className="text-red-500 font-bold border px-2 rounded-xl hover:bg-gray-200 duration-200 shadow-md hover:text-red-700"
+                          className="text-red-500 font-bold border px-2 rounded-xl bg-white hover:bg-gray-200 duration-200 shadow-md hover:text-red-700"
                         >
                           Remove
                         </button>
