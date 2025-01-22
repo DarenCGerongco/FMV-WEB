@@ -48,26 +48,25 @@ const Annual = ({ onDataSend }) => {
     try {
       setLoading(true);
       setError(false);
-  
-      console.log("Fetching data for year:", year);
-  
+
       const responseTotalAnnual = await axios.get(`${url}/api/Insights/View/Annual-Data`, {
         params: { year },
       });
-  
+
       const responseTotalAnnualChart = await axios.get(
         `${url}/api/Insights/View/Annual-Data/Chart`,
         { params: { year } }
       );
-  
+
       const responseTop3Products = await axios.get(
         `${url}/api/Insights/View/Annual-Data/Top-3-Products`,
-        { params: { year } }
+        {params: {year}}
       );
-  
+
+      console.log(responseTop3Products.data);
       setAnnualData(responseTotalAnnual.data || {});
       setChartAnnualData(responseTotalAnnualChart.data.monthlyData || []);
-      setTop3AnnualData(responseTop3Products.data || []);
+      setTop3AnnualData(responseTop3Products.data || []); 
       setLoading(false);
     } catch (error) {
       console.error("Failed to fetch annual records:", error);
@@ -75,10 +74,6 @@ const Annual = ({ onDataSend }) => {
       setLoading(false);
     }
   };
-  
-
-
-
   console.log(chartAnnualData);
   useEffect(() => {
     fetchAnnualRecords(selectedYear);
@@ -296,6 +291,13 @@ const Annual = ({ onDataSend }) => {
                     <p className="text-center text-gray-500">No products available.</p>
                 )}
             </div>
+                {/* Modal for "See All" */}
+                {topSoldModal && (
+                    <AnnualTopSoldProduct
+                        year={selectedYear}
+                        onClose={() => setTopSoldModal(false)} // Close modal
+                    />
+                )}
           </div>
             {/* LEFT TOP 3 SOLD PRODUCT */}
 
@@ -359,18 +361,13 @@ const Annual = ({ onDataSend }) => {
                     <p className="text-center text-gray-500">No products available.</p>
                 )}
             </div>
-              {topSoldModal && (
-                <AnnualTopSoldProduct
-                  year={selectedYear} // Pass the selected year
-                  onClose={() => setTopSoldModal(false)} // Close modal handler
-                />
-              )}
-              {topDamagedModal && (
-                <AnnualTopDamagedProduct
-                  year={selectedYear} // Pass selected year
-                  onClose={() => setTopDamagedModal(false)} // Close modal
-                />
-              )}
+                {/* Modal for "See All" */}
+                {topDamagedModal && (
+                    <AnnualTopDamagedProduct
+                        year={selectedYear}
+                        onClose={() => setTopDamagedModal(false)} // Close modal
+                    />
+                )}
             </div>
         </div>
       </>

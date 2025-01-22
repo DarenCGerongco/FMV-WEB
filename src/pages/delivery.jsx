@@ -193,7 +193,7 @@ function Delivery() {
           </div>
         </div>
         <div className="w-4/5 mx-auto mt-2 py-1 rounded-lg bg-white shadow-lg shadow-gray-400">
-          <div className="grid grid-cols-9 font-bold px-2 text-sm py-3 border-b border-gray-300">
+          <div className="grid grid-cols-9 px-2 text-sm font-bold rounded-md ">
             <div className="col-span-1 cursor-pointer" onClick={() => handleSort("delivery_id")}>
               Delivery ID# {sortColumn === "delivery_id" ? (sortDirection === "asc" ? "↑" : "↓") : ""}
             </div>

@@ -318,7 +318,7 @@ function Inventory() {
             </div>
             <div className="flex flex-row items-center justify-end px-2 py-2">
               <button
-                className="w-40 r-4 px-4 py-3 bg-blue-500 text-white hover:bg-white hover:text-blue-500 shadow-md duration-200 rounded-lg font-bold"
+                className="w-40 r-4 px-4 py-2 bg-blue-500 text-white hover:bg-white hover:text-blue-500 shadow-md duration-200 rounded-lg font-bold"
                 onClick={() => setShowAddProductModal(true)}
               >
                 <h1 className="text-center text-md">Add Product</h1>

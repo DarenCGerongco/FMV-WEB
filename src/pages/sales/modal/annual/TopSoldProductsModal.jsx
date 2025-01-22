@@ -25,14 +25,17 @@ const TopSoldProductsModal = ({ onClose, month, year }) => {
 
   const url = import.meta.env.VITE_API_URL;
 
+  // Fetch top 20 products for the Pie Chart
   const fetchTopChartData = async () => {
     try {
       const response = await axios.get(`${url}/api/Insights/View/Annual-Data/Top-Sold-Products`, {
-        params: { year }, // Pass only `year` for annual data
+        params: { page: 1, perPage: 20, month, year },
       });
+
       const { data } = response.data;
-  
-      const top10 = data.slice(0, 10); // Take only the top 10 for the chart
+
+      // Prepare chart data for top 10 products
+      const top10 = data.slice(0, 20);
       setChartData({
         labels: top10.map((product) => product.product_name),
         datasets: [
@@ -44,6 +47,11 @@ const TopSoldProductsModal = ({ onClose, month, year }) => {
               "#F44336", "#7E57C2", "#FF7043", "#AB47BC",
               "#26A69A", "#EC407A",
             ],
+            hoverBackgroundColor: [
+              "#FF6384", "#36A2EB", "#FFCE56", "#4CAF50",
+              "#F44336", "#7E57C2", "#FF7043", "#AB47BC",
+              "#26A69A", "#EC407A",
+            ],
           },
         ],
       });
@@ -51,18 +59,20 @@ const TopSoldProductsModal = ({ onClose, month, year }) => {
       console.error("Failed to fetch chart data:", error);
     }
   };
-  
+
+  // Fetch paginated data for the table
   const fetchTopProducts = async (page = 1) => {
     try {
       setLoading(true);
-      const response = await axios.get(`${url}/api/Insights/View/Annual-Data/Top-Sold-Products`, {
-        params: { page, perPage: 20, year }, // Ensure pagination and year are included
+      const response = await axios.get(`${url}/api/Insights/View/Month-Data/Top-Sold-Products`, {
+        params: { page, perPage: 20, month, year },
       });
-  
+
       const { data, pagination } = response.data;
-  
-      setTopProducts(data); // Set products for the table
-      setPagination(pagination); // Set pagination details
+
+      // Update table state
+      setTopProducts(data);
+      setPagination(pagination);
       setCurrentPage(pagination.currentPage);
     } catch (error) {
       console.error("Failed to fetch top products:", error);
@@ -70,14 +80,14 @@ const TopSoldProductsModal = ({ onClose, month, year }) => {
       setLoading(false);
     }
   };
-  
-  
 
+  // Run both fetch functions on component load
   useEffect(() => {
-    fetchTopChartData(); // Fetch chart data
+    fetchTopChartData(); // Fetch top 20 products for chart
     fetchTopProducts(); // Fetch paginated data
-  }, [month, year]); // Ensure it updates whenever `month` or `year` changes
+  }, [month, year]);
 
+  // Handle pagination navigation
   const handlePageChange = (page) => {
     if (page >= 1 && page <= pagination.lastPage) {
       fetchTopProducts(page);
