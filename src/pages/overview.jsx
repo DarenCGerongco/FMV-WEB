@@ -409,7 +409,7 @@ function Overview() {
                 className="bg-white w-[65%] p-5 rounded-3xl shadow-lg shadow-gray-400 hover:shadow-2xl hover:shadow-gray-400 duration-200 cursor-pointer"
                 onClick={handleInventoryClick}
               >
-                <h3 className="text-lg font-bold">INVENTORY (Descend by Quantity)</h3>
+                <h3 className="text-lg font-bold">Product (Descend by Quantity)</h3>
 
                 {/* Labels Row */}
                 <div className="grid grid-cols-5 mt-2 mb-2">

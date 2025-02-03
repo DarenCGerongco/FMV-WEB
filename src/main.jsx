@@ -7,8 +7,8 @@ import { GlobalProvider } from '../GlobalContext'; // Import GlobalProvider
 
 import Index from './pages/index.jsx';
 import Employee from './pages/employee.jsx';
-import Inventory from './pages/inventory.jsx';
-import InventoryDetails from './pages/inventory/page/ProductProfile.jsx';
+import Product from './pages/products.jsx';
+import ProductDetails from './pages/products/page/ProductProfile.jsx';
 import Reorder from './pages/reorder.jsx';
 
 import Sales from './pages/sales.jsx';
@@ -31,10 +31,10 @@ root.render(
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/employee" element={<Employee />} />
-          <Route path="/inventory" element={<Inventory />} />
-          <Route path="/inventory" element={<Inventory />} />
-          <Route path="/inventory/reorder" element={<Reorder/>} />
-          <Route path="/inventory/product/:productID/details" element={<InventoryDetails />} />
+          <Route path="/products" element={<Product />} />
+          <Route path="/products" element={<Product />} />
+          <Route path="/products/reorder" element={<Reorder/>} />
+          <Route path="/products/:productID/details" element={<ProductDetails />} />
           <Route path="/sales" element={<Sales />} />
           <Route path="/delivery" element={<Delivery />} />
           <Route path="/overview" element={<Overview />} />

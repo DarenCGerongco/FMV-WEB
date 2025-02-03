@@ -157,11 +157,20 @@ const Navbar = () => {
 
             <li className={`my-3 flex hover:translate-x-3 duration-200 items-center transition pl-2 md:pl-5 group ${isActive('/inventory') ? 'bg-white text-black rounded' : 'hover:bg-white hover:text-black rounded'}`}>
               <img
+                // src={salesImage}
+                alt=""
+                className={`w-6 h-6 mr-2 transition group-hover:invert-0 ${isActive('/inventory') ? 'invert-0' : 'invert'}`}
+              />
+              <Link to="/inventory" className={`text-base md:text-xl ${isActive('/inventory') ? 'text-black' : 'text-white group-hover:text-black'}`}>INVENTORY</Link>
+            </li>
+
+            <li className={`my-3 flex hover:translate-x-3 duration-200 items-center transition pl-2 md:pl-5 group ${isActive('/products') ? 'bg-white text-black rounded' : 'hover:bg-white hover:text-black rounded'}`}>
+              <img
               src={inventoryImage}
               alt="Inventory Icon"
-              className={`w-6 h-6 mr-2 transition group-hover:invert-0 ${isActive('/inventory') ? 'invert-0' : 'invert'}`}
+              className={`w-6 h-6 mr-2 transition group-hover:invert-0 ${isActive('/products') ? 'invert-0' : 'invert'}`}
               />
-                <Link to="/inventory" className={`text-base md:text-xl ${isActive('/inventory') ? 'text-black' : 'text-white group-hover:text-black'}`}>INVENTORY</Link>
+                <Link to="/products" className={`text-base md:text-xl ${isActive('/products') ? 'text-black' : 'text-white group-hover:text-black'}`}>PRODUCTS</Link>
             </li>
 
             <li className={`my-3 flex hover:translate-x-3 duration-200 items-center transition pl-2 md:pl-5 group ${isActive('/employee') ? 'bg-white text-black rounded' : 'hover:bg-white hover:text-black rounded'}`}>
@@ -187,8 +196,8 @@ const Navbar = () => {
       </div>
       <div className="w-full">
           {/* Reorder Items */}
-          <li className={`my-3 flex  hover:translate-x-3 duration-200 items-center pl-2 md:pl-5 group relative ${isActive('/inventory/reorder') ? 'bg-white text-black rounded' : 'hover:bg-white hover:text-black rounded'}`}>
-            <Link to="/inventory/reorder" className={`text-base md:text-xl ${isActive('/inventory/reorder') ? 'text-black' : 'text-white group-hover:text-black'}`}>
+          <li className={`my-3 flex  hover:translate-x-3 duration-200 items-center pl-2 md:pl-5 group relative ${isActive('/products/reorder') ? 'bg-white text-black rounded' : 'hover:bg-white hover:text-black rounded'}`}>
+            <Link to="/products/reorder" className={`text-base md:text-xl ${isActive('/products/reorder') ? 'text-black' : 'text-white group-hover:text-black'}`}>
               REORDER ITEMS
               {reorderCount > 0 && (
                 <span className="absolute -top-2 right-6 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full">

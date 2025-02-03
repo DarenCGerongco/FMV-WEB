@@ -144,7 +144,7 @@ function Configuration() {
               <h1 className="font-bold bg-gray-200 p-2 rounded-md text-center">User Types</h1>
               <div className="flex flex-col mt-4">
                 {usertype.map((user, index) => (
-                  <div key={index} className="mb-1 p-2 hover:bg-gray-200 rounded flex justify-between items-center">
+                  <div key={index} className="mb-1 p-2 hover:bg-blue-200 duration-200 rounded flex justify-between items-center">
                     <span className="font-bold">
                       {index+1}. {user.user_type}
                     </span>
@@ -179,7 +179,7 @@ function Configuration() {
               <h1 className="font-bold bg-gray-200 p-2 rounded-md text-center">Product Categories</h1>
               <div className="flex flex-col mt-4">
                 {categories.map((category, index) => (
-                  <div key={index} className="mb-1 p-1 hover:bg-gray-200 items-center rounded flex justify-between">
+                  <div key={index} className="mb-1 p-1 hover:bg-blue-200 items-center duration-200 rounded flex justify-between">
                     <span className="font-bold">
                       {index+1}. {category.category_name}
                     </span>
@@ -214,7 +214,7 @@ function Configuration() {
               <h1 className="font-bold bg-gray-200 p-2 rounded-md text-center">Sale Types</h1>
               <div className="flex flex-col mt-4">
                 {saleTypes.map((saleType, index) => (
-                  <div key={index} className="mb-1 flex p-1 items-center hover:bg-gray-200 rounded justify-between">
+                  <div key={index} className="mb-1 flex p-1 items-center hover:bg-blue-200 rounded justify-between duration-300">
                     <span className="font-bold">
                       {index+1}. {saleType.sale_type_name}
                     </span>

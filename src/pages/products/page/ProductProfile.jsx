@@ -4,7 +4,7 @@ import axios from "axios";
 import Navbar from "../../../components/navbar";
 import RestockModal from "./../modal/RestockModal";
 
-const InventoryDetails = () => {
+const ProductDetails = () => {
   const { productID } = useParams();
   const [productDetails, setProductDetails] = useState({});
   const [transactions, setTransactions] = useState([]);
@@ -331,4 +331,4 @@ const InventoryDetails = () => {
   );
 };
 
-export default InventoryDetails;
+export default ProductDetails;
