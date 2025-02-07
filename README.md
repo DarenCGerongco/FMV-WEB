@@ -17,6 +17,7 @@ Currently, two official plugins are available:
 - `npm i react-toastify`
 - `npm install react-icons`
 - `npm install react-chartjs-2@latest chart.js@latest`
+- `npm install react-datepicker`
 
 
 # To run the Code:

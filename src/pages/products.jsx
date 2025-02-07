@@ -73,9 +73,6 @@ function Product() {
       setLoading(false);
     }
   };
-  
-
-
 
   // Initial load and re-fetch when dependencies change
   useEffect(() => {
@@ -299,9 +296,8 @@ function Product() {
         <div className="w-4/5 mx-auto bg-white p-6 m-3 rounded-lg shadow-lg shadow-gray-400 mb-6">
           <h2 className="text-1xl font-bold">MANAGEMENT SYSTEM PRODUCT</h2>
         </div>
-
-        {/* Searchbar and Filters */}
         <div className="w-4/5 mx-auto bg-white p-3 m-3 rounded-lg shadow-lg shadow-gray-400">
+          {/* Searchbar and Filters */}
           <div className="flex flex-row justify-between items-center w-full">
             <div className="flex flex-row items-center w-full px-2 py-2 mr-1 border border-gray-300 rounded-md shadow-md focus-within:border-blue-500 relative h-12">
               <span className="font-bold text-black-500 whitespace-nowrap">
@@ -325,6 +321,7 @@ function Product() {
               </button>
             </div>
           </div>
+          {/* Searchbar and Filters */}
 
           {/* Category Filter */}
           <div className="mt-4 flex justify-between items-center ">

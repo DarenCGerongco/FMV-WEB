@@ -14,13 +14,13 @@ import Reorder from './pages/reorder.jsx';
 import Sales from './pages/sales.jsx';
 import Delivery from './pages/delivery.jsx';
 import Overview from './pages/overview.jsx';
+import Inventory from './pages/inventory.jsx';
 
 import Order from './pages/order.jsx';
 import CreatePurchaseOrder from './pages/order/pages/CreatePurchaseOrderDelivery.jsx';
 import PurchaseOrderEdit from './pages/order/Edit/PurchaseOrderEdit.jsx'; // Import the component
 
 import Configuration from './pages/configuration.jsx';
-
 
 const root = createRoot(document.getElementById('root'));
 
@@ -37,6 +37,7 @@ root.render(
           <Route path="/products/:productID/details" element={<ProductDetails />} />
           <Route path="/sales" element={<Sales />} />
           <Route path="/delivery" element={<Delivery />} />
+          <Route path="/inventory" element={<Inventory />} />
           <Route path="/overview" element={<Overview />} />
           <Route path="/order" element={<Order />} />
           <Route path="/configuration" element={<Configuration />} />
