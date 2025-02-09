@@ -18,6 +18,7 @@ Currently, two official plugins are available:
 - `npm install react-icons`
 - `npm install react-chartjs-2@latest chart.js@latest`
 - `npm install react-datepicker`
+- `npm install moment`
 
 
 # To run the Code:

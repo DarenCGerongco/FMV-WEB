@@ -195,9 +195,8 @@ const Navbar = () => {
         </div>
       </div>
       <div className="w-full">
-          {/* Reorder Items */}
           <li className={`my-3 flex  hover:translate-x-3 duration-200 items-center pl-2 md:pl-5 group relative ${isActive('/products/reorder') ? 'bg-white text-black rounded' : 'hover:bg-white hover:text-black rounded'}`}>
-            <Link to="/products/reorder" className={`text-base md:text-xl ${isActive('/products/reorder') ? 'text-black' : 'text-white group-hover:text-black'}`}>
+            <Link to="/products/reorder" className={`text-base md:text-xl ${isActive('/products/reorder') ? 'text-black' : 'text-white hover:text-black'}`}>
               REORDER ITEMS
               {reorderCount > 0 && (
                 <span className="absolute -top-2 right-6 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full">
@@ -206,13 +205,13 @@ const Navbar = () => {
               )}
             </Link>
           </li>
-        <li className="my-3 flex hover:translate-x-3 duration-200 items-center transition group hover:bg-white hover:text-black rounded pl-2 md:pl-5">
+        <li className="my-3 flex hover:translate-x-3 duration-200 items-center transition group hover:bg-red-600 hover:text-white rounded pl-2 md:pl-5">
         <img
             src={logoutImage}
             alt="Settings Icon"
-            className={`w-6 h-6 mr-2 transition group-hover:invert-0 ${isActive('') ? 'invert-0' : 'invert'}`}
+            className={`w-6 h-6 mr-2 transition hover:shadow-lg hover:bg-red-500 ${isActive('') ? 'invert-0' : 'invert'}`}
             />
-          <button onClick={openModal} className="text-base md:text-xl text-white group-hover:text-black">LOGOUT</button>
+          <button onClick={openModal} className="text-base md:text-xl text-white group-hover:text-white">LOGOUT</button>
         </li>
       </div>
       {isModalOpen && (
