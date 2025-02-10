@@ -69,3 +69,10 @@ body {
     opacity: 1;
   }
 }
+
+
+.react-datepicker-wrapper input:focus {
+  font-weight: normal; /* Remove bold effect */
+  outline: none; /* Remove default outline */
+  /* box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25); Optional: Add a custom focus ring */
+}

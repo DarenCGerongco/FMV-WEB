@@ -1,9 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Navbar from '../components/navbar';
 import { useNavigate } from 'react-router-dom';
 import QuickButtons from '../components/quickButtons';
 import axios from 'axios';
 import { MdExpandMore } from "react-icons/md";
+import { CiDeliveryTruck } from "react-icons/ci"; // Import the delivery truck icon
+import { GiWalkingBoot } from "react-icons/gi"; // Import the walking boot icon
+import { BiRefresh } from "react-icons/bi"; // Import the refresh icon
 import DatePicker from "react-datepicker";
 import moment from "moment";
 import "react-datepicker/dist/react-datepicker.css";
@@ -31,7 +34,15 @@ const Inventory = () => {
   const [selectedTransactionTypes, setSelectedTransactionTypes] = useState(["All"]);
   const transactionTypes = ["All", "Delivery", "Walk-In", "Restock"];
 
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage] = useState(10); // You can change this value to set the number of items per page
+  const [totalPages, setTotalPages] = useState(1);
+
+  const [loading, setLoading] = useState(false); // Loading state
+  const [searchTerm, setSearchTerm] = useState(''); // Search term state
+
   const navigate = useNavigate();
+  const debounceTimeout = useRef(null); // Ref to store the debounce timeout
 
   const handleTransactionTypeToggle = (type) => {
     setSelectedTransactionTypes((prev) => {
@@ -41,21 +52,47 @@ const Inventory = () => {
     });
   };
 
+  const handleCategoryToggle = (category) => {
+    setSelectedCategories((prev) => {
+      if (prev.includes(category)) return prev.filter((c) => c !== category); // Remove if already selected
+      return [...prev, category]; // Add category if not already selected
+    });
+  };
+
   const fetchDataLabel = ["Product ID", "Product Name", "Category", "Date in (m/d/y)", "Date out (m/d/y)", "Quantity", "Transaction Type", "Total Value"];
   
   const fetchTransactions = async () => {
+    setLoading(true); // Set loading to true before fetching data
     try {
+      console.log("Fetching transactions with filters:", {
+        date_from: dateFrom ? moment(dateFrom).format('YYYY-MM-DD') : null,
+        date_to: dateTo ? moment(dateTo).format('YYYY-MM-DD') : null,
+        transaction_types: selectedTransactionTypes.includes("All") ? null : selectedTransactionTypes,
+        categories: selectedCategories.length > 0 ? selectedCategories : null,
+        page: currentPage,
+        per_page: itemsPerPage,
+        search: searchTerm, // Include search term in the request
+      });
+
       const response = await axios.get(`${url}/api/view/inventory/transactions`, {
         params: {
           date_from: dateFrom ? moment(dateFrom).format('YYYY-MM-DD') : null,
           date_to: dateTo ? moment(dateTo).format('YYYY-MM-DD') : null,
           transaction_types: selectedTransactionTypes.includes("All") ? null : selectedTransactionTypes,
+          categories: selectedCategories.length > 0 ? selectedCategories : null,
+          page: currentPage,
+          per_page: itemsPerPage,
+          search: searchTerm, // Include search term in the request
         },
       });
-  
+
+      console.log("Transactions fetched:", response.data.transactions.data);
       setTransactions(response.data.transactions.data);
+      setTotalPages(response.data.transactions.pagination.lastPage);
     } catch (error) {
       console.error("Error fetching transactions:", error);
+    } finally {
+      setLoading(false); // Set loading to false after fetching data
     }
   };
   
@@ -70,15 +107,65 @@ const Inventory = () => {
   };
 
   useEffect(() => {
-    fetchTransactions();
-    fetchCategories();
-  }, [dateFrom, dateTo, selectedCategories, selectedTransactionTypes]);
+    const fetchData = async () => {
+      await fetchCategories(); // Fetch categories first
+      fetchTransactions(); // Fetch transactions after categories are available
+    };
+    
+    fetchData();
+  }, [dateFrom, dateTo, selectedCategories, selectedTransactionTypes, currentPage]);
+
+  useEffect(() => {
+    // Debounce the search term input
+    if (debounceTimeout.current) {
+      clearTimeout(debounceTimeout.current);
+    }
+
+    debounceTimeout.current = setTimeout(() => {
+      fetchTransactions();
+    }, 500); // 2 seconds debounce time
+
+    return () => {
+      if (debounceTimeout.current) {
+        clearTimeout(debounceTimeout.current);
+      }
+    };
+  }, [searchTerm]);
+
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+  };
+
+  const renderPageNumbers = () => {
+    const pageNumbers = [];
+    const maxVisiblePages = 15;
+    let startPage = Math.max(currentPage - Math.floor(maxVisiblePages / 2), 1);
+    let endPage = Math.min(startPage + maxVisiblePages - 1, totalPages);
+
+    if (endPage - startPage < maxVisiblePages - 1) {
+      startPage = Math.max(endPage - maxVisiblePages + 1, 1);
+    }
+
+    for (let i = startPage; i <= endPage; i++) {
+      pageNumbers.push(i);
+    }
+
+    return pageNumbers.map((number) => (
+      <button
+        key={number}
+        className={`px-4 py-2 hover:bg-blue-500 hover:text-white duration-200 font-bold mx-1 border rounded-md  ${currentPage === number ? 'bg-blue-500 text-white' : ''}`}
+        onClick={() => handlePageChange(number)}
+      >
+        {number}
+      </button>
+    ));
+  };
 
   return (
     <div className="flex w-full bg-white">
       <Navbar />
       <QuickButtons />
-      <div className="w-full bg-white-100">
+      <div className="w-full bg-white-100 mb-5 ">
         <div className="w-4/5 flex justify-between mx-auto p-6 mt-3 rounded-lg bg-white shadow-lg shadow-gray-400 mb-6">
           <h2 className="text-1xl font-bold">MANAGEMENT SYSTEM INVENTORY</h2>
           <h3 className="font-bold">
@@ -95,6 +182,8 @@ const Inventory = () => {
             <input
               type="text"
               placeholder="Search for items"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
               className="flex-grow focus:outline-none px-4 py-2 rounded-md sm:text-sm border-gray-300 focus:ring-blue-500 focus:border-blue-500 block w-full"
             />
           </div>
@@ -181,7 +270,7 @@ const Inventory = () => {
             </div>
 
             <div className="flex items-center">
-              <div className="flex items-center space-x-1 mt-4">
+              <div className="flex items-center space-x-1 mt-4 mr-16">
                 <h1 className='text-xs font-bold'>
                   Date
                 </h1>
@@ -189,9 +278,10 @@ const Inventory = () => {
                 <DatePicker
                   selected={dateFrom}
                   onChange={(date) => setDateFrom(date)}
-                  className="px-1 py-1 border border-gray-300 rounded-md"
+                  className="px-2 py-1 border border-gray-300 rounded-md"
                   dateFormat="MM/dd/yyyy"
                   placeholderText="Select Date"
+                  maxDate={new Date()} // Restrict "From" date to be up to the current date
                 />
                 <h1 className="text-xs mx-2 font-bold">to:</h1>
                 <DatePicker
@@ -201,6 +291,7 @@ const Inventory = () => {
                   dateFormat="MM/dd/yyyy"
                   placeholderText="Select Date"
                   minDate={dateFrom} // Restrict "To" date to be after "From" date
+                  maxDate={new Date()} // Restrict "To" date to be up to the current date
                 />
               </div>
             </div>
@@ -209,41 +300,73 @@ const Inventory = () => {
 
         {/* Inventory Data Table */}
         <div className="w-4/5 mx-auto bg-white rounded-lg shadow-lg shadow-gray-400">
-          <table className="w-full border-collapse">
-            {/* Table Header */}
-            <thead>
-              <tr className="border-b border-gray-300">
-                {fetchDataLabel.map((label, index) => (
-                  <th key={index} className="text-left text-sm px-2 py-2 font-bold ">
-                    {label}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            {/* Table Body */}
-            <tbody>
-              {transactions.length > 0 ? (
-                transactions.map((item, index) => (
-                  <tr key={index} className="border-b text-xs border-gray-200 hover:bg-gray-50">
-                    <td className="px-3 py-3">{item.product_id}</td>
-                    <td className="px-3">{item.product_name}</td>
-                    <td className="px-3">{item.category_name}</td>
-                    <td className="px-3">{item.date_in}</td>
-                    <td className="px-3">{item.date_out}</td>
-                    <td className="px-3">{item.quantity}</td>
-                    <td className="px-3">{item.transaction_type}</td>
-                    <td className="px-3">₱ {item.total_value}</td>
+          {loading ? (
+            <div className="flex justify-center items-center py-10">
+              <div className="spinner"></div>
+              <span>Loading...</span>
+            </div>
+          ) : (
+            <>
+              <table className="w-full border-collapse">
+                {/* Table Header */}
+                <thead>
+                  <tr className="border-b border-gray-300">
+                    {fetchDataLabel.map((label, index) => (
+                      <th key={index} className="text-left text-sm px-2 py-2 font-bold ">
+                        {label}
+                      </th>
+                    ))}
                   </tr>
-                ))
-              ) : (
-                <tr>
-                  <td colSpan={fetchDataLabel.length} className="text-center p-4 text-gray-500">
-                    No inventory data found.
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
+                </thead>
+                {/* Table Body */}
+                <tbody>
+                  {transactions.length > 0 ? (
+                    transactions.map((item, index) => (
+                      <tr key={index} className="border-b text-xs border-gray-200 hover:bg-gray-50">
+                        <td className="px-3 py-3">{item.product_id}</td>
+                        <td className="px-3">{item.product_name}</td>
+                        <td className="px-3">{item.category_name}</td>
+                        <td className="px-3">{item.date_in}</td>
+                        <td className="px-3">{item.date_out}</td>
+                        <td className="px-3">{item.quantity}</td>
+                        <td className="px-3">
+                          {item.transaction_type === "Delivery" && <CiDeliveryTruck className="inline-block mr-1" />}
+                          {item.transaction_type === "Walk-In" && <GiWalkingBoot className="inline-block mr-1" />}
+                          {item.transaction_type === "Restock" && <BiRefresh className="inline-block mr-1" />}
+                          {item.transaction_type}
+                        </td>
+                        <td className="px-3">₱ {item.total_value}</td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan={fetchDataLabel.length} className="text-center p-4 text-gray-500">
+                        No inventory data found.
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+              {/* Pagination Controls */}
+              <div className="flex justify-center mt-4 pb-4 duration-200">
+                <button
+                  className="px-4 py-2 mx-1 border rounded-md hover:bg-blue-500 hover:text-white font-bold duration-200"
+                  onClick={() => handlePageChange(currentPage - 1)}
+                  disabled={currentPage === 1}
+                >
+                  Previous
+                </button>
+                {renderPageNumbers()}
+                <button
+                  className="px-4 py-2 mx-1 border rounded-md hover:bg-blue-500 hover:text-white font-bold duration-200"
+                  onClick={() => handlePageChange(currentPage + 1)}
+                  disabled={currentPage === totalPages}
+                >
+                  Next
+                </button>
+              </div>
+            </>
+          )}
         </div>
       </div>
     </div>

@@ -24,11 +24,14 @@ const DeliveriesTab = () => {
   const [confirmationData, setConfirmationData] = useState(null);
   const [openDropDowns, setOpenDropDowns] = useState({});
 
-
-
   const fetchOrders = async (page = 1) => {
     setLoading(true);
     try {
+      console.log('Fetching orders with params:', {
+        page,
+        status: statusFilter || 'All',
+        search: searchInput.trim() || null,
+      });
       const response = await axios.get(`${url}/api/purchase-orders-delivery`, {
         params: {
           page,
@@ -37,6 +40,7 @@ const DeliveriesTab = () => {
         },
       });
       const data = response.data;
+      console.log('Fetched data:', data);
       const combinedData = data.orders.map((order) => ({
         purchase_order_id: order.purchase_order_id,
         customer_name: order.customer_name,
@@ -71,7 +75,6 @@ const DeliveriesTab = () => {
   
     return () => clearTimeout(delayDebounce);
   }, [searchInput, statusFilter, paginationInfo.currentPage]);
-  
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -89,6 +92,7 @@ const DeliveriesTab = () => {
   // When user types in search, reset to page 1 immediately
   const handleSearchChange = (event) => {
     const input = event.target.value;
+    console.log('Search input changed:', input);
     setSearchInput(input);
     // Reset to page 1 only if not already on page 1
     setPaginationInfo((prev) => (prev.currentPage !== 1 ? { ...prev, currentPage: 1 } : prev));
@@ -96,7 +100,14 @@ const DeliveriesTab = () => {
 
   // When user changes filter, also reset to page 1
   const handleFilterChange = (status) => {
-    setStatusFilter(status);
+    console.log('Status filter changed:', status);
+    const statusMap = {
+      'All': '',
+      'Pending': 'P',
+      'Failed': 'F',
+      'Success': 'S'
+    };
+    setStatusFilter(statusMap[status]);
     setPaginationInfo((prev) => (prev.currentPage !== 1 ? { ...prev, currentPage: 1 } : prev));
   };
 
@@ -184,7 +195,7 @@ const DeliveriesTab = () => {
                   ? 'bg-blue-500 text-white'
                   : ''
               }`}
-              onClick={() => handleFilterChange(status === 'All' ? '' : status)}
+              onClick={() => handleFilterChange(status)}
             >
               {status}
             </button>
@@ -208,87 +219,93 @@ const DeliveriesTab = () => {
               <div className="spinner"></div>
             </div>
           ) : (
-            searchResults.map((customerData, index) => (
-              <div
-                key={index}
-                className="grid grid-cols-11 px-2 py-2 items-center bg-white text-sm border-b border-gray-200 hover:bg-blue-50 duration-300"
-              >
-                <p className="col-span-1 font-bold text-left">{customerData.purchase_order_id || 'N/A'}</p>
-                <p className="col-span-2 font-bold text-left">{customerData.customer_name || 'N/A'}</p>
-                <p
-                  className={`col-span-1 font-bold text-left ${
-                    customerData.status === 'Failed'
-                      ? 'text-red-500'
-                      : customerData.status === 'Success'
-                      ? 'text-green-500'
-                      : 'text-yellow-500'
-                  }`}
+            searchResults.length > 0 ? (
+              searchResults.map((customerData, index) => (
+                <div
+                  key={index}
+                  className="grid grid-cols-11 px-2 py-2 items-center bg-white text-sm border-b border-gray-200 hover:bg-blue-50 duration-300"
                 >
-                  {customerData.status || 'Unknown'}
-                </p>
-                <div className="col-span-3 text-left font-bold text-xs px-1">
-                  <p>{`${customerData.street || ''}, ${customerData.barangay || ''}, ${
-                    customerData.province || ''
-                  }, ${customerData.city || ''}`}
-                  </p>
-                </div>
-                <p className="col-span-2 text-center text-sm text-gray-700 ">{customerData.created_at || 'N/A'}</p>
-                <div className="col-span-2 flex justify-center relative">
-                  <button
-                    className="bg-blue-500 px-3 py-1 duration-200 text-white hover:bg-white shadow-md hover:text-blue-500 rounded-lg font-bold mr-2"
-                    onClick={() => handleCreateDeliveryClick(customerData.purchase_order_id)}
+                  <p className="col-span-1 font-bold text-left">{customerData.purchase_order_id || 'N/A'}</p>
+                  <p className="col-span-2 font-bold text-left">{customerData.customer_name || 'N/A'}</p>
+                  <p
+                    className={`col-span-1 font-bold text-left ${
+                      customerData.status === 'Failed'
+                        ? 'text-red-500'
+                        : customerData.status === 'Success'
+                        ? 'text-green-500'
+                        : 'text-yellow-500'
+                    }`}
                   >
-                    Create Deliveries
-                  </button>
-                  <div className="relative dropdown-container">
+                    {customerData.status || 'Unknown'}
+                  </p>
+                  <div className="col-span-3 text-left font-bold text-xs px-1">
+                    <p>{`${customerData.street || ''}, ${customerData.barangay || ''}, ${
+                      customerData.province || ''
+                    }, ${customerData.city || ''}`}
+                    </p>
+                  </div>
+                  <p className="col-span-2 text-center text-sm text-gray-700 ">{customerData.created_at || 'N/A'}</p>
+                  <div className="col-span-2 flex justify-center relative">
                     <button
-                      className="bg-blue-500 text-white duration-200 px-3 py-1 rounded-lg font-bold shadow-md hover:bg-white hover:text-blue-500 dropdown-toggle"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setOpenDropDowns((prevState) => ({
-                          ...prevState,
-                          [index]: !prevState[index],
-                        }));
-                      }}
+                      className="bg-blue-500 px-3 py-1 duration-200 text-white hover:bg-white shadow-md hover:text-blue-500 rounded-lg font-bold mr-2"
+                      onClick={() => handleCreateDeliveryClick(customerData.purchase_order_id)}
                     >
-                      More
+                      Create Deliveries
                     </button>
-                    {openDropDowns[index] && (
-                      <div className="absolute left-14 top-0 w-44 bg-white border border-gray-300 rounded-lg shadow-lg z-10 dropdown-container">
-                        <button
-                          className="block w-full duration-200 text-left px-4 py-2 text-blue-500 font-bold hover:bg-gray-200"
-                          onClick={() => {
-                            setSelectedPurchaseOrderId(customerData.purchase_order_id);
-                            setViewDeliveriesModalOpen(true);
-                            setOpenDropDowns({});
-                          }}
-                        >
-                          View Deliveries
-                        </button>
-                        <button
-                          className="block w-full duration-200 text-left px-4 py-2 text-blue-500 font-bold hover:bg-gray-200"
-                          onClick={() => {
-                            setSelectedPurchaseOrderId(customerData.purchase_order_id);
-                            setItemsOrderedModalOpen(true);
-                            setOpenDropDowns({});
-                          }}
-                        >
-                          View Ordered
-                        </button>
-                        <button
-                          className="block w-full duration-200 text-left px-4 py-2 text-red-500 font-bold hover:bg-red-200"
-                          onClick={() =>
-                            handleEditPurchaseOrderClick(customerData.purchase_order_id, customerData)
-                          }
-                        >
-                          Edit Purchase Order
-                        </button>
-                      </div>
-                    )}
+                    <div className="relative dropdown-container">
+                      <button
+                        className="bg-blue-500 text-white duration-200 px-3 py-1 rounded-lg font-bold shadow-md hover:bg-white hover:text-blue-500 dropdown-toggle"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setOpenDropDowns((prevState) => ({
+                            ...prevState,
+                            [index]: !prevState[index],
+                          }));
+                        }}
+                      >
+                        More
+                      </button>
+                      {openDropDowns[index] && (
+                        <div className="absolute left-14 top-0 w-44 bg-white border border-gray-300 rounded-lg shadow-lg z-10 dropdown-container">
+                          <button
+                            className="block w-full duration-200 text-left px-4 py-2 text-blue-500 font-bold hover:bg-gray-200"
+                            onClick={() => {
+                              setSelectedPurchaseOrderId(customerData.purchase_order_id);
+                              setViewDeliveriesModalOpen(true);
+                              setOpenDropDowns({});
+                            }}
+                          >
+                            View Deliveries
+                          </button>
+                          <button
+                            className="block w-full duration-200 text-left px-4 py-2 text-blue-500 font-bold hover:bg-gray-200"
+                            onClick={() => {
+                              setSelectedPurchaseOrderId(customerData.purchase_order_id);
+                              setItemsOrderedModalOpen(true);
+                              setOpenDropDowns({});
+                            }}
+                          >
+                            View Ordered
+                          </button>
+                          <button
+                            className="block w-full duration-200 text-left px-4 py-2 text-red-500 font-bold hover:bg-red-200"
+                            onClick={() =>
+                              handleEditPurchaseOrderClick(customerData.purchase_order_id, customerData)
+                            }
+                          >
+                            Edit Purchase Order
+                          </button>
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </div>
+              ))
+            ) : (
+              <div className="flex justify-center py-5">
+                <h2>No purchase orders found.</h2>
               </div>
-            ))
+            )
           )}
         </div>
       </div>
