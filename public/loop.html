@@ -35,7 +35,7 @@
     <script>
         const fileInput = document.getElementById('file');
         const outputDiv = document.getElementById('output');
-        const API_URL = "http://192.168.1.10:3000/api/products"; // Use HTTP if HTTPS is not available
+        const API_URL = "http://localhost:3000/api/products"; // Use HTTP if HTTPS is not available
 
         fileInput.addEventListener('change', async (event) => {
             const file = event.target.files[0];
@@ -78,6 +78,9 @@
                     table += '</table>';
                     outputDiv.innerHTML = table;
 
+                    // Define the user_id
+                    const userId = 1; // Example user_id
+
                     // Send POST requests for each row (skip header row)
                     for (let i = 1; i < jsonData.length; i++) {
                         const row = jsonData[i];
@@ -87,7 +90,8 @@
                             category_id: parseInt(row[1]) || 0, // Ensure it's an integer
                             product_name: row[0], // Ensure it's a string
                             original_price: parseFloat(row[2]) || 0, // Ensure it's a float
-                            quantity: parseInt(row[3]) || 0 // Ensure it's an integer
+                            quantity: parseInt(row[3]) || 0, // Ensure it's an integer
+                            user_id: userId // Include user_id in the payload
                         };
 
                         // Skip rows with invalid category_id or empty product_name
