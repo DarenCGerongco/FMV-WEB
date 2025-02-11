@@ -14,6 +14,8 @@ import employeeImage from './../assets/employee.png';
 import settingsImage from './../assets/settings.png';
 import logoutImage from './../assets/logout.png';
 
+import { MdOutlineInventory2 } from "react-icons/md";
+
 const Navbar = () => {
   const url = import.meta.env.VITE_API_URL; // Base API URL
   const navigate = useNavigate();
@@ -156,11 +158,7 @@ const Navbar = () => {
             </li>
 
             <li className={`my-3 flex hover:translate-x-3 duration-200 items-center transition pl-2 md:pl-5 group ${isActive('/inventory') ? 'bg-white text-black rounded' : 'hover:bg-white hover:text-black rounded'}`}>
-              <img
-                // src={salesImage}
-                alt=""
-                className={`w-6 h-6 mr-2 transition group-hover:invert-0 ${isActive('/inventory') ? 'invert-0' : 'invert'}`}
-              />
+              <MdOutlineInventory2 className={`w-6 h-6 mr-2 transition group-hover:invert-0 ${isActive('/inventory') ? 'invert-0' : 'invert'}`}/>
               <Link to="/inventory" className={`text-base md:text-xl ${isActive('/inventory') ? 'text-black' : 'text-white group-hover:text-black'}`}>INVENTORY</Link>
             </li>
 
