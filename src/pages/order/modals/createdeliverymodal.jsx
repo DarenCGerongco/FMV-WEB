@@ -161,6 +161,7 @@ const CreateDeliveryModal = ({ createDeliveryModalOpen, closeCreateDeliveryModal
               <ul className="border border-gray-300 rounded-md mt-2 max-h-32 overflow-y-auto bg-white shadow-lg">
                 {deliverymanRecord.map((user, index) => (
                   <li key={index} className="p-2 hover:bg-blue-100 cursor-pointer" onClick={() => handleSelectUser(user.name)}>
+                    {user.id}. 
                     {user.name}
                   </li>
                 ))}

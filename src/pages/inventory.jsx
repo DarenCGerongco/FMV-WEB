@@ -10,6 +10,7 @@ import { BiRefresh } from "react-icons/bi"; // Import the refresh icon
 import DatePicker from "react-datepicker";
 import moment from "moment";
 import "react-datepicker/dist/react-datepicker.css";
+import { RiResetLeftLine } from "react-icons/ri";
 
 const Inventory = () => {
   const url = import.meta.env.VITE_API_URL;
@@ -134,6 +135,16 @@ const Inventory = () => {
 
   const handlePageChange = (page) => {
     setCurrentPage(page);
+  };
+
+  const resetFilters = () => {
+    setDateFrom(null);
+    setDateTo(null);
+    setSelectedCategories([]);
+    setSelectedTransactionTypes(["All"]);
+    setSearchTerm('');
+    setCurrentPage(1);
+    fetchTransactions(); // Re-fetch with default filters
   };
 
   const renderPageNumbers = () => {
@@ -270,15 +281,15 @@ const Inventory = () => {
             </div>
 
             <div className="flex items-center">
-              <div className="flex items-center space-x-1 mt-4 mr-16">
+              <div className="flex items-center space-x-1 mt-4">
                 <h1 className='text-xs font-bold'>
                   Date
                 </h1>
-                <h1 className="text-xs mr-2 font-bold">from:</h1>
+                <h1 className="text-xs font-bold">from:</h1>
                 <DatePicker
                   selected={dateFrom}
                   onChange={(date) => setDateFrom(date)}
-                  className="px-2 py-1 border border-gray-300 rounded-md"
+                  className="px-2 py-1  border border-gray-300 rounded-md"
                   dateFormat="MM/dd/yyyy"
                   placeholderText="Select Date"
                   maxDate={new Date()} // Restrict "From" date to be up to the current date
@@ -293,6 +304,12 @@ const Inventory = () => {
                   minDate={dateFrom} // Restrict "To" date to be after "From" date
                   maxDate={new Date()} // Restrict "To" date to be up to the current date
                 />
+                <button
+                  className="px-4 py-2 border hover:bg-blue-500 hover:text-white rounded-md text-black font-bold duration-200"
+                  onClick={resetFilters} // ✅ Call the reset function when clicked
+                >
+                  <RiResetLeftLine />
+                </button>
               </div>
             </div>
           </div>
