@@ -11,12 +11,14 @@ import DatePicker from "react-datepicker";
 import moment from "moment";
 import "react-datepicker/dist/react-datepicker.css";
 import { RiResetLeftLine } from "react-icons/ri";
+import TransactionModal from "./inventory/TransactionModal"; // Import the modal component
 
 const Inventory = () => {
   const url = import.meta.env.VITE_API_URL;
   const [inventoryData, setInventoryData] = useState([]);
   const [dateFrom, setDateFrom] = useState(null);
   const [dateTo, setDateTo] = useState(null);
+  const [searchType, setSearchType] = useState("product");
 
   const currentDate = new Date();
   const day = currentDate.getDate();
@@ -36,7 +38,7 @@ const Inventory = () => {
   const transactionTypes = ["All", "Delivery", "Walk-In", "Restock"];
 
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage] = useState(10); // You can change this value to set the number of items per page
+  const [itemsPerPage] = useState(20); // You can change this value to set the number of items per page
   const [totalPages, setTotalPages] = useState(1);
 
   const [loading, setLoading] = useState(false); // Loading state
@@ -63,7 +65,7 @@ const Inventory = () => {
   const fetchDataLabel = ["Product ID", "Product Name", "Category", "Date in (m/d/y)", "Date out (m/d/y)", "Quantity", "Transaction Type", "Total Value"];
   
   const fetchTransactions = async () => {
-    setLoading(true); // Set loading to true before fetching data
+    setLoading(true);
     try {
       console.log("Fetching transactions with filters:", {
         date_from: dateFrom ? moment(dateFrom).format('YYYY-MM-DD') : null,
@@ -72,9 +74,10 @@ const Inventory = () => {
         categories: selectedCategories.length > 0 ? selectedCategories : null,
         page: currentPage,
         per_page: itemsPerPage,
-        search: searchTerm, // Include search term in the request
+        search: searchTerm,
+        search_type: searchType, // ✅ Send search type to backend
       });
-
+  
       const response = await axios.get(`${url}/api/view/inventory/transactions`, {
         params: {
           date_from: dateFrom ? moment(dateFrom).format('YYYY-MM-DD') : null,
@@ -83,19 +86,22 @@ const Inventory = () => {
           categories: selectedCategories.length > 0 ? selectedCategories : null,
           page: currentPage,
           per_page: itemsPerPage,
-          search: searchTerm, // Include search term in the request
+          search: searchTerm,
+          search_type: searchType, // ✅ Send search type (Product or Category)
         },
       });
-
+  
       console.log("Transactions fetched:", response.data.transactions.data);
       setTransactions(response.data.transactions.data);
       setTotalPages(response.data.transactions.pagination.lastPage);
     } catch (error) {
       console.error("Error fetching transactions:", error);
     } finally {
-      setLoading(false); // Set loading to false after fetching data
+      setLoading(false);
     }
   };
+  
+  
   
   const fetchCategories = async () => {
     try {
@@ -117,21 +123,24 @@ const Inventory = () => {
   }, [dateFrom, dateTo, selectedCategories, selectedTransactionTypes, currentPage]);
 
   useEffect(() => {
-    // Debounce the search term input
+    // Reset pagination when search term or search type changes
+    setCurrentPage(1); // ✅ Reset to page 1 before searching
+  
     if (debounceTimeout.current) {
       clearTimeout(debounceTimeout.current);
     }
-
+  
     debounceTimeout.current = setTimeout(() => {
       fetchTransactions();
-    }, 500); // 2 seconds debounce time
-
+    }, 500);
+  
     return () => {
       if (debounceTimeout.current) {
         clearTimeout(debounceTimeout.current);
       }
     };
-  }, [searchTerm]);
+  }, [searchTerm, searchType]); // ✅ Added `searchType` as a dependency
+  
 
   const handlePageChange = (page) => {
     setCurrentPage(page);
@@ -172,6 +181,56 @@ const Inventory = () => {
     ));
   };
 
+  const [filteredCategories, setFilteredCategories] = useState([]); // Store filtered results
+  const [categoryInput, setCategoryInput] = useState(""); // Store search input
+
+  // Function to filter categories based on user input
+  const handleCategorySearch = (input) => {
+    setCategoryInput(input);
+    if (input.trim() === "") {
+      setFilteredCategories([]); // Clear suggestions if input is empty
+      return;
+    }
+
+    // Filter categories based on input
+    const filtered = categories.filter(category =>
+      category.category_name.toLowerCase().includes(input.toLowerCase())
+    );
+
+    setFilteredCategories(filtered);
+  };
+
+
+  const [selectedTransaction, setSelectedTransaction] = useState(null); // Store selected transaction
+  const [isModalOpen, setIsModalOpen] = useState(false); // Modal visibility state
+
+
+  // Function to select category from dropdown
+  const selectCategory = (category) => {
+    setSelectedCategories([category]); // Select category
+    setCategoryInput(category); // Update input value
+    setFilteredCategories([]); // Hide dropdown
+  };
+
+  const handleTransactionClick = (transaction) => {
+    setSelectedTransaction(transaction);
+    setIsModalOpen(true); // Open modal when a transaction is clicked
+  };
+
+  const getTransactionIcon = (type) => {
+    switch (type) {
+      case "Delivery":
+        return <CiDeliveryTruck className="inline-block mr-1 text-blue-500" />;
+      case "Walk-In":
+        return <GiWalkingBoot className="inline-block mr-1 text-green-500" />;
+      case "Restock":
+        return <BiRefresh className="inline-block mr-1 text-yellow-500" />;
+      default:
+        return null;
+    }
+  };
+
+
   return (
     <div className="flex w-full bg-white">
       <Navbar />
@@ -186,10 +245,19 @@ const Inventory = () => {
 
         <div className="w-4/5 mx-auto bg-white p-3 m-3 rounded-lg shadow-lg shadow-gray-400">
           <div className="flex flex-row items-center w-full px-2 py-2 mr-1 border border-gray-300 rounded-md shadow-md focus-within:border-blue-500 relative h-12">
-            <span className="font-bold text-black-500 whitespace-nowrap">
-              INVENTORY
-            </span>
-            <div className="border-l border-gray-300 h-10 mx-2"></div>
+            <div className="font-bold text-black-500 whitespace-nowrap">INVENTORY</div>
+            <div className="border-l border-gray-300 h-10 mx-2 "></div>
+
+            {/* Search Type Dropdown */}
+            <select
+              className="font-bold py-2 bg-blue-500 text-white rounded-md focus:border-white"
+              value={searchType}
+              onChange={(e) => setSearchType(e.target.value)}
+            >
+              <option value="product">Product</option>
+              <option value="category">Category</option>
+            </select>
+            {/* Search Input */}
             <input
               type="text"
               placeholder="Search for items"
@@ -198,6 +266,7 @@ const Inventory = () => {
               className="flex-grow focus:outline-none px-4 py-2 rounded-md sm:text-sm border-gray-300 focus:ring-blue-500 focus:border-blue-500 block w-full"
             />
           </div>
+
 
           <div className="flex items-center justify-between p-1">
             <div className="flex items-center justify-between space-x-1">
@@ -329,7 +398,12 @@ const Inventory = () => {
                 <thead>
                   <tr className="border-b border-gray-300">
                     {fetchDataLabel.map((label, index) => (
-                      <th key={index} className="text-left text-sm px-2 py-2 font-bold ">
+                      <th 
+                        key={index} 
+                        className={`px-2 py-2 text-sm font-bold ${
+                          label === "Transaction Type" ? "text-center" : "text-left"
+                        }`}
+                      >
                         {label}
                       </th>
                     ))}
@@ -339,17 +413,19 @@ const Inventory = () => {
                 <tbody>
                   {transactions.length > 0 ? (
                     transactions.map((item, index) => (
-                      <tr key={index} className="border-b text-xs border-gray-200 hover:bg-gray-50">
+                      <tr 
+                        key={index} 
+                        className="border-b text-xs border-gray-200 hover:bg-gray-50 cursor-pointer"
+                        onClick={() => handleTransactionClick(item)} // ✅ Handle transaction click
+                      >
                         <td className="px-3 py-3">{item.product_id}</td>
                         <td className="px-3">{item.product_name}</td>
                         <td className="px-3">{item.category_name}</td>
                         <td className="px-3">{item.date_in}</td>
                         <td className="px-3">{item.date_out}</td>
                         <td className="px-3">{item.quantity}</td>
-                        <td className="px-3">
-                          {item.transaction_type === "Delivery" && <CiDeliveryTruck className="inline-block mr-1" />}
-                          {item.transaction_type === "Walk-In" && <GiWalkingBoot className="inline-block mr-1" />}
-                          {item.transaction_type === "Restock" && <BiRefresh className="inline-block mr-1" />}
+                        <td className="px-3 text-center">
+                          {getTransactionIcon(item.transaction_type)}
                           {item.transaction_type}
                         </td>
                         <td className="px-3">₱ {item.total_value}</td>
@@ -363,6 +439,13 @@ const Inventory = () => {
                     </tr>
                   )}
                 </tbody>
+                {/* Transaction Modal */}
+                  {isModalOpen && (
+                    <TransactionModal 
+                      transaction={selectedTransaction} 
+                      onClose={() => setIsModalOpen(false)} 
+                    />
+                  )}
               </table>
               {/* Pagination Controls */}
               <div className="flex justify-center mt-4 pb-4 duration-200">
@@ -386,6 +469,7 @@ const Inventory = () => {
           )}
         </div>
       </div>
+
     </div>
   );
 };
