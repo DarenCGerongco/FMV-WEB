@@ -81,7 +81,7 @@ const TransactionModal = ({ transaction, onClose }) => {
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 z-50">
       <div className="bg-white p-6 rounded-lg shadow-lg w-3/5">
-        <h2 className="text-xl font-bold mb-4">Transactions for {transaction.product_name}</h2>
+        <h2 className="text-xl font-bold mb-4">{transaction.product_name} - Transactions</h2>
 
         {/* Table of Related Transactions */}
         <table className="w-full border-collapse">
