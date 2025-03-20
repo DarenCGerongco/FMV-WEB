@@ -82,12 +82,18 @@ const TopDamagedProductsModal = ({ onClose, month, year }) => {
     }
   };
 
+  const getMonthName = (monthNumber) => {
+    const date = new Date();
+    date.setMonth(monthNumber - 1); // JavaScript months are 0-based
+    return date.toLocaleString('default', { month: 'long' });
+  };
+
   return (
     <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center z-50">
       <div className="bg-white w-3/4 max-w-5xl rounded-lg shadow-lg max-h-[90vh] overflow-y-auto">
         {/* Header */}
         <div className="sticky top-0 bg-white border-b z-10 p-4 flex justify-between items-center">
-          <h2 className="text-xl font-bold">Top Damaged Products - {month}/{year}</h2>
+        <h2 className="text-xl font-bold">Most Sold Products as of - {getMonthName(month)} {year}</h2>
           <button onClick={onClose} className="text-gray-600 hover:text-gray-900 font-bold text-2xl">
             &times;
           </button>

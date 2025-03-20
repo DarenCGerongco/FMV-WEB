@@ -12,6 +12,7 @@ import moment from "moment";
 import "react-datepicker/dist/react-datepicker.css";
 import { RiResetLeftLine } from "react-icons/ri";
 import TransactionModal from "./inventory/TransactionModal"; // Import the modal component
+import ReportModal from "./inventory/ReportModal";
 
 const Inventory = () => {
   const url = import.meta.env.VITE_API_URL;
@@ -230,24 +231,31 @@ const Inventory = () => {
     }
   };
 
+  const [isReportModalOpen, setIsReportModalOpen] = useState(false);
+  const [reportData, setReportData] = useState([]); 
+
+  const handleGenerateReport = () => {
+    setReportData(transactions); // Pass current transactions
+    setIsReportModalOpen(true);
+  };
 
   return (
     <div className="flex w-full bg-white">
       <Navbar />
       <QuickButtons />
-      <div className="w-full bg-white-100 mb-5 ">
+      <div className="w-full bg-white-100 mb-5">
         <div className="w-4/5 flex justify-between mx-auto p-6 mt-3 rounded-lg bg-white shadow-lg shadow-gray-400 mb-6">
           <h2 className="text-1xl font-bold">MANAGEMENT SYSTEM INVENTORY</h2>
           <h3 className="font-bold">
             {month}, {day} {weekday} {year}
           </h3>
         </div>
-
+  
         <div className="w-4/5 mx-auto bg-white p-3 m-3 rounded-lg shadow-lg shadow-gray-400">
           <div className="flex flex-row items-center w-full px-2 py-2 mr-1 border border-gray-300 rounded-md shadow-md focus-within:border-blue-500 relative h-12">
             <div className="font-bold text-black-500 whitespace-nowrap">INVENTORY</div>
             <div className="border-l border-gray-300 h-10 mx-2 "></div>
-
+  
             {/* Search Type Dropdown */}
             <select
               className="font-bold py-2 bg-blue-500 text-white rounded-md focus:border-white"
@@ -266,10 +274,10 @@ const Inventory = () => {
               className="flex-grow focus:outline-none px-4 py-2 rounded-md sm:text-sm border-gray-300 focus:ring-blue-500 focus:border-blue-500 block w-full"
             />
           </div>
-
-
+  
           <div className="flex items-center justify-between p-1">
             <div className="flex items-center justify-between space-x-1">
+              
               {/* Category Filter Button */}
               <div className="relative">
                 <div 
@@ -279,7 +287,7 @@ const Inventory = () => {
                   <h1 className="text-xs font-bold">Category</h1>
                   <MdExpandMore />
                 </div>
-
+  
                 {/* Category Dropdown */}
                 {isFilterOpenCategory && (
                   <div className="absolute left-0 mt-2 bg-white border rounded-lg shadow-lg z-10 w-48">
@@ -310,8 +318,8 @@ const Inventory = () => {
                   </div>
                 )}
               </div>
-              
-              {/* Transaction Type Filter */}
+  
+              {/* Transaction Type Filter - RESTORED */}
               <div className="relative">
                 <div 
                   onClick={() => setIsFilterOpenTransactionType((prev) => !prev)}
@@ -320,6 +328,7 @@ const Inventory = () => {
                   <h1 className="text-xs font-bold">Transaction</h1>
                   <MdExpandMore />
                 </div>
+  
                 {/* Dropdown */}
                 {isFilterOpenTransactionType && (
                   <div className="absolute left-0 mt-2 bg-white border rounded-lg shadow-lg z-10 w-48">
@@ -347,43 +356,19 @@ const Inventory = () => {
                   </div>
                 )}
               </div>
-            </div>
-
-            <div className="flex items-center">
-              <div className="flex items-center space-x-1 mt-4">
-                <h1 className='text-xs font-bold'>
-                  Date
-                </h1>
-                <h1 className="text-xs font-bold">from:</h1>
-                <DatePicker
-                  selected={dateFrom}
-                  onChange={(date) => setDateFrom(date)}
-                  className="px-2 py-1  border border-gray-300 rounded-md"
-                  dateFormat="MM/dd/yyyy"
-                  placeholderText="Select Date"
-                  maxDate={new Date()} // Restrict "From" date to be up to the current date
-                />
-                <h1 className="text-xs mx-2 font-bold">to:</h1>
-                <DatePicker
-                  selected={dateTo}
-                  onChange={(date) => setDateTo(date)}
-                  className="px-2 py-1 border border-gray-300 rounded-md"
-                  dateFormat="MM/dd/yyyy"
-                  placeholderText="Select Date"
-                  minDate={dateFrom} // Restrict "To" date to be after "From" date
-                  maxDate={new Date()} // Restrict "To" date to be up to the current date
-                />
-                <button
-                  className="px-4 py-2 border hover:bg-blue-500 hover:text-white rounded-md text-black font-bold duration-200"
-                  onClick={resetFilters} // ✅ Call the reset function when clicked
-                >
-                  <RiResetLeftLine />
-                </button>
-              </div>
+  
+              {/* Button to Generate Report */}
+              <button 
+                onClick={() => setIsReportModalOpen(true)} 
+                className="px-4 py-2 border rounded-md hover:bg-blue-500 hover:text-white font-bold duration-200"
+              >
+                Generate Report
+              </button>
+  
             </div>
           </div>
         </div>
-
+  
         {/* Inventory Data Table */}
         <div className="w-4/5 mx-auto bg-white rounded-lg shadow-lg shadow-gray-400">
           {loading ? (
@@ -416,7 +401,7 @@ const Inventory = () => {
                       <tr 
                         key={index} 
                         className="border-b text-xs border-gray-200 hover:bg-gray-50 cursor-pointer"
-                        onClick={() => handleTransactionClick(item)} // ✅ Handle transaction click
+                        onClick={() => handleTransactionClick(item)}
                       >
                         <td className="px-3 py-3">{item.product_id}</td>
                         <td className="px-3">{item.product_name}</td>
@@ -439,39 +424,22 @@ const Inventory = () => {
                     </tr>
                   )}
                 </tbody>
-                {/* Transaction Modal */}
-                  {isModalOpen && (
-                    <TransactionModal 
-                      transaction={selectedTransaction} 
-                      onClose={() => setIsModalOpen(false)} 
-                    />
-                  )}
               </table>
-              {/* Pagination Controls */}
-              <div className="flex justify-center mt-4 pb-4 duration-200">
-                <button
-                  className="px-4 py-2 mx-1 border rounded-md hover:bg-blue-500 hover:text-white font-bold duration-200"
-                  onClick={() => handlePageChange(currentPage - 1)}
-                  disabled={currentPage === 1}
-                >
-                  Previous
-                </button>
-                {renderPageNumbers()}
-                <button
-                  className="px-4 py-2 mx-1 border rounded-md hover:bg-blue-500 hover:text-white font-bold duration-200"
-                  onClick={() => handlePageChange(currentPage + 1)}
-                  disabled={currentPage === totalPages}
-                >
-                  Next
-                </button>
-              </div>
+  
+              {/* Report Modal */}
+              {isReportModalOpen && (
+                <ReportModal products={transactions} onClose={() => setIsReportModalOpen(false)} />
+              )}
+  
             </>
           )}
         </div>
       </div>
-
     </div>
   );
+  
+  
+  
 };
 
 export default Inventory;

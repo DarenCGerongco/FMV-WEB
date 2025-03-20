@@ -103,7 +103,7 @@ const TopSoldProductsModal = ({ onClose, month, year }) => {
       <div className="bg-white w-3/4 max-w-5xl rounded-lg shadow-lg max-h-[90vh] overflow-y-auto">
         {/* Header */}
         <div className="sticky top-0 bg-white border-b z-10 p-4 flex justify-between items-center">
-          <h2 className="text-xl font-bold">Top Sold Products - {year}</h2>
+          <h2 className="text-xl font-bold">Most Sold Products as of {year}</h2>
           <button
             onClick={onClose}
             className="text-gray-600 hover:text-gray-900 font-bold text-2xl"
@@ -121,7 +121,7 @@ const TopSoldProductsModal = ({ onClose, month, year }) => {
             {chartData && (
               <div className="my-6 p-2">
                 <h3 className="text-lg font-bold text-center mb-4">
-                  Top 20 Product Sales Distribution
+                  Top Sold Product Sales Distribution
                 </h3>
                 <div className="relative w-full h-[500px] bg-gray-100 p-4 rounded-md">
                   <Pie data={chartData} options={{ responsive: true, maintainAspectRatio: false }} />

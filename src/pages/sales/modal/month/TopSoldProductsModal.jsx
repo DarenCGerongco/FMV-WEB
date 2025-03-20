@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Pie } from "react-chartjs-2";
+import jsPDF from 'jspdf';
+import 'jspdf-autotable';
 import {
   Chart as ChartJS,
   ArcElement,
@@ -94,18 +96,55 @@ const TopSoldProductsModal = ({ onClose, month, year }) => {
     }
   };
 
+  const getMonthName = (monthNumber) => {
+    const date = new Date();
+    date.setMonth(monthNumber - 1); // JavaScript months are 0-based
+    return date.toLocaleString('default', { month: 'long' });
+  };
+
+  const handleGenerateReport = () => {
+    const doc = new jsPDF();
+
+    // Add title
+    doc.setFontSize(18);
+    doc.text(`Most Sold Products as of ${getMonthName(month)} ${year}`, 14, 22);
+
+    // Add table
+    doc.autoTable({
+      startY: 30,
+      head: [['#', 'Product Name', 'Price (Php)', 'Total Sold']],
+      body: topProducts.map((product, index) => [
+        index + 1 + (currentPage - 1) * 20,
+        product.product_name,
+        `₱ ${product.price.toLocaleString()}`,
+        product.total_sold,
+      ]),
+    });
+
+    // Save the PDF
+    doc.save(`Top_Sold_Products_${getMonthName(month)}_${year}.pdf`);
+  };
+
   return (
     <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center z-50">
       <div className="bg-white w-3/4 max-w-5xl rounded-lg shadow-lg max-h-[90vh] overflow-y-auto">
         {/* Header */}
         <div className="sticky top-0 bg-white border-b z-10 p-4 flex justify-between items-center">
-          <h2 className="text-xl font-bold">Top Sold Products - {month}/{year}</h2>
-          <button
-            onClick={onClose}
-            className="text-gray-600 hover:text-gray-900 font-bold text-2xl"
-          >
-            &times;
-          </button>
+          <h2 className="text-xl font-bold">Most Sold Products as of {getMonthName(month)} {year}</h2>
+          <div>
+            <button
+              onClick={handleGenerateReport}
+              className="mr-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700"
+            >
+              Generate Report
+            </button>
+            <button
+              onClick={onClose}
+              className="text-gray-600 hover:text-gray-900 font-bold text-2xl"
+            >
+              &times;
+            </button>
+          </div>
         </div>
 
         {/* Loading State */}
@@ -117,7 +156,7 @@ const TopSoldProductsModal = ({ onClose, month, year }) => {
             {chartData && (
               <div className="my-6 p-2">
                 <h3 className="text-lg font-bold text-center mb-4">
-                  Top 20 Product Sales Distribution
+                  Most Sold Product Sales Distribution
                 </h3>
                 <div className="relative w-full h-[500px] bg-gray-100 p-4 rounded-md">
                   <Pie data={chartData} options={{ responsive: true, maintainAspectRatio: false }} />

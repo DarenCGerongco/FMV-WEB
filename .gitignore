@@ -25,3 +25,4 @@ dist-ssr
 .env
 GlobalContext.jsx
 GlobalContext.jsx
+package-lock.json
