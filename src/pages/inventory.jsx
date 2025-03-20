@@ -162,25 +162,33 @@ const Inventory = () => {
     const maxVisiblePages = 15;
     let startPage = Math.max(currentPage - Math.floor(maxVisiblePages / 2), 1);
     let endPage = Math.min(startPage + maxVisiblePages - 1, totalPages);
-
+  
     if (endPage - startPage < maxVisiblePages - 1) {
       startPage = Math.max(endPage - maxVisiblePages + 1, 1);
     }
-
+  
     for (let i = startPage; i <= endPage; i++) {
       pageNumbers.push(i);
     }
-
-    return pageNumbers.map((number) => (
-      <button
-        key={number}
-        className={`px-4 py-2 hover:bg-blue-500 hover:text-white duration-200 font-bold mx-1 border rounded-md  ${currentPage === number ? 'bg-blue-500 text-white' : ''}`}
-        onClick={() => handlePageChange(number)}
-      >
-        {number}
-      </button>
-    ));
+  
+    return (
+      <div className="flex justify-center items-center space-x-2">  
+        {/* Page Numbers */}
+        {pageNumbers.map((number) => (
+          <button
+            key={number}
+            className={`px-4 py-2 hover:bg-blue-500 hover:text-white duration-200 font-bold mx-1 border rounded-md ${
+              currentPage === number ? "bg-blue-500 text-white" : ""
+            }`}
+            onClick={() => handlePageChange(number)}
+          >
+            {number}
+          </button>
+        ))}
+      </div>
+    );
   };
+  
 
   const [filteredCategories, setFilteredCategories] = useState([]); // Store filtered results
   const [categoryInput, setCategoryInput] = useState(""); // Store search input
@@ -214,8 +222,8 @@ const Inventory = () => {
   };
 
   const handleTransactionClick = (transaction) => {
-    setSelectedTransaction(transaction);
-    setIsModalOpen(true); // Open modal when a transaction is clicked
+    setSelectedTransaction(transaction); // ✅ Store the selected transaction
+    setIsModalOpen(true); // ✅ Open modal when a row is clicked
   };
 
   const getTransactionIcon = (type) => {
@@ -239,6 +247,7 @@ const Inventory = () => {
     setIsReportModalOpen(true);
   };
 
+  
   return (
     <div className="flex w-full bg-white">
       <Navbar />
@@ -254,7 +263,7 @@ const Inventory = () => {
         <div className="w-4/5 mx-auto bg-white p-3 m-3 rounded-lg shadow-lg shadow-gray-400">
           <div className="flex flex-row items-center w-full px-2 py-2 mr-1 border border-gray-300 rounded-md shadow-md focus-within:border-blue-500 relative h-12">
             <div className="font-bold text-black-500 whitespace-nowrap">INVENTORY</div>
-            <div className="border-l border-gray-300 h-10 mx-2 "></div>
+            <div className="border-l border-gray-300 h-10 mx-2"></div>
   
             {/* Search Type Dropdown */}
             <select
@@ -265,6 +274,7 @@ const Inventory = () => {
               <option value="product">Product</option>
               <option value="category">Category</option>
             </select>
+  
             {/* Search Input */}
             <input
               type="text"
@@ -276,9 +286,9 @@ const Inventory = () => {
           </div>
   
           <div className="flex items-center justify-between p-1">
-            <div className="flex items-center justify-between space-x-1">
+            <div className="flex items-center space-x-2">
               
-              {/* Category Filter Button */}
+              {/* Category Filter */}
               <div className="relative">
                 <div 
                   onClick={() => setIsFilterOpenCategory(prev => !prev)} 
@@ -288,17 +298,13 @@ const Inventory = () => {
                   <MdExpandMore />
                 </div>
   
-                {/* Category Dropdown */}
                 {isFilterOpenCategory && (
                   <div className="absolute left-0 mt-2 bg-white border rounded-lg shadow-lg z-10 w-48">
                     <div className="p-2">
                       <div className="font-bold mb-2">Category Filter</div>
                       <div className="space-y-1">
                         {categories.map((category) => (
-                          <label 
-                            key={category.id} 
-                            className="flex items-center hover:bg-blue-500 hover:text-white duration-200 rounded space-x-2 cursor-pointer p-1"
-                          >
+                          <label key={category.id} className="flex items-center hover:bg-blue-500 hover:text-white duration-200 rounded space-x-2 cursor-pointer p-1">
                             <input
                               type="checkbox"
                               checked={selectedCategories.includes(category.category_name)}
@@ -319,7 +325,7 @@ const Inventory = () => {
                 )}
               </div>
   
-              {/* Transaction Type Filter - RESTORED */}
+              {/* Transaction Type Filter */}
               <div className="relative">
                 <div 
                   onClick={() => setIsFilterOpenTransactionType((prev) => !prev)}
@@ -329,7 +335,6 @@ const Inventory = () => {
                   <MdExpandMore />
                 </div>
   
-                {/* Dropdown */}
                 {isFilterOpenTransactionType && (
                   <div className="absolute left-0 mt-2 bg-white border rounded-lg shadow-lg z-10 w-48">
                     <div className="p-2">
@@ -357,15 +362,46 @@ const Inventory = () => {
                 )}
               </div>
   
-              {/* Button to Generate Report */}
-              <button 
-                onClick={() => setIsReportModalOpen(true)} 
-                className="px-4 py-2 border rounded-md hover:bg-blue-500 hover:text-white font-bold duration-200"
-              >
-                Generate Report
-              </button>
+              {/* Date Filters */}
+              <div className="flex items-center space-x-2">
+                <h1 className="text-xs font-bold">Date</h1>
+                <h1 className="text-xs font-bold">from:</h1>
+                <DatePicker
+                  selected={dateFrom}
+                  onChange={(date) => setDateFrom(date)}
+                  className="px-2 py-1 border border-gray-300 rounded-md"
+                  dateFormat="MM/dd/yyyy"
+                  placeholderText="Select Date"
+                  maxDate={new Date()}
+                />
+                <h1 className="text-xs mx-2 font-bold">to:</h1>
+                <DatePicker
+                  selected={dateTo}
+                  onChange={(date) => setDateTo(date)}
+                  className="px-2 py-1 border border-gray-300 rounded-md"
+                  dateFormat="MM/dd/yyyy"
+                  placeholderText="Select Date"
+                  minDate={dateFrom}
+                  maxDate={new Date()}
+                />
+                <button
+                  className="px-4 py-2 border hover:bg-blue-500 hover:text-white rounded-md text-black font-bold duration-200"
+                  onClick={resetFilters}
+                >
+                  <RiResetLeftLine />
+                </button>
+              </div>
   
             </div>
+  
+            {/* Generate Report Button */}
+            <button 
+              onClick={() => setIsReportModalOpen(true)} 
+              className="px-4 py-2 border rounded-md hover:bg-blue-500 hover:text-white font-bold duration-200"
+            >
+              Generate Report
+            </button>
+  
           </div>
         </div>
   
@@ -379,64 +415,76 @@ const Inventory = () => {
           ) : (
             <>
               <table className="w-full border-collapse">
-                {/* Table Header */}
                 <thead>
                   <tr className="border-b border-gray-300">
                     {fetchDataLabel.map((label, index) => (
-                      <th 
-                        key={index} 
-                        className={`px-2 py-2 text-sm font-bold ${
-                          label === "Transaction Type" ? "text-center" : "text-left"
-                        }`}
-                      >
-                        {label}
-                      </th>
+                      <th key={index} className="px-2 py-2 text-sm font-bold">{label}</th>
                     ))}
                   </tr>
                 </thead>
-                {/* Table Body */}
-                <tbody>
-                  {transactions.length > 0 ? (
-                    transactions.map((item, index) => (
-                      <tr 
-                        key={index} 
-                        className="border-b text-xs border-gray-200 hover:bg-gray-50 cursor-pointer"
-                        onClick={() => handleTransactionClick(item)}
-                      >
-                        <td className="px-3 py-3">{item.product_id}</td>
-                        <td className="px-3">{item.product_name}</td>
-                        <td className="px-3">{item.category_name}</td>
-                        <td className="px-3">{item.date_in}</td>
-                        <td className="px-3">{item.date_out}</td>
-                        <td className="px-3">{item.quantity}</td>
-                        <td className="px-3 text-center">
-                          {getTransactionIcon(item.transaction_type)}
-                          {item.transaction_type}
+                  <tbody>
+                    {transactions.length > 0 ? (
+                      transactions.map((item, index) => (
+                        <tr 
+                          key={index} 
+                          className="border-b text-xs border-gray-200 hover:bg-gray-50 cursor-pointer"
+                          onClick={() => handleTransactionClick(item)} // ✅ Ensure this is present
+                        >
+                          <td className="px-3 py-3">{item.product_id}</td>
+                          <td className="px-3">{item.product_name}</td>
+                          <td className="px-3">{item.category_name}</td>
+                          <td className="px-3">{item.date_in}</td>
+                          <td className="px-3">{item.date_out}</td>
+                          <td className="px-3">{item.quantity}</td>
+                          <td className="px-3 text-center flex items-center justify-center">
+                            {getTransactionIcon(item.transaction_type)}
+                            <span className="ml-1">{item.transaction_type}</span>
+                          </td>
+                          <td className="px-3">₱ {item.total_value}</td>
+                        </tr>
+                      ))
+                    ) : (
+                      <tr>
+                        <td colSpan={fetchDataLabel.length} className="text-center p-4 text-gray-500">
+                          No inventory data found.
                         </td>
-                        <td className="px-3">₱ {item.total_value}</td>
                       </tr>
-                    ))
-                  ) : (
-                    <tr>
-                      <td colSpan={fetchDataLabel.length} className="text-center p-4 text-gray-500">
-                        No inventory data found.
-                      </td>
-                    </tr>
-                  )}
-                </tbody>
+                    )}
+                  </tbody>
+
               </table>
   
-              {/* Report Modal */}
-              {isReportModalOpen && (
-                <ReportModal products={transactions} onClose={() => setIsReportModalOpen(false)} />
-              )}
-  
+              {/* Report & Transaction Modals */}
+              {isModalOpen && <TransactionModal transaction={selectedTransaction} onClose={() => setIsModalOpen(false)} />}
+              {isReportModalOpen && <ReportModal products={transactions} onClose={() => setIsReportModalOpen(false)} />}
             </>
           )}
+          {/* Pagination Controls - Restored */}
+          <div className="flex justify-center mt-4 pb-4 duration-200">
+            <button
+              className="px-4 py-2 mx-1 border rounded-md hover:bg-blue-500 hover:text-white font-bold duration-200 disabled:opacity-50"
+              onClick={() => handlePageChange(currentPage - 1)}
+              disabled={currentPage === 1}
+            >
+              Previous
+            </button>
+            {renderPageNumbers()}
+            <button
+              className="px-4 py-2 mx-1 border rounded-md hover:bg-blue-500 hover:text-white font-bold duration-200 disabled:opacity-50"
+              onClick={() => handlePageChange(currentPage + 1)}
+              disabled={currentPage === totalPages}
+            >
+              Next
+            </button>
+          </div>
+
         </div>
       </div>
     </div>
   );
+  
+  
+  
   
   
   
