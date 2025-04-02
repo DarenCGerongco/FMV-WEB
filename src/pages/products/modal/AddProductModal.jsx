@@ -1,7 +1,11 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import axios from "axios";
+import { GlobalContext } from "../../../../GlobalContext";
+import { ToastContainer, toast } from "react-toastify";
+import 'react-toastify/dist/ReactToastify.css';
 
 const AddProductModal = ({ onClose, fetchProducts }) => {
+  const { id: userID } = useContext(GlobalContext); // ✅ Get the user ID properly
   const [categories, setCategories] = useState([]);
   const [categoryId, setCategoryId] = useState("");
   const [productName, setProductName] = useState("");
@@ -18,7 +22,6 @@ const AddProductModal = ({ onClose, fetchProducts }) => {
 
   const url = import.meta.env.VITE_API_URL;
 
-  // Fetch categories from the API
   useEffect(() => {
     const fetchCategories = async () => {
       try {
@@ -32,7 +35,6 @@ const AddProductModal = ({ onClose, fetchProducts }) => {
     fetchCategories();
   }, [url]);
 
-  // Validate form fields
   const validateFields = () => {
     const newErrors = {};
     if (!categoryId) newErrors.categoryId = "Category is required.";
@@ -40,7 +42,7 @@ const AddProductModal = ({ onClose, fetchProducts }) => {
     if (!originalPrice || isNaN(originalPrice) || originalPrice <= 0)
       newErrors.originalPrice = "Price is required.";
     if (!quantity || quantity <= 0)
-      newErrors.quantity = "Quantity missing and quantity must be greater than zero.";
+      newErrors.quantity = "Quantity missing and must be greater than zero.";
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -51,25 +53,28 @@ const AddProductModal = ({ onClose, fetchProducts }) => {
     setLoading(true);
     try {
       const response = await axios.post(`${url}/api/products`, {
+        user_id: userID, // ✅ user_id included
         category_id: categoryId,
         product_name: productName,
         original_price: parseFloat(originalPrice),
         quantity: parseInt(quantity, 10),
       });
-      if (response.status === 200) {
-        fetchProducts(); // Refresh products list after adding
-        onClose(); // Close the modal
+
+      if (response.status === 200 || response.status === 201) {
+        toast.success("Product successfully added!");
+        fetchProducts(); // Refresh list
+        onClose(); // Close modal
       } else {
         console.error("Error creating product:", response.data);
       }
     } catch (error) {
       console.error("Error creating product:", error);
+      toast.error("Failed to add product. Please try again.");
     } finally {
       setLoading(false);
     }
   };
 
-  // Allow decimals in Original Price input
   const handleDecimalInput = (e) => {
     const value = e.target.value;
     if (/^\d*\.?\d{0,2}$/.test(value)) {
@@ -84,7 +89,7 @@ const AddProductModal = ({ onClose, fetchProducts }) => {
           <h3 className="text-lg font-bold">Add New Product</h3>
         </div>
 
-        {/* Category Dropdown */}
+        {/* Category */}
         <div className="mb-4">
           <label className="block font-bold text-blue-600 mb-2">Category:</label>
           <select
@@ -92,9 +97,7 @@ const AddProductModal = ({ onClose, fetchProducts }) => {
             onChange={(e) => setCategoryId(e.target.value)}
             className={`w-full p-2 border rounded-md ${errors.categoryId ? "border-red-500" : ""}`}
           >
-            <option value="" disabled>
-              Select a category
-            </option>
+            <option value="" disabled>Select a category</option>
             {categories.map((category) => (
               <option key={category.id} value={category.id}>
                 {category.category_name}
@@ -104,7 +107,7 @@ const AddProductModal = ({ onClose, fetchProducts }) => {
           {errors.categoryId && <p className="text-red-500 text-sm">{errors.categoryId}</p>}
         </div>
 
-        {/* Product Name Input */}
+        {/* Product Name */}
         <div className="mb-4">
           <label className="block font-bold text-blue-600 mb-2">Product Name:</label>
           <input
@@ -116,7 +119,7 @@ const AddProductModal = ({ onClose, fetchProducts }) => {
           {errors.productName && <p className="text-red-500 text-sm">{errors.productName}</p>}
         </div>
 
-        {/* Original Price Input */}
+        {/* Original Price */}
         <div className="mb-4">
           <label className="block font-bold text-blue-600 mb-2">Original Price:</label>
           <input
@@ -128,11 +131,12 @@ const AddProductModal = ({ onClose, fetchProducts }) => {
           {errors.originalPrice && <p className="text-red-500 text-sm">{errors.originalPrice}</p>}
         </div>
 
-        {/* Quantity Input */}
+        {/* Quantity */}
         <div className="mb-4">
           <label className="block font-bold text-blue-600 mb-2">Quantity:</label>
           <input
             type="number"
+            min="1"
             value={quantity}
             onChange={(e) => setQuantity(e.target.value)}
             className={`w-full p-2 border rounded-md ${errors.quantity ? "border-red-500" : ""}`}
@@ -140,7 +144,7 @@ const AddProductModal = ({ onClose, fetchProducts }) => {
           {errors.quantity && <p className="text-red-500 text-sm">{errors.quantity}</p>}
         </div>
 
-        {/* Modal Buttons */}
+        {/* Buttons */}
         <div className="flex justify-end mt-4 gap-x-4">
           <button
             className="w-32 bg-transparent hover:bg-blue-500 text-blue-700 hover:text-white px-4 py-2 border border-blue-500 hover:border-transparent rounded-lg"
@@ -149,7 +153,7 @@ const AddProductModal = ({ onClose, fetchProducts }) => {
             Cancel
           </button>
           <button
-            className="w-40 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700 rounded-lg"
+            className="w-40 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700"
             onClick={handleSubmit}
             disabled={loading}
           >
@@ -157,6 +161,7 @@ const AddProductModal = ({ onClose, fetchProducts }) => {
           </button>
         </div>
       </div>
+      <ToastContainer />
     </div>
   );
 };

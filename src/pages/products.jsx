@@ -391,7 +391,7 @@ function Product() {
             <div className="flex">
               <button
                 className="px-4 py-2 bg-blue-500 text-white  hover:bg-white hover:text-blue-500 shadow-md duration-200 rounded-lg font-bold"
-                onClick={() => navigate("/product/reorder")}
+                onClick={() => navigate("/products/reorder")}
                 >
                 View Reorder Level
               </button>
@@ -495,12 +495,6 @@ function Product() {
                             <ul>
                               <li
                                 className="px-4 py-2 hover:bg-blue-500 hover:text-white cursor-pointer font-bold"
-                                onClick={() => handleRestockClick(item)}
-                              >
-                                Restock
-                              </li>
-                              <li
-                                className="px-4 py-2 hover:bg-blue-500 hover:text-white cursor-pointer font-bold"
                                 onClick={() => navigate(`/products/${item.product_id}/details`)}
                               >
                                 Details
@@ -546,13 +540,13 @@ function Product() {
             fetchProducts={() => fetchProducts(pagination.currentPage)}
           />
         )}
-        {showRestockModal && restockProduct && (
-          <RestockModal
-            productId={restockProduct.id}
-            productName={restockProduct.name}
-            onClose={() => setShowRestockModal(false)}
-            onRestockSuccess={() => fetchProducts(pagination.currentPage)}
-          />
+        {showRestockModal && Object.keys(selectedProducts).length > 0 && (
+            <RestockModal
+              selectedProducts={selectedProducts}
+              setSelectedProducts={setSelectedProducts} // you may want to pass this too
+              onClose={() => setShowRestockModal(false)}
+              onRestockSuccess={() => fetchProducts(pagination.currentPage)}
+            />
         )}
         {showEditProductModal && editProduct && (
           <EditProductModal

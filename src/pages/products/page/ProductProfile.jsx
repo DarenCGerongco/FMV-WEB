@@ -9,26 +9,17 @@ const ProductDetails = () => {
   const [productDetails, setProductDetails] = useState({});
   const [transactions, setTransactions] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [isRestockMode, setIsRestockMode] = useState(false);
-  const toggleRestockMode = () => setIsRestockMode((prev) => !prev);
+  const [showRestockModal, setShowRestockModal] = useState(false);
+  const [selectedProducts, setSelectedProducts] = useState({}); // ✅ Added for RestockModal compatibility
+  const [selectedType, setSelectedType] = useState("all"); // For filter
+  const url = import.meta.env.VITE_API_URL;
 
-  const [selectedType, setSelectedType] = useState("all"); // Default value
-  const handleTransactionTypeChange = (e) => {
-    const value = e.target.value;
-    setSelectedType(value); // Update the selected value
-    fetchProductTransactions(1, value); // Fetch data for the selected transaction type
-  };
-  
   const [pagination, setPagination] = useState({
     total: 0,
     perPage: 20,
     currentPage: 1,
     lastPage: 1,
   });
-
-  const [showRestockModal, setShowRestockModal] = useState(false);
-
-  const url = import.meta.env.VITE_API_URL;
 
   useEffect(() => {
     fetchProductTransactions();
@@ -40,8 +31,6 @@ const ProductDetails = () => {
       const response = await axios.get(`${url}/api/view/${productID}/Product-Profile`, {
         params: { page: Number(page), transactionType },
       });
-  
-      console.log(response.data);
 
       const {
         product_id,
@@ -51,10 +40,7 @@ const ProductDetails = () => {
         total_restocked_quantity,
         transactions: { data: transactionData, pagination: paginationData },
       } = response.data;
-  
-      console.log("Pagination Data:", paginationData); // Debugging
-      console.log("Current Transactions:", transactionData); // Debugging
-  
+
       setProductDetails({
         product_id,
         product_name,
@@ -62,7 +48,7 @@ const ProductDetails = () => {
         remaining_quantity,
         total_restocked_quantity,
       });
-  
+
       const sortedTransactions = transactionData.sort((a, b) => new Date(b.date) - new Date(a.date));
       setTransactions(sortedTransactions);
       setPagination(paginationData || { total: 0, perPage: 20, currentPage: 1, lastPage: 1 });
@@ -72,16 +58,15 @@ const ProductDetails = () => {
       setLoading(false);
     }
   };
-  
+
   const handlePageChange = (page) => {
-    console.log("Page Change Triggered. New Page:", page); // Debugging
     if (page >= 1 && page <= pagination.lastPage) {
-      fetchProductTransactions(page, selectedType); // Pass transaction type if needed
+      fetchProductTransactions(page, selectedType);
     }
   };
-  
+
   const handleRestockSuccess = () => {
-    fetchProductTransactions(); // Refresh transactions after restocking
+    fetchProductTransactions();
   };
 
   const formatDate = (dateString) => {
@@ -96,101 +81,56 @@ const ProductDetails = () => {
   };
 
   const renderPagination = () => {
-    if (!pagination || !pagination.lastPage) {
-      console.error("Pagination data is not properly set:", pagination);
-      return null; // Prevent rendering if pagination is not ready
-    }
-  
-    const { currentPage, lastPage = 1 } = pagination;
-  
-    // Convert currentPage to a number for comparison
-    const currentPageNumber = Number(currentPage);
-  
-    const maxPagesShown = 15; // Limit displayed pages to 15
-    let startPage = Math.max(1, currentPageNumber - Math.floor(maxPagesShown / 2));
+    if (!pagination || !pagination.lastPage) return null;
+    const { currentPage, lastPage } = pagination;
+
+    const maxPagesShown = 15;
+    let startPage = Math.max(1, currentPage - Math.floor(maxPagesShown / 2));
     let endPage = Math.min(lastPage, startPage + maxPagesShown - 1);
-  
-    if (currentPageNumber >= endPage - 3 && endPage < lastPage) {
-      endPage = Math.min(lastPage, endPage + 5);
-    }
-  
-    if (endPage - startPage < maxPagesShown) {
-      startPage = Math.max(1, endPage - maxPagesShown + 1);
-    }
-  
+
+    if (currentPage >= endPage - 3 && endPage < lastPage) endPage = Math.min(lastPage, endPage + 5);
+    if (endPage - startPage < maxPagesShown) startPage = Math.max(1, endPage - maxPagesShown + 1);
+
     const pages = [];
-    for (let i = startPage; i <= endPage; i++) {
-      pages.push(i);
-    }
-  
+    for (let i = startPage; i <= endPage; i++) pages.push(i);
+
     return (
       <div className="flex gap-2 my-10 w-full justify-center">
-        {/* First Button */}
-        <button
-          onClick={() => handlePageChange(1)}
-          disabled={currentPageNumber === 1} // Ensure comparison uses numbers
-          className={`duration-200 font-bold px-3 py-1 rounded ${
-            currentPageNumber === 1
-              ? "bg-gray-300 text-gray-500 cursor-not-allowed" // Disabled state styling
-              : "bg-white border hover:bg-blue-500 hover:text-white"
-          }`}
-        >
-          First
-        </button>
-  
-        {/* Previous Button */}
-        <button
-          onClick={() => handlePageChange(currentPageNumber - 1)}
-          disabled={currentPageNumber === 1} // Ensure comparison uses numbers
-          className={`duration-200 font-bold px-3 py-1 rounded ${
-            currentPageNumber === 1
-              ? "bg-gray-300 text-gray-500 cursor-not-allowed" // Disabled state styling
-              : "bg-white border hover:bg-blue-500 hover:text-white"
-          }`}
-        >
-          Previous
-        </button>
-  
-        {/* Dynamic Page Numbers */}
+        {["First", "Previous"].map((label, idx) => {
+          const targetPage = label === "First" ? 1 : currentPage - 1;
+          return (
+            <button
+              key={label}
+              onClick={() => handlePageChange(targetPage)}
+              disabled={currentPage === 1}
+              className={`duration-200 font-bold px-3 py-1 rounded ${currentPage === 1 ? "bg-gray-300 text-gray-500" : "bg-white border hover:bg-blue-500 hover:text-white"}`}
+            >
+              {label}
+            </button>
+          );
+        })}
         {pages.map((page) => (
           <button
             key={page}
             onClick={() => handlePageChange(page)}
-            className={`font-bold px-3 py-1 rounded cursor-pointer ${
-              currentPageNumber === page
-                ? "bg-blue-500 text-white" // Highlight the current page
-                : "bg-white hover:bg-blue-500 hover:text-white border"
-            }`}
+            className={`font-bold px-3 py-1 rounded cursor-pointer ${currentPage === page ? "bg-blue-500 text-white" : "bg-white hover:bg-blue-500 hover:text-white border"}`}
           >
             {page}
           </button>
         ))}
-  
-        {/* Next Button */}
-        <button
-          onClick={() => handlePageChange(currentPageNumber + 1)}
-          disabled={currentPageNumber === lastPage} // Ensure comparison uses numbers
-          className={`duration-200 font-bold px-3 py-1 rounded ${
-            currentPageNumber === lastPage
-              ? "bg-gray-300 text-gray-500 cursor-not-allowed" // Disabled state styling
-              : "bg-white border hover:bg-blue-500 hover:text-white"
-          }`}
-        >
-          Next
-        </button>
-  
-        {/* Last Button */}
-        <button
-          onClick={() => handlePageChange(lastPage)}
-          disabled={currentPageNumber === lastPage} // Ensure comparison uses numbers
-          className={`duration-200 font-bold px-3 py-1 rounded ${
-            currentPageNumber === lastPage
-              ? "bg-gray-300 text-gray-500 cursor-not-allowed" // Disabled state styling
-              : "bg-white border hover:bg-blue-500 hover:text-white"
-          }`}
-        >
-          Last
-        </button>
+        {["Next", "Last"].map((label) => {
+          const targetPage = label === "Next" ? currentPage + 1 : lastPage;
+          return (
+            <button
+              key={label}
+              onClick={() => handlePageChange(targetPage)}
+              disabled={currentPage === lastPage}
+              className={`duration-200 font-bold px-3 py-1 rounded ${currentPage === lastPage ? "bg-gray-300 text-gray-500" : "bg-white border hover:bg-blue-500 hover:text-white"}`}
+            >
+              {label}
+            </button>
+          );
+        })}
       </div>
     );
   };
@@ -205,29 +145,32 @@ const ProductDetails = () => {
           </div>
         ) : (
           <>
-            {/* Product Details */}
             <div className="mb-6 flex justify-between items-center">
               <div>
                 <h1 className="text-2xl font-bold mb-2">
                   Product ID: {productDetails.product_id} - {productDetails.product_name}
                 </h1>
-                <p>
-                  <span className="font-bold">Created On:</span> {formatDate(productDetails.product_created_date)}
-                </p>
+                <p><span className="font-bold">Created On:</span> {formatDate(productDetails.product_created_date)}</p>
                 <p className="text-red-600 font-bold flex items-center">
                   <span className="font-bold">In Stock:</span> {productDetails.remaining_quantity}
-                  <span className="ml-1 flex items-center">
-                    <span className="live-circle"></span>
-                  </span>
                 </p>
                 <p className="text-green-600 font-bold">
                   <span>Total Stock Accumulated:</span> {productDetails.total_restocked_quantity}
                 </p>
               </div>
-              {/* Restock Button */}
+
+              {/* ✅ FIXED Restock Button */}
               <button
-                className="px-4 py-2 font-bold  bg-blue-500 text-white rounded hover:bg-white hover:text-blue-500 shadow-md border duration-200"
-                onClick={() => setShowRestockModal(true)}
+                className="px-4 py-2 font-bold bg-blue-500 text-white rounded hover:bg-white hover:text-blue-500 shadow-md border duration-200"
+                onClick={() => {
+                  setSelectedProducts({
+                    [productID]: {
+                      product_id: productID,
+                      product_name: productDetails.product_name
+                    }
+                  });
+                  setShowRestockModal(true);
+                }}
               >
                 Restock
               </button>
@@ -238,8 +181,8 @@ const ProductDetails = () => {
               <div className="flex items-center justify-between space-x-4 mb-2">
                 <h2 className="text-xl font-semibold">Transaction Logs</h2>
                 <select
-                  value={selectedType} // Bind selected value to state
-                  onChange={handleTransactionTypeChange} // Handle change
+                  value={selectedType}
+                  onChange={(e) => handleTransactionTypeChange(e)}
                   className="border px-4 font-bold py-2 rounded-2xl"
                 >
                   <option value="all">All Transactions</option>
@@ -248,6 +191,7 @@ const ProductDetails = () => {
                   <option value="Walk-In">Walk-In</option>
                 </select>
               </div>
+
               {transactions.length === 0 ? (
                 <p>No transactions found for this product.</p>
               ) : (
@@ -257,72 +201,49 @@ const ProductDetails = () => {
                       key={index}
                       className={`p-3 hover:translate-x-3 border duration-200 rounded-lg shadow-md ${
                         transaction.transaction_type === "Restock"
-                          ? "bg-yellow-100 text-yellow-800" // Restock
+                          ? "bg-yellow-100 text-yellow-800"
                           : transaction.transaction_type === "Delivery"
-                          ? "bg-red-100 text-red-800"       // Delivery
-                          : "bg-blue-100 text-blue-800"     // Walk-In
+                          ? "bg-red-100 text-red-800"
+                          : "bg-blue-100 text-blue-800"
                       }`}
                     >
-                      {/* Transaction Date */}
-                      <p className="text-sm font-bold text-gray-700">
-                        {formatDate(transaction.date)}
-                      </p>
-
-                      {/* Transaction Type and Details */}
+                      <p className="text-sm font-bold text-gray-700">{formatDate(transaction.date)}</p>
                       {transaction.transaction_type === "Restock" ? (
                         <>
                           <p className="font-bold text-base">Restocked</p>
-                          <p className="text-sm">
-                            <strong>Quantity:</strong> {transaction.quantity}
-                          </p>
-                          <p className="text-sm text-green-600 font-bold">
-                            Paid: ₱{transaction.total_value}
-                          </p>
+                          <p className="text-sm"><strong>Quantity:</strong> {transaction.quantity}</p>
+                          <p className="text-sm text-green-600 font-bold">Paid: ₱{transaction.total_value}</p>
                         </>
                       ) : transaction.transaction_type === "Delivery" ? (
                         <>
                           <p className="font-bold text-base">Delivered</p>
-                          <p className="text-sm">
-                            <strong>Delivery ID:</strong> {transaction.delivery_id || "N/A"}
-                          </p>
-                          <p className="text-sm">
-                            <strong>Quantity:</strong> {transaction.quantity}
-                          </p>
-                          <p className="text-sm text-red-600 font-bold">
-                            Gain: ₱{transaction.total_value}
-                          </p>
-                          <p className="text-sm">
-                            <strong>Damages:</strong> {transaction.no_of_damages || 0}
-                          </p>
-                        </>
-                      ) : transaction.transaction_type === "Walk-In" ? (
-                        <>
-                          <p className="font-bold text-base">Walk-In Sale</p>
-                          <p className="text-sm">
-                            <strong>Quantity:</strong> {transaction.quantity}
-                          </p>
-                          <p className="text-sm text-blue-600 font-bold">
-                            Total: ₱{transaction.total_value}
-                          </p>
+                          <p className="text-sm"><strong>Delivery ID:</strong> {transaction.delivery_id || "N/A"}</p>
+                          <p className="text-sm"><strong>Quantity:</strong> {transaction.quantity}</p>
+                          <p className="text-sm text-red-600 font-bold">Gain: ₱{transaction.total_value}</p>
+                          <p className="text-sm"><strong>Damages:</strong> {transaction.no_of_damages || 0}</p>
                         </>
                       ) : (
-                        <p className="text-sm font-bold text-red-500">Unknown Transaction Type</p>
+                        <>
+                          <p className="font-bold text-base">Walk-In Sale</p>
+                          <p className="text-sm"><strong>Quantity:</strong> {transaction.quantity}</p>
+                          <p className="text-sm text-blue-600 font-bold">Total: ₱{transaction.total_value}</p>
+                        </>
                       )}
                     </div>
                   ))}
                 </div>
               )}
             </div>
-            {/* Pagination Controls */}
             {renderPagination()}
           </>
         )}
       </div>
-      {/* Restock Modal */}
+
+      {/* ✅ Corrected Modal Usage */}
       {showRestockModal && (
         <RestockModal
-          productId={productID}
-          productName={productDetails.product_name}
+          selectedProducts={selectedProducts}
+          setSelectedProducts={setSelectedProducts}
           onClose={() => setShowRestockModal(false)}
           onRestockSuccess={handleRestockSuccess}
         />
