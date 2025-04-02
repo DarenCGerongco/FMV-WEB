@@ -132,12 +132,12 @@ const TopSoldProductsModal = ({ onClose, month, year }) => {
         <div className="sticky top-0 bg-white border-b z-10 p-4 flex justify-between items-center">
           <h2 className="text-xl font-bold">Most Sold Products as of {getMonthName(month)} {year}</h2>
           <div>
-            <button
+            {/* <button
               onClick={handleGenerateReport}
               className="mr-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700"
             >
               Generate Report
-            </button>
+            </button> */}
             <button
               onClick={onClose}
               className="text-gray-600 hover:text-gray-900 font-bold text-2xl"
