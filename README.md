@@ -84,6 +84,58 @@ Currently, two official plugins are available:
 - First, run the ipconfig, then find the IPV4 of your device, example you have `192.168.1.20`;
 - ".env" should be created and the content should be like this: `"VITE_API_URL=http://192.168.1.6:3000"`
 
+# Additional Steps
+
+Since sige man tag `npm run build` kada naay changes sa atong designs, naa koy life hacks, follow lang.
+
+1. install: 
+```sh
+    npm install -D concurrently
+
+    npm install -D browser-sync browser-sync-webpack-plugin
+```
+
+2. Create a file, `bs-config.js` and inside fmv_web/bs-config.js:
+```js
+    module.exports = {
+        proxy: "localhost:3000", // Adjust this to your local server address if needed
+        files: ["pages/**/*.html", "pages/css/**/*.css"],
+        open: false,
+        notify: false
+    };
+```
+
+3. The package.json:
+```json
+{
+  "name": "fmv_web",
+  "version": "1.0.0",
+  "scripts": {
+    "build": "postcss src/css/styles.css -o pages/css/styles.css",
+    "watch:css": "postcss src/css/styles.css -o pages/css/styles.css --watch",
+    "watch:bs": "browser-sync start --config bs-config.js",
+    "watch": "concurrently \"npm run watch:css\" \"npm run watch:bs\"",
+    "start": "npm run watch"
+  },
+  "devDependencies": {
+    "tailwindcss": "^3.x.x",
+    "postcss": "^8.x.x",
+    "autoprefixer": "^10.x.x",
+    "postcss-cli": "^9.x.x",
+    "concurrently": "^6.x.x",
+    "browser-sync": "^2.x.x",
+    "browser-sync-webpack-plugin": "^2.x.x"
+  }
+}
+
+```
+
+4. Run the following: 
+```sh
+    npm start
+```
+
+
 # Running necessities:
 - `npm install axios`
 - `npm install vite --save-dev`
