@@ -184,5 +184,3 @@ npm install
 - `npm start` will watch for changes and sync them live in the browser.
 
 ---
-
-Happy coding! 💻🔥
